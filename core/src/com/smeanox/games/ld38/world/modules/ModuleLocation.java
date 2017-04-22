@@ -142,8 +142,16 @@ public class ModuleLocation {
 		setRotation(rotation);
 	}
 
+	public int getRotRight(){
+		return getRotX() + getRotWidth();
+	}
+
+	public int getRotTop(){
+		return getRotY() + getRotHeight();
+	}
+
 	public boolean isPointInModule(int x, int y){
-		return getRotX() <= x && x < getRotX() + getRotWidth() && getRotY() <= y && y < getRotY() + getRotHeight();
+		return getRotX() <= x && x < getRotRight() && getRotY() <= y && y < getRotTop();
 	}
 
 	public Pair<Integer, Integer> getPortLocation(int direction){

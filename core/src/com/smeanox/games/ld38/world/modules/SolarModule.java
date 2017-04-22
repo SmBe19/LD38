@@ -17,4 +17,9 @@ public class SolarModule extends Module {
 	public TextureRegion getTextureHull(float time) {
 		return IOAnimation.SolarPanel.texture();
 	}
+
+	@Override
+	public boolean canAttachSolarPanel() {
+		return false;
+	}
 }

@@ -1,5 +1,7 @@
 package com.smeanox.games.ld38.world.modules;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.smeanox.games.ld38.Consts;
@@ -23,6 +25,10 @@ public abstract class Module {
 		return (direction + getModuleLocation().getRotation()) % 4;
 	}
 
+	public boolean canAttachSolarPanel(){
+		return true;
+	}
+
 	public Module getNeighbor(int direction){
 		return neighbors[rotateDirection(direction)];
 	}
@@ -40,51 +46,40 @@ public abstract class Module {
 			return null;
 		}
 		Module module = ModuleFactory.createModule(clazz, getModuleLocation().getRotX(), getModuleLocation().getRotY(), rotation);
-		boolean success = false;
 		if(module.canAddNeighbor(ModuleLocation.flipDirection(direction))) {
 			Pair<Integer, Integer> portLocation = getModuleLocation().getPortLocation(direction);
 			switch (direction) {
 				case Consts.UP:
 					module.getModuleLocation().setRotX(portLocation.first - module.getModuleLocation().getRotWidth() / 2);
 					module.getModuleLocation().setRotY(portLocation.second);
-					success = true;
 					break;
 				case Consts.RIGHT:
 					module.getModuleLocation().setRotX(portLocation.first);
 					module.getModuleLocation().setRotY(portLocation.second - module.getModuleLocation().getRotHeight() / 2);
-					success = true;
 					break;
 				case Consts.DOWN:
 					module.getModuleLocation().setRotX(portLocation.first - module.getModuleLocation().getRotWidth() / 2);
 					module.getModuleLocation().setRotY(portLocation.second + 1 - module.getModuleLocation().getRotHeight());
-					success = true;
 					break;
 				case Consts.LEFT:
 					module.getModuleLocation().setRotX(portLocation.first + 1 - module.getModuleLocation().getRotWidth());
 					module.getModuleLocation().setRotY(portLocation.second - module.getModuleLocation().getRotHeight() / 2);
-					success = true;
 					break;
 			}
 		}
-		if(success) {
-			for (final Module amodule : SpaceStation.get().getModules()) {
-				final GenericRapper<Boolean> eminem = new GenericRapper<Boolean>(true);
-				module.getModuleLocation().foreach(new ModuleLocation.ForeachRunnable() {
-					@Override
-					public void run(int x, int y) {
-						if (amodule.getModuleLocation().isPointInModule(x, y)) {
-							eminem.value = false;
-						}
+		for (final Module amodule : SpaceStation.get().getModules()) {
+			final GenericRapper<Boolean> eminem = new GenericRapper<Boolean>(true);
+			module.getModuleLocation().foreach(new ModuleLocation.ForeachRunnable() {
+				@Override
+				public void run(int x, int y) {
+					if (amodule.getModuleLocation().isPointInModule(x, y)) {
+						eminem.value = false;
 					}
-				});
-				if (!eminem.value) {
-					success = false;
-					break;
 				}
+			});
+			if (!eminem.value) {
+				return null;
 			}
-		}
-		if(!success){
-			return null;
 		}
 		return module;
 	}
@@ -115,8 +110,41 @@ public abstract class Module {
 		if(canAddNeighbor(direction) && false){
 			return null;
 		}
-		// todo check if in range
+		if (!canAttachSolarPanel()) {
+			return null;
+		}
 		Module module = ModuleFactory.createModule(SolarModule.class, x, y, direction);
+		if(direction == Consts.UP || direction == Consts.DOWN){
+			if(x < getModuleLocation().getRotX() || getModuleLocation().getRotRight() - 1 < x){
+				return null;
+			}
+			if (x == getModuleLocation().getRotRight() - 1){
+				Module neighbor = getNeighbor(Consts.RIGHT);
+				if(neighbor == null || !neighbor.canAttachSolarPanel()) {
+					return null;
+				} else {
+					if(direction == Consts.UP && neighbor.getModuleLocation().getRotTop() != getModuleLocation().getRotTop() ||
+							direction == Consts.DOWN && neighbor.getModuleLocation().getRotY() != getModuleLocation().getRotY()){
+						return null;
+					}
+				}
+			}
+		} else {
+			if(y < getModuleLocation().getRotY() || getModuleLocation().getRotTop() - 1 < y){
+				return null;
+			}
+			if (y == getModuleLocation().getRotTop() - 1){
+				Module neighbor = getNeighbor(Consts.UP);
+				if(neighbor == null || !neighbor.canAttachSolarPanel()) {
+					return null;
+				} else {
+					if(direction == Consts.RIGHT && neighbor.getModuleLocation().getRotRight() != getModuleLocation().getRotRight() ||
+							direction == Consts.LEFT && neighbor.getModuleLocation().getRotX() != getModuleLocation().getRotX()){
+						return null;
+					}
+				}
+			}
+		}
 		switch (direction) {
 			case Consts.UP:
 				module.getModuleLocation().setRotX(x);
@@ -173,9 +201,9 @@ public abstract class Module {
 		TextureRegion textureInterior = getTextureInterior(time);
 		if (textureInterior != null) {
 			batch.draw(textureInterior, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
-					textureInterior.getRegionHeight() / Consts.SPRITE_SIZE,
 					textureInterior.getRegionWidth() / Consts.SPRITE_SIZE,
-					1, 1, getModuleLocation().getRotation() * 90 - 90, false);
+					textureInterior.getRegionHeight() / Consts.SPRITE_SIZE,
+					1, 1, getModuleLocation().getRotation() * 90);
 		}
 	}
 
@@ -183,9 +211,9 @@ public abstract class Module {
 		TextureRegion textureHull = getTextureHull(time);
 		if (textureHull != null) {
 			batch.draw(textureHull, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
-					textureHull.getRegionHeight() / Consts.SPRITE_SIZE,
 					textureHull.getRegionWidth() / Consts.SPRITE_SIZE,
-					1, 1, getModuleLocation().getRotation() * 90 - 90, false);
+					textureHull.getRegionHeight() / Consts.SPRITE_SIZE,
+					1, 1, getModuleLocation().getRotation() * 90);
 		}
 	}
 }

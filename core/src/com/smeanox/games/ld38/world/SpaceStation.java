@@ -51,16 +51,13 @@ public class SpaceStation {
 				!= null){
 			throw new RuntimeException("boom");
 		}
+		/*
 		if(mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 1, mainModule.getModuleLocation().getY() - 1) == null ||
 				mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 3, mainModule.getModuleLocation().getY() - 1) == null ||
-				mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 5, mainModule.getModuleLocation().getY() - 1) == null ||
-				mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 7, mainModule.getModuleLocation().getY() - 1) == null ||
-				mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 9, mainModule.getModuleLocation().getY() - 1) == null ||
-				mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 11, mainModule.getModuleLocation().getY() - 1) == null ||
-				mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 13, mainModule.getModuleLocation().getY() - 1) == null ||
-				mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 15, mainModule.getModuleLocation().getY() - 1) == null){
+				mainModule.getNeighbor(Consts.RIGHT).addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 5, mainModule.getModuleLocation().getY() - 1) == null){
 			throw new RuntimeException("boom2");
 		}
+		*/
 	}
 
 	public Set<Module> getModules() {

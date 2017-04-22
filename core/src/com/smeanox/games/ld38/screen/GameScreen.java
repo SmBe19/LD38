@@ -35,7 +35,7 @@ public class GameScreen implements Screen {
 	}
 
 	private void initBuild(){
-		buildClazz = MainModule.class;
+		buildClazz = SolarModule.class;
 		buildModule = null;
 		buildNeighbor = null;
 		buildX = Integer.MAX_VALUE;
@@ -72,6 +72,7 @@ public class GameScreen implements Screen {
 							float ydist = (module.getModuleLocation().getRotY() + module.getModuleLocation().getRotHeight() / 2.f - mousey);
 							float val = xdist * xdist + ydist * ydist;
 							if(val < minVal){
+								// System.out.println(neighbor.getModuleLocation() + " " + module.getModuleLocation() + " " + module.getModuleLocation().getX() + " " + module.getModuleLocation().getY());
 								buildModule = module;
 								buildNeighbor = neighbor;
 								buildDirection = i;

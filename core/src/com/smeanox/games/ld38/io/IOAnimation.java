@@ -8,6 +8,7 @@ import com.smeanox.games.ld38.Consts;
 public enum IOAnimation {
 	HullDefault(IOTexture.station, 0, 0, 3, 1),
 	ModuleEmpty(IOTexture.station, 5, 0, 3, 1),
+	SolarPanel(IOTexture.station, 0, 4, 4, 2),
 	Dude1(IOTexture.dude, 1.f, 0, 0, 3),
 	;
 
@@ -18,7 +19,7 @@ public enum IOAnimation {
 		for(int i = 0; i < tiles; i++){
 			frames.add(new TextureRegion(texture.texture, (startx + i * width) * Consts.SPRITE_SIZE, starty * Consts.SPRITE_SIZE, width * Consts.SPRITE_SIZE, height * Consts.SPRITE_SIZE));
 		}
-		animation = new Animation<TextureRegion>(duration, frames);
+		animation = new Animation<TextureRegion>(duration, frames, Animation.PlayMode.LOOP);
 	}
 
 	IOAnimation(IOTexture texture, float duration, int startx, int starty, int tiles) {

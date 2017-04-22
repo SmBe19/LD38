@@ -1,12 +1,17 @@
 package com.smeanox.games.ld38.world.modules;
 
 import com.smeanox.games.ld38.Consts;
+import com.smeanox.games.ld38.world.Pair;
 
 public class ModuleLocation {
 	private int x, y;
 	private int width, height;
 	private int rotation;
 	private int rotX, rotY, rotWidth, rotHeight;
+
+	public static int flipDirection(int direction){
+		return (direction + 2) % 4;
+	}
 
 	public ModuleLocation(int x, int y, int width, int height, int rotation) {
 		this.x = x;
@@ -139,6 +144,20 @@ public class ModuleLocation {
 
 	public boolean isPointInModule(int x, int y){
 		return getRotX() <= x && x < getRotX() + getRotWidth() && getRotY() <= y && y < getRotY() + getRotHeight();
+	}
+
+	public Pair<Integer, Integer> getPortLocation(int direction){
+		switch(direction){
+			case Consts.UP:
+				return new Pair<Integer, Integer>(getRotX() + getRotWidth() / 2, getRotY() + getRotHeight());
+			case Consts.RIGHT:
+				return new Pair<Integer, Integer>(getRotX() + getRotWidth(), getRotY() + getRotHeight() / 2);
+			case Consts.DOWN:
+				return new Pair<Integer, Integer>(getRotX() + getRotWidth() / 2, getRotY() - 1);
+			case Consts.LEFT:
+				return new Pair<Integer, Integer>(getRotX() - 1, getRotY() + getRotHeight() / 2);
+		}
+		return null;
 	}
 
 	public void foreach(ForeachRunnable runnable){

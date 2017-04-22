@@ -8,7 +8,10 @@ import com.smeanox.games.ld38.Consts;
 public enum IOAnimation {
 	HullDefault(IOTexture.station, 0, 0, 3, 1),
 	ModuleEmpty(IOTexture.station, 5, 0, 3, 1),
+	ModuleFlowers(IOTexture.station, 5, 1, 3, 1),
 	SolarPanel(IOTexture.station, 0, 4, 4, 2),
+	HullCross(IOTexture.station, 3, 0, 1, 1),
+	ModuleCross(IOTexture.station, 4, 0, 1, 1),
 	Dude1(IOTexture.dude, 1.f, 0, 0, 3),
 	;
 

@@ -9,19 +9,23 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.smeanox.games.ld38.Consts;
-import com.smeanox.games.ld38.io.IOAnimation;
 import com.smeanox.games.ld38.io.IOFont;
+import com.smeanox.games.ld38.screen.window.Window;
+import com.smeanox.games.ld38.world.Dude;
+import com.smeanox.games.ld38.world.Pair;
 import com.smeanox.games.ld38.world.SpaceStation;
-import com.smeanox.games.ld38.world.modules.MainModule;
-import com.smeanox.games.ld38.world.modules.Module;
-import com.smeanox.games.ld38.world.modules.SolarModule;
+import com.smeanox.games.ld38.world.module.Module;
+import com.smeanox.games.ld38.world.module.ModuleFactory;
+import com.smeanox.games.ld38.world.module.ModuleInformation;
+import com.smeanox.games.ld38.world.module.SolarModule;
 
 public class GameScreen implements Screen {
 
 	private SpriteBatch batch;
-	private Camera camera;
+	private Camera camera, uiCamera;
 	private float time, scale;
-	private int wWidth, wHeight;
+	private float wWidth, wHeight;
+	private Window buildWindow;
 
 	private Class<? extends Module> buildClazz;
 	private Module buildModule, buildNeighbor;
@@ -31,11 +35,12 @@ public class GameScreen implements Screen {
 	public GameScreen() {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
+		uiCamera = new OrthographicCamera();
 
 		initBuild();
 	}
 
-	private void initBuild(){
+	private void initBuild() {
 		buildClazz = null;
 		buildModule = null;
 		buildNeighbor = null;
@@ -44,12 +49,21 @@ public class GameScreen implements Screen {
 		buildRotation = 0;
 	}
 
+	private void initBuildWindow(){
+		if (buildWindow != null) {
+			Window.windows95.remove(buildWindow);
+		}
+		buildWindow = new BuildWindow(wWidth - 150, 100, 100, wHeight - 200);
+		Window.windows95.add(buildWindow);
+	}
+
 	@Override
 	public void show() {
 
 	}
 
 	private void update(float delta){
+		SpaceStation.get().update(delta);
 	}
 
 	private void findBuildParams(float mousex, float mousey){
@@ -88,11 +102,11 @@ public class GameScreen implements Screen {
 	private void updateInput(float delta){
 		// build
 		boolean buildChanged = false;
+		int x, y;
+		Vector3 mouse = unprojectMouse();
+		x = (int) Math.floor(mouse.x);
+		y = (int) Math.floor(mouse.y);
 		if(buildClazz != null) {
-			int x, y;
-			Vector3 mouse = unprojectMouse();
-			x = (int) Math.floor(mouse.x);
-			y = (int) Math.floor(mouse.y);
 			if (x != buildX || y != buildY) {
 				buildX = x;
 				buildY = y;
@@ -131,6 +145,13 @@ public class GameScreen implements Screen {
 			camera.translate(-Consts.CAMERA_SPEED * delta, 0, 0);
 		}
 
+		mouse = unprojectMouseUI();
+		x = (int) Math.floor(mouse.x);
+		y = (int) Math.floor(mouse.y);
+		for (Window window : Window.windows95) {
+			window.update(delta, x, y);
+		}
+
 		wasDown[0] = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		wasDown[1] = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
 	}
@@ -139,26 +160,44 @@ public class GameScreen implements Screen {
 		return camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 	}
 
+	private Vector3 unprojectMouseUI() {
+		return uiCamera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+	}
+
 	private void draw(float delta){
-		Gdx.gl.glClearColor(0, 1, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
+		batch.setColor(1, 1, 1, 1);
 		batch.begin();
 		for (Module module : SpaceStation.get().getModules()) {
 			module.drawBackground(batch, time);
 		}
-		batch.draw(IOAnimation.Dude1.keyFrame(time), 0, 0, 1, 1);
+		for (Dude dude : SpaceStation.get().getDudes()) {
+			dude.draw(batch, time);
+		}
 		for (Module module : SpaceStation.get().getModules()) {
 			module.drawForeground(batch, time);
 		}
 		if (buildModule != null) {
-			batch.setColor(1, 1, 1, 0.5f);
+			batch.setColor(1, 1, 1, Consts.BUILD_PREVIEW_ALPHA);
 			buildModule.drawBackground(batch, time);
 			buildModule.drawForeground(batch, time);
 			batch.setColor(1, 1, 1, 1);
 		}
-		IOFont.grusigPunktBdf.draw(batch, 0, 0, "Hallo Welt");
+		batch.end();
+
+		drawUI(delta);
+	}
+
+	private void drawUI(float delta) {
+		batch.setProjectionMatrix(uiCamera.combined);
+		batch.begin();
+		for (Window window : Window.windows95) {
+			window.draw(batch, delta);
+		}
+		IOFont.grusigPunktBdf.draw(batch, 16, 16, Consts.SPRITE_SIZE, Consts.GAME_NAME);
 		batch.end();
 	}
 
@@ -176,10 +215,17 @@ public class GameScreen implements Screen {
 		if(scale >= 0.5f){
 			scale = Math.round(scale);
 		}
-		wWidth = width;
-		wHeight = height;
+		wWidth = width / scale;
+		wHeight = height / scale;
 		camera.viewportWidth = width / scale / Consts.SPRITE_SIZE;
 		camera.viewportHeight = height / scale / Consts.SPRITE_SIZE;
+		camera.update();
+		uiCamera.viewportWidth = width / scale;
+		uiCamera.viewportHeight = height / scale;
+		uiCamera.position.set(uiCamera.viewportWidth / 2, uiCamera.viewportHeight / 2, 0);
+		uiCamera.update();
+
+		initBuildWindow();
 	}
 
 	@Override
@@ -201,4 +247,29 @@ public class GameScreen implements Screen {
 	public void dispose() {
 		batch.dispose();
 	}
+
+	private class BuildWindow extends Window {
+
+		public BuildWindow(float x, float y, float width, float height) {
+			super(x, y, width, height);
+		}
+
+		@Override
+		public void init() {
+			uiElements.add(new Label(5, height - 15, 80, 10, "Construction", null));
+
+			float ay = height - 30;
+			for (final Class<? extends Module> module : ModuleFactory.moduleClasses) {
+				uiElements.add(new Button(5, ay, 80, 10, module.getAnnotation(ModuleInformation.class).name(), null, new LabelActionHandler() {
+					@Override
+					public void actionHappened(Label label, float delta) {
+						initBuild();
+						buildClazz = module;
+					}
+				}));
+				ay -= 15;
+			}
+		}
+	}
+
 }

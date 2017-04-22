@@ -1,24 +1,30 @@
-package com.smeanox.games.ld38.world.modules;
+package com.smeanox.games.ld38.world.module;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.world.GenericRapper;
 import com.smeanox.games.ld38.world.Pair;
+import com.smeanox.games.ld38.world.Resource;
 import com.smeanox.games.ld38.world.SpaceStation;
+
+import java.util.Map;
 
 public abstract class Module {
 	private ModuleLocation moduleLocation;
 	private Module[] neighbors = new Module[4];
 	private boolean[] allowNeighbors = new boolean[4];
+	private boolean finished, hadEnoughResources;
+	private float buildProgress;
 
 	public Module(ModuleLocation moduleLocation) {
 		this.moduleLocation = moduleLocation;
 
 		allowNeighbors[Consts.UP] = allowNeighbors[Consts.DOWN] = moduleLocation.getWidth() % 2 == 1;
 		allowNeighbors[Consts.RIGHT] = allowNeighbors[Consts.LEFT] = moduleLocation.getHeight() % 2 == 1;
+
+		finished = false;
+		hadEnoughResources = true;
 	}
 
 	private int rotateDirection(int direction){
@@ -27,6 +33,45 @@ public abstract class Module {
 
 	public boolean canAttachSolarPanel(){
 		return true;
+	}
+
+	public float getBuildSpeed(){
+		return Consts.BUILD_SPEED;
+	}
+
+	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta){
+		hadEnoughResources = true;
+	}
+
+	public void adjustResourceMax(Map<Resource, GenericRapper<Float>> resources, boolean add){}
+
+	public boolean isHadEnoughResources() {
+		return hadEnoughResources;
+	}
+
+	public boolean isFinished() {
+		return finished;
+	}
+
+	public void setFinished(boolean finished) {
+		this.finished = finished;
+	}
+
+	public float getBuildProgress() {
+		return buildProgress;
+	}
+
+	public void setBuildProgress(float buildProgress) {
+		this.buildProgress = buildProgress;
+	}
+
+	public void doBuildProrgess(float delta){
+		if (!finished) {
+			buildProgress += delta * getBuildSpeed();
+			if (buildProgress >= 1.f) {
+				finished = true;
+			}
+		}
 	}
 
 	public Module getNeighbor(int direction){
@@ -91,7 +136,7 @@ public abstract class Module {
 		}
 		setNeighbor(direction, module);
 		module.setNeighbor(ModuleLocation.flipDirection(direction), this);
-		SpaceStation.get().getModules().add(module);
+		SpaceStation.get().addModule(module);
 		for(int i = 0; i < 4; i++){
 			if(module.canAddNeighbor(i)){
 				Pair<Integer, Integer> portLocation = module.getModuleLocation().getPortLocation(i);
@@ -185,7 +230,7 @@ public abstract class Module {
 		if (module == null) {
 			return null;
 		}
-		SpaceStation.get().getModules().add(module);
+		SpaceStation.get().addModule(module);
 		return module;
 	}
 
@@ -200,20 +245,32 @@ public abstract class Module {
 	public void drawBackground(SpriteBatch batch, float time) {
 		TextureRegion textureInterior = getTextureInterior(time);
 		if (textureInterior != null) {
+			if (!finished) {
+				batch.setColor(1, 1, 1, Consts.BUILDING_ALPHA);
+			}
 			batch.draw(textureInterior, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
 					textureInterior.getRegionWidth() / Consts.SPRITE_SIZE,
 					textureInterior.getRegionHeight() / Consts.SPRITE_SIZE,
 					1, 1, getModuleLocation().getRotation() * 90);
+			if (!finished) {
+				batch.setColor(1, 1, 1, 1);
+			}
 		}
 	}
 
 	public void drawForeground(SpriteBatch batch, float time){
 		TextureRegion textureHull = getTextureHull(time);
 		if (textureHull != null) {
+			if (!finished) {
+				batch.setColor(1, 1, 1, Consts.BUILDING_ALPHA);
+			}
 			batch.draw(textureHull, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
 					textureHull.getRegionWidth() / Consts.SPRITE_SIZE,
 					textureHull.getRegionHeight() / Consts.SPRITE_SIZE,
 					1, 1, getModuleLocation().getRotation() * 90);
+			if (!finished) {
+				batch.setColor(1, 1, 1, 1);
+			}
 		}
 	}
 }

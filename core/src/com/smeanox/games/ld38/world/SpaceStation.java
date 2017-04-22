@@ -1,9 +1,10 @@
 package com.smeanox.games.ld38.world;
 
 import com.smeanox.games.ld38.Consts;
-import com.smeanox.games.ld38.world.modules.MainModule;
-import com.smeanox.games.ld38.world.modules.Module;
-import com.smeanox.games.ld38.world.modules.ModuleFactory;
+import com.smeanox.games.ld38.io.IOAnimation;
+import com.smeanox.games.ld38.world.module.MainModule;
+import com.smeanox.games.ld38.world.module.Module;
+import com.smeanox.games.ld38.world.module.ModuleFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,22 +23,30 @@ public class SpaceStation {
 	}
 
 	private Set<Module> modules;
+	private Set<Dude> dudes;
 	private Module mainModule;
-	private Map<Ressource, GenericRapper<Float>> ressources;
+	private Map<Resource, GenericRapper<Float>> resources;
+	private Map<Resource, GenericRapper<Float>> resourceMax;
 
 	private SpaceStation() {
 		singleton = this;
 		modules = new HashSet<Module>();
-		ressources = new HashMap<Ressource, GenericRapper<Float>>();
-		mainModule = ModuleFactory.createModule(MainModule.class, 0, 0);
-		modules.add(mainModule);
+		dudes = new HashSet<Dude>();
+		resources = new HashMap<Resource, GenericRapper<Float>>();
+		resourceMax = new HashMap<Resource, GenericRapper<Float>>();
 		init();
 	}
 
 	private void init(){
-		for (Ressource ressource : Ressource.values()) {
-			ressources.put(ressource, new GenericRapper<Float>(0.f));
+		for (Resource resource : Resource.values()) {
+			resources.put(resource, new GenericRapper<Float>(0.f));
+			resourceMax.put(resource, new GenericRapper<Float>(0.f));
 		}
+
+		mainModule = ModuleFactory.createModule(MainModule.class, 0, 0);
+		mainModule.setBuildProgress(1);
+		mainModule.setFinished(true);
+		addModule(mainModule);
 
 		if(mainModule
 				.addNeighbor(Consts.RIGHT, Consts.RIGHT, MainModule.class)
@@ -51,17 +60,29 @@ public class SpaceStation {
 				!= null){
 			throw new RuntimeException("boom");
 		}
-		/*
-		if(mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 1, mainModule.getModuleLocation().getY() - 1) == null ||
-				mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 3, mainModule.getModuleLocation().getY() - 1) == null ||
-				mainModule.getNeighbor(Consts.RIGHT).addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 5, mainModule.getModuleLocation().getY() - 1) == null){
+		if(mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 1, mainModule.getModuleLocation().getY() - 1) == null){
 			throw new RuntimeException("boom2");
 		}
-		*/
+
+		dudes.add(new Dude(IOAnimation.Dude1));
+	}
+
+	public void addModule(Module module) {
+		modules.add(module);
+		module.adjustResourceMax(resourceMax, true);
+	}
+
+	public void removeModule(Module module) {
+		modules.remove(module);
+		module.adjustResourceMax(resourceMax, false);
 	}
 
 	public Set<Module> getModules() {
 		return modules;
+	}
+
+	public Set<Dude> getDudes() {
+		return dudes;
 	}
 
 	public Module getMainModule() {
@@ -75,5 +96,27 @@ public class SpaceStation {
 			}
 		}
 		return null;
+	}
+
+	public void update(float delta){
+		for (Module module : modules) {
+			module.doInputOutputProcessing(resources, delta);
+			module.doBuildProrgess(delta);
+		}
+
+		// clamp resources
+		for (Resource resource : Resource.values()) {
+			if (resources.get(resource).value > resourceMax.get(resource).value) {
+				resources.get(resource).value = resourceMax.get(resource).value;
+			}
+			if (resources.get(resource).value < 0) {
+				resources.get(resource).value = 0.f;
+			}
+		}
+
+		for (Dude dude : dudes) {
+			dude.doInputOutputProcessing(resources, delta);
+			dude.update(delta);
+		}
 	}
 }

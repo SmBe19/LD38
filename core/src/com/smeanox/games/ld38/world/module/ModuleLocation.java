@@ -1,4 +1,4 @@
-package com.smeanox.games.ld38.world.modules;
+package com.smeanox.games.ld38.world.module;
 
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.world.Pair;

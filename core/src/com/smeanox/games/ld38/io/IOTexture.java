@@ -7,6 +7,7 @@ public enum IOTexture {
 	station("img/station.png"),
 	dude("img/dude.png"),
 	font("img/font.png"),
+	windowBorder("img/ui.png"),
 	;
 
 	public Texture texture;

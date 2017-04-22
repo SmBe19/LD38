@@ -8,4 +8,5 @@ public class Consts {
 	public static final int SPRITE_SIZE = 32;
 	public static final float CAMERA_SPEED = 7.5f;
 	public static final int BUILD_SEARCH_DIST = 2;
+	public static final float LINE_SPACING = 1.5f;
 }

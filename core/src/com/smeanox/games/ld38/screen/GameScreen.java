@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOAnimation;
+import com.smeanox.games.ld38.io.IOFont;
 import com.smeanox.games.ld38.world.SpaceStation;
 import com.smeanox.games.ld38.world.modules.MainModule;
 import com.smeanox.games.ld38.world.modules.Module;
@@ -35,7 +36,7 @@ public class GameScreen implements Screen {
 	}
 
 	private void initBuild(){
-		buildClazz = SolarModule.class;
+		buildClazz = null;
 		buildModule = null;
 		buildNeighbor = null;
 		buildX = Integer.MAX_VALUE;
@@ -72,7 +73,6 @@ public class GameScreen implements Screen {
 							float ydist = (module.getModuleLocation().getRotY() + module.getModuleLocation().getRotHeight() / 2.f - mousey);
 							float val = xdist * xdist + ydist * ydist;
 							if(val < minVal){
-								// System.out.println(neighbor.getModuleLocation() + " " + module.getModuleLocation() + " " + module.getModuleLocation().getX() + " " + module.getModuleLocation().getY());
 								buildModule = module;
 								buildNeighbor = neighbor;
 								buildDirection = i;
@@ -140,7 +140,7 @@ public class GameScreen implements Screen {
 	}
 
 	private void draw(float delta){
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 1, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -158,6 +158,7 @@ public class GameScreen implements Screen {
 			buildModule.drawForeground(batch, time);
 			batch.setColor(1, 1, 1, 1);
 		}
+		IOFont.grusigPunktBdf.draw(batch, 0, 0, "Hallo Welt");
 		batch.end();
 	}
 

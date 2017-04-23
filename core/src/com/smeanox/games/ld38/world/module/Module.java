@@ -1,5 +1,6 @@
 package com.smeanox.games.ld38.world.module;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.smeanox.games.ld38.Consts;
@@ -28,7 +29,7 @@ public abstract class Module {
 	}
 
 	private int rotateDirection(int direction){
-		return (direction + getModuleLocation().getRotation()) % 4;
+		return (direction + 4 - getModuleLocation().getRotation()) % 4;
 	}
 
 	public boolean canAttachSolarPanel(){
@@ -156,8 +157,7 @@ public abstract class Module {
 	}
 
 	public Module tryAddSolar(int direction, int x, int y){
-		// todo remove false
-		if(canAddNeighbor(direction) && false){
+		if(canAddNeighbor(direction)){
 			return null;
 		}
 		if (!canAttachSolarPanel()) {
@@ -251,14 +251,20 @@ public abstract class Module {
 		TextureRegion textureInterior = getTextureInterior(time);
 		if (textureInterior != null) {
 			if (!finished) {
+				Color oldColor = batch.getColor().cpy();
 				batch.setColor(1, 1, 1, Consts.BUILDING_ALPHA);
-			}
-			batch.draw(textureInterior, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
-					textureInterior.getRegionWidth() / Consts.SPRITE_SIZE,
-					textureInterior.getRegionHeight() / Consts.SPRITE_SIZE,
-					1, 1, getModuleLocation().getRotation() * 90);
-			if (!finished) {
-				batch.setColor(1, 1, 1, 1);
+				TextureRegion buildTexture = new TextureRegion(textureInterior);
+				buildTexture.setRegionWidth((int) (textureInterior.getRegionWidth() * buildProgress));
+				batch.draw(buildTexture, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
+						buildTexture.getRegionWidth() / (float) Consts.SPRITE_SIZE,
+						buildTexture.getRegionHeight() / Consts.SPRITE_SIZE,
+						1, 1, getModuleLocation().getRotation() * 90);
+				batch.setColor(oldColor);
+			} else {
+				batch.draw(textureInterior, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
+						textureInterior.getRegionWidth() / Consts.SPRITE_SIZE,
+						textureInterior.getRegionHeight() / Consts.SPRITE_SIZE,
+						1, 1, getModuleLocation().getRotation() * 90);
 			}
 		}
 	}
@@ -266,16 +272,11 @@ public abstract class Module {
 	public void drawForeground(SpriteBatch batch, float time){
 		TextureRegion textureHull = getTextureHull(time);
 		if (textureHull != null) {
-			if (!finished) {
-				batch.setColor(1, 1, 1, Consts.BUILDING_ALPHA);
-			}
+			Color oldColor = batch.getColor().cpy();
 			batch.draw(textureHull, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
 					textureHull.getRegionWidth() / Consts.SPRITE_SIZE,
 					textureHull.getRegionHeight() / Consts.SPRITE_SIZE,
 					1, 1, getModuleLocation().getRotation() * 90);
-			if (!finished) {
-				batch.setColor(1, 1, 1, 1);
-			}
 		}
 	}
 }

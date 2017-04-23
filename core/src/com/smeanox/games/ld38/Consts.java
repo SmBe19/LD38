@@ -11,5 +11,5 @@ public class Consts {
 	public static final float LINE_SPACING = 1.5f;
 	public static final float BUILD_SPEED = 0.2f;
 	public static final float BUILD_PREVIEW_ALPHA = 0.5f;
-	public static final float BUILDING_ALPHA = 0.2f;
+	public static final float BUILDING_ALPHA = 0.5f;
 }

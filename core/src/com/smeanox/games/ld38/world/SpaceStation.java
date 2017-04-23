@@ -48,22 +48,6 @@ public class SpaceStation {
 		mainModule.setFinished(true);
 		addModule(mainModule);
 
-		if(mainModule
-				.addNeighbor(Consts.RIGHT, Consts.RIGHT, MainModule.class)
-				.addNeighbor(Consts.RIGHT, Consts.RIGHT, MainModule.class)
-				.addNeighbor(Consts.UP, Consts.UP, MainModule.class)
-				.addNeighbor(Consts.UP, Consts.UP, MainModule.class)
-				.addNeighbor(Consts.LEFT, Consts.LEFT, MainModule.class)
-				.addNeighbor(Consts.LEFT, Consts.LEFT, MainModule.class)
-				.addNeighbor(Consts.DOWN, Consts.DOWN, MainModule.class)
-				.addNeighbor(Consts.DOWN, Consts.DOWN, MainModule.class)
-				!= null){
-			throw new RuntimeException("boom");
-		}
-		if(mainModule.addSolar(Consts.DOWN, mainModule.getModuleLocation().getRotX() + 1, mainModule.getModuleLocation().getY() - 1) == null){
-			throw new RuntimeException("boom2");
-		}
-
 		dudes.add(new Dude(IOAnimation.Dude1));
 	}
 

@@ -1,6 +1,7 @@
 package com.smeanox.games.ld38.world.module;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOAnimation;
 import com.smeanox.games.ld38.world.GenericRapper;
 import com.smeanox.games.ld38.world.Resource;
@@ -9,9 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ModuleInformation(
-		name = "Main Module",
+		name = "Command Module",
 		width = 3,
-		height = 1
+		height = 3
 )
 public class MainModule extends Module {
 
@@ -23,25 +24,34 @@ public class MainModule extends Module {
 
 	public MainModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);
+
+		allowNeighbors[Consts.UP] = false;
+	}
+
+	@Override
+	public boolean canAttachSolarPanel() {
+		return false;
 	}
 
 	@Override
 	public TextureRegion getTextureInterior(float time) {
-		return IOAnimation.ModuleEmpty.texture();
+		return IOAnimation.ModuleMain.texture();
 	}
 
 	@Override
 	public TextureRegion getTextureHull(float time) {
-		return IOAnimation.HullDefault.texture();
+		return IOAnimation.HullMain.texture();
 	}
 
 	@Override
 	public void adjustResourceMax(Map<Resource, GenericRapper<Float>> resources, boolean add) {
-		resources.get(Resource.Electricity).value += (add ? 1 : -1) * 100;
+		resources.get(Resource.Electricity).value += (add ? 1 : -1) * 1000;
+		resources.get(Resource.Fe).value += (add ? 1 : -1) * 1000;
 	}
 
 	@Override
 	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta) {
-		hadEnoughResources = tryUseResource(resources, Resource.Electricity, -delta * 1);
+		hadEnoughResources = tryUseResource(resources, Resource.Electricity, -delta * 100) &&
+				tryUseResource(resources, Resource.Fe, -delta * 100);
 	}
 }

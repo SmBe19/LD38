@@ -122,9 +122,10 @@ public abstract class Window {
 		}
 
 		public void draw(SpriteBatch batch, float delta) {
+			Color oldColor = batch.getColor().cpy();
 			batch.setColor(color);
 			IOFont.grusigPunktBdf.draw(batch, (int) (Window.this.x + x), (int) (Window.this.y + y), Consts.SPRITE_SIZE, text);
-			batch.setColor(1, 1, 1, 1);
+			batch.setColor(oldColor);
 		}
 	}
 

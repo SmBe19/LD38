@@ -12,8 +12,10 @@ public class ModuleFactory {
 
 	public static final List<Class<? extends Module>> moduleClasses = new ArrayList<Class<? extends Module>>();
 	static{
-		moduleClasses.add(MainModule.class);
+		moduleClasses.add(EmptyModule.class);
 		moduleClasses.add(CrossModule.class);
+		moduleClasses.add(HydrolysisModule.class);
+		moduleClasses.add(GardenModule.class);
 		moduleClasses.add(SolarModule.class);
 	}
 

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ModuleInformation(
-		name = "Cross Module",
+		name = "Cross Connector",
 		width = 1,
 		height = 1
 )

@@ -109,6 +109,9 @@ public class GameScreen implements Screen {
 				}
 			}
 		}
+		if (buildModule != null) {
+			buildModule.setFinished(true);
+		}
 	}
 
 	private void updateInput(float delta){
@@ -150,6 +153,7 @@ public class GameScreen implements Screen {
 					} else {
 						buildNeighbor.addNeighbor(buildDirection, buildRotation, buildClazz);
 					}
+					findBuildParams(mouse.x, mouse.y);
 				}
 			}
 			if (wasDown[1] && !isMouseDown[1]) {
@@ -198,10 +202,11 @@ public class GameScreen implements Screen {
 			module.drawForeground(batch, time);
 		}
 		if (buildModule != null) {
+			Color oldColor = batch.getColor().cpy();
 			batch.setColor(1, 1, 1, Consts.BUILD_PREVIEW_ALPHA);
 			buildModule.drawBackground(batch, time);
 			buildModule.drawForeground(batch, time);
-			batch.setColor(1, 1, 1, 1);
+			batch.setColor(oldColor);
 		}
 		batch.end();
 

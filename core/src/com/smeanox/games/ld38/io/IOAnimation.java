@@ -6,11 +6,15 @@ import com.badlogic.gdx.utils.Array;
 import com.smeanox.games.ld38.Consts;
 
 public enum IOAnimation {
-	HullDefault(IOTexture.station, 0, 0, 3, 1),
-	ModuleEmpty(IOTexture.station, 5, 0, 3, 1),
-	ModuleFlowers(IOTexture.station, 5, 1, 3, 1),
-	SolarPanel(IOTexture.station, 0, 4, 4, 2),
+	HullDefault3(IOTexture.station, 0, 0, 3, 1),
+	HullDefault2(IOTexture.station, 0, 2, 2, 1),
+	HullMain(IOTexture.station, 0, 6, 3, 3),
 	HullCross(IOTexture.station, 3, 0, 1, 1),
+	ModuleEmpty3(IOTexture.station, 5, 0, 3, 1),
+	ModuleHydrolysis(IOTexture.station, 2, 2, 2, 1),
+	ModuleFlowers(IOTexture.station, 5, 1, 3, 1),
+	ModuleMain(IOTexture.station, 3, 6, 3, 3),
+	SolarPanel(IOTexture.station, 0, 4, 4, 2),
 	ModuleCross(IOTexture.station, 4, 0, 1, 1),
 	Dude1(IOTexture.dude, 1.f, 0, 0, 3),
 	;

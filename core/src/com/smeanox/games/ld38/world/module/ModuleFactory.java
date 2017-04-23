@@ -33,9 +33,25 @@ public class ModuleFactory {
 		buildCostCache.put(clazz, cost);
 	}
 
+	public static String getModuleName(Class<? extends Module> clazz){
+		return clazz.getAnnotation(ModuleInformation.class).name();
+	}
+
+	private static boolean tryLoadClass(Class<? extends Module> clazz) {
+		try {
+			Class.forName(clazz.getCanonicalName());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	public static Map<Resource, Float> getModuleBuildCost(Class<? extends Module> clazz) {
 		if(!buildCostCache.containsKey(clazz)) {
-			throw new RuntimeException("Unknown module type");
+			if(!tryLoadClass(clazz) || !buildCostCache.containsKey(clazz)) {
+				throw new RuntimeException("Unknown module type: " + clazz);
+			}
 		}
 		return buildCostCache.get(clazz);
 	}

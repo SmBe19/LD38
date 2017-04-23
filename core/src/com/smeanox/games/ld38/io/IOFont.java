@@ -5,12 +5,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.smeanox.games.ld38.Consts;
 
 public enum IOFont {
-	grusigPunktBdf(IOTexture.font.texture, 7, 11, "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"),
+	grusigPunktBdf(IOTexture.font.texture, 7, 11, "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!?.,;\"/0123456789"),
 	;
 
-	private Texture texture;
-	private int width, height;
-	private String chars;
+	private final Texture texture;
+	private final int width, height;
+	private final String chars;
 
 	IOFont(Texture texture, int width, int height, String chars) {
 		this.texture = texture;

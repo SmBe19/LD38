@@ -15,7 +15,7 @@ public enum IOAnimation {
 	Dude1(IOTexture.dude, 1.f, 0, 0, 3),
 	;
 
-	public Animation<TextureRegion> animation;
+	public final Animation<TextureRegion> animation;
 
 	IOAnimation(IOTexture texture, float duration, int startx, int starty, int tiles, int width, int height){
 		Array<TextureRegion> frames = new Array<TextureRegion>();

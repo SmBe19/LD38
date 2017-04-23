@@ -11,11 +11,11 @@ import com.smeanox.games.ld38.world.SpaceStation;
 import java.util.Map;
 
 public abstract class Module {
-	private ModuleLocation moduleLocation;
-	private Module[] neighbors = new Module[4];
-	private boolean[] allowNeighbors = new boolean[4];
-	private boolean finished, hadEnoughResources;
-	private float buildProgress;
+	protected ModuleLocation moduleLocation;
+	protected Module[] neighbors = new Module[4];
+	protected boolean[] allowNeighbors = new boolean[4];
+	protected boolean finished, hadEnoughResources;
+	protected float buildProgress;
 
 	public Module(ModuleLocation moduleLocation) {
 		this.moduleLocation = moduleLocation;
@@ -41,6 +41,11 @@ public abstract class Module {
 
 	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta){
 		hadEnoughResources = true;
+	}
+
+	protected boolean tryUseResource(Map<Resource, GenericRapper<Float>> resources, Resource resource, float valueUse) {
+		resources.get(resource).value -= valueUse;
+		return resources.get(resource).value > 0;
 	}
 
 	public void adjustResourceMax(Map<Resource, GenericRapper<Float>> resources, boolean add){}

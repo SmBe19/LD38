@@ -77,6 +77,32 @@ public class SpaceStation {
 		module.adjustResourceMax(resourceMax, false);
 	}
 
+	public float getResource(Resource resource) {
+		return resources.get(resource).value;
+	}
+
+	public float getResourceMax(Resource resource) {
+		return resourceMax.get(resource).value;
+	}
+
+	public boolean buyModule(Class<? extends Module> clazz, boolean tryOnly) {
+		if (!tryOnly) {
+			if (!buyModule(clazz, true)) {
+				return false;
+			}
+		}
+		Map<Resource, Float> moduleBuildCost = ModuleFactory.getModuleBuildCost(clazz);
+		for (Resource resource : moduleBuildCost.keySet()) {
+			if (moduleBuildCost.get(resource) > resources.get(resource).value) {
+				return false;
+			}
+			if (!tryOnly) {
+				resources.get(resource).value -= moduleBuildCost.get(resource);
+			}
+		}
+		return true;
+	}
+
 	public Set<Module> getModules() {
 		return modules;
 	}

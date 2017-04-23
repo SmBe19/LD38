@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,12 +13,13 @@ import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOFont;
 import com.smeanox.games.ld38.screen.window.Window;
 import com.smeanox.games.ld38.world.Dude;
-import com.smeanox.games.ld38.world.Pair;
+import com.smeanox.games.ld38.world.Resource;
 import com.smeanox.games.ld38.world.SpaceStation;
 import com.smeanox.games.ld38.world.module.Module;
 import com.smeanox.games.ld38.world.module.ModuleFactory;
-import com.smeanox.games.ld38.world.module.ModuleInformation;
 import com.smeanox.games.ld38.world.module.SolarModule;
+
+import java.util.Map;
 
 public class GameScreen implements Screen {
 
@@ -25,9 +27,9 @@ public class GameScreen implements Screen {
 	private Camera camera, uiCamera;
 	private float time, scale;
 	private float wWidth, wHeight;
-	private Window buildWindow;
+	private Window buildWindow, buildInfoWindow, recourceInfoWindow;
 
-	private Class<? extends Module> buildClazz;
+	private Class<? extends Module> buildClazz, hoverBuildClazz;
 	private Module buildModule, buildNeighbor;
 	private int buildX, buildY, buildDirection, buildRotation;
 	private boolean[] wasDown = new boolean[2];
@@ -49,12 +51,22 @@ public class GameScreen implements Screen {
 		buildRotation = 0;
 	}
 
-	private void initBuildWindow(){
+	private void initWindows2000(){
 		if (buildWindow != null) {
 			Window.windows95.remove(buildWindow);
 		}
-		buildWindow = new BuildWindow(wWidth - 150, 100, 100, wHeight - 200);
+		if (buildInfoWindow != null) {
+			Window.windows95.remove(buildInfoWindow);
+		}
+		if (recourceInfoWindow != null) {
+			Window.windows95.remove(recourceInfoWindow);
+		}
+		buildWindow = new BuildWindow(wWidth - 150, 0, 100, 0);
 		Window.windows95.add(buildWindow);
+		buildInfoWindow = new BuildInfoWindow(wWidth - 270, 0, 100, 0);
+		Window.windows95.add(buildInfoWindow);
+		recourceInfoWindow = new ResourceInfoWindow(0, wHeight - 30, 0, 20);
+		Window.windows95.add(recourceInfoWindow);
 	}
 
 	@Override
@@ -103,7 +115,19 @@ public class GameScreen implements Screen {
 		// build
 		boolean buildChanged = false;
 		int x, y;
-		Vector3 mouse = unprojectMouse();
+		Vector3 mouse;
+		boolean[] isMouseDown = new boolean[2];
+		isMouseDown[0] = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		isMouseDown[1] = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
+
+		mouse = unprojectMouseUI();
+		x = (int) Math.floor(mouse.x);
+		y = (int) Math.floor(mouse.y);
+		for (Window window : Window.windows95) {
+			window.update(delta, x, y, isMouseDown);
+		}
+
+		mouse = unprojectMouse();
 		x = (int) Math.floor(mouse.x);
 		y = (int) Math.floor(mouse.y);
 		if(buildClazz != null) {
@@ -119,15 +143,16 @@ public class GameScreen implements Screen {
 			if (buildChanged) {
 				findBuildParams(mouse.x, mouse.y);
 			}
-			if (buildModule != null && wasDown[0] && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-				if (buildClazz == SolarModule.class) {
-					buildNeighbor.addSolar(buildDirection, buildX, buildY);
-				} else {
-					buildNeighbor.addNeighbor(buildDirection, buildRotation, buildClazz);
+			if (buildModule != null && wasDown[0] && !isMouseDown[0]) {
+				if(SpaceStation.get().buyModule(buildClazz, false)) {
+					if (buildClazz == SolarModule.class) {
+						buildNeighbor.addSolar(buildDirection, buildX, buildY);
+					} else {
+						buildNeighbor.addNeighbor(buildDirection, buildRotation, buildClazz);
+					}
 				}
-				initBuild();
 			}
-			if (wasDown[1] && !Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+			if (wasDown[1] && !isMouseDown[1]) {
 				initBuild();
 			}
 		}
@@ -145,15 +170,7 @@ public class GameScreen implements Screen {
 			camera.translate(-Consts.CAMERA_SPEED * delta, 0, 0);
 		}
 
-		mouse = unprojectMouseUI();
-		x = (int) Math.floor(mouse.x);
-		y = (int) Math.floor(mouse.y);
-		for (Window window : Window.windows95) {
-			window.update(delta, x, y);
-		}
-
-		wasDown[0] = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
-		wasDown[1] = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
+		wasDown = isMouseDown;
 	}
 
 	private Vector3 unprojectMouse() {
@@ -225,7 +242,7 @@ public class GameScreen implements Screen {
 		uiCamera.position.set(uiCamera.viewportWidth / 2, uiCamera.viewportHeight / 2, 0);
 		uiCamera.update();
 
-		initBuildWindow();
+		initWindows2000();
 	}
 
 	@Override
@@ -256,20 +273,132 @@ public class GameScreen implements Screen {
 
 		@Override
 		public void init() {
+			height = 30 + ModuleFactory.moduleClasses.size() * 15;
+			y = wHeight - 100 - height;
+
 			uiElements.add(new Label(5, height - 15, 80, 10, "Construction", null));
 
 			float ay = height - 30;
 			for (final Class<? extends Module> module : ModuleFactory.moduleClasses) {
-				uiElements.add(new Button(5, ay, 80, 10, module.getAnnotation(ModuleInformation.class).name(), null, new LabelActionHandler() {
+				uiElements.add(new ButtonWithHover(5, ay, 80, 10, ModuleFactory.getModuleName(module), new LabelActionHandler() {
+					@Override
+					public void actionHappened(Label label, float delta) {
+						label.color = SpaceStation.get().buyModule(module, true) ? Color.BLACK : Color.FIREBRICK;
+					}
+				}, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
 						initBuild();
 						buildClazz = module;
 					}
+				}, new LabelActionHandler() {
+					@Override
+					public void actionHappened(Label label, float delta) {
+						hoverBuildClazz = module;
+					}
 				}));
 				ay -= 15;
+			}
+
+			uiElements.add(new Button(5, ay, 80, 10, "Cancel", new LabelActionHandler() {
+				private boolean wasNull = false;
+
+				@Override
+				public void actionHappened(Label label, float delta) {
+					if(buildClazz == null){
+						if (!wasNull) {
+							label.text = "";
+						}
+					} else {
+						if (wasNull) {
+							label.text = "Cancel";
+						}
+					}
+					wasNull = buildClazz == null;
+				}
+			}, new LabelActionHandler() {
+				@Override
+				public void actionHappened(Label label, float delta) {
+					initBuild();
+				}
+			}));
+		}
+
+		@Override
+		public void update(float delta, int mouseX, int mouseY, boolean[] mouseButtons) {
+			hoverBuildClazz = null;
+			super.update(delta, mouseX, mouseY, mouseButtons);
+		}
+	}
+
+	private class BuildInfoWindow extends Window {
+
+		private Class<? extends Module> lastBuildModule;
+
+		public BuildInfoWindow(float x, float y, float width, float height) {
+			super(x, y, width, height);
+			visible = false;
+			lastBuildModule = null;
+		}
+
+		@Override
+		public void init() {}
+
+		@Override
+		public void update(float delta, int mouseX, int mouseY, boolean[] mouseButtons) {
+			super.update(delta, mouseX, mouseY, mouseButtons);
+
+			if (lastBuildModule != hoverBuildClazz) {
+				lastBuildModule = hoverBuildClazz;
+				uiElements.clear();
+
+				if (lastBuildModule == null) {
+					visible = false;
+				} else {
+					visible = true;
+					final Map<Resource, Float> moduleBuildCost = ModuleFactory.getModuleBuildCost(lastBuildModule);
+					int count = moduleBuildCost.size();
+					height = count * 15;
+					y = wHeight - 100 - height;
+					float ay = height - 15;
+					for (final Resource resource : Resource.values()) {
+						if (moduleBuildCost.containsKey(resource)) {
+							uiElements.add(new Label(5, ay, 80, 10, resource.displayName + " " + moduleBuildCost.get(resource).intValue(), new LabelActionHandler() {
+								@Override
+								public void actionHappened(Label label, float delta) {
+									label.color = SpaceStation.get().getResource(resource) < moduleBuildCost.get(resource) ? Color.FIREBRICK : Color.BLACK;
+								}
+							}));
+							ay -= 15;
+						}
+					}
+				}
 			}
 		}
 	}
 
+	private class ResourceInfoWindow extends Window {
+
+		public ResourceInfoWindow(float x, float y, float width, float height) {
+			super(x, y, width, height);
+		}
+
+		@Override
+		public void init() {
+			width = 80 * Resource.values().length;
+			x = (wWidth - width) / 2;
+
+			float ax = 5;
+			for (final Resource resource : Resource.values()) {
+				uiElements.add(new Label(ax, 2, 80, 10, "", new LabelActionHandler() {
+					@Override
+					public void actionHappened(Label label, float delta) {
+						label.text = resource.icon + " " + ((int) SpaceStation.get().getResource(resource))
+								+ "/" + ((int) SpaceStation.get().getResourceMax(resource));
+					}
+				}));
+				ax += 80;
+			}
+		}
+	}
 }

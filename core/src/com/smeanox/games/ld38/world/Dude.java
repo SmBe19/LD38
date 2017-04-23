@@ -47,6 +47,10 @@ public class Dude {
 		this.hp = hp;
 	}
 
+	public boolean isHadEnoughResources() {
+		return hadEnoughResources;
+	}
+
 	public void update(float delta) {
 
 	}

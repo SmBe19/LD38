@@ -10,7 +10,7 @@ public enum IOTexture {
 	windowBorder("img/ui.png"),
 	;
 
-	public Texture texture;
+	public final Texture texture;
 
 	IOTexture(String file) {
 		texture = new Texture(Gdx.files.internal(file), true);

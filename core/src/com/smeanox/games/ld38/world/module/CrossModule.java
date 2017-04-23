@@ -17,6 +17,7 @@ public class CrossModule extends Module {
 	static{
 		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
 		buildCost.put(Resource.Electricity, 5.f);
+		buildCost.put(Resource.Fe, 125.f);
 		ModuleFactory.putBuildCost(CrossModule.class, buildCost);
 	}
 

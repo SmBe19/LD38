@@ -4,12 +4,12 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < sizeof(a); i++) {
 		a[i] = 0;
 	}
-	for (int i = 0; i < 1000; i++) {
-		a[rand() % sizeof(a)] = 1;
+	for (int i = 0; i < 300; i++) {
+		a[rand() % sizeof(a)] = 0x80 + (rand() & 0x7f);
 	}
-	printf("P1\n%d %d\n", 800, 480);
+	printf("P2\n%d %d\n255\n", 800, 480);
 	for (int i = 0; i < sizeof(a); i++) {
-		printf("%d", !a[i]);
+		printf("%d ", (int)a[i]);
 	}
 	return 0;
 }

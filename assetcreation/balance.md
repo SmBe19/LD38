@@ -20,8 +20,8 @@ Resources
 
 **Build Costs**
 
-Resource  | Command Module | Solar Panels |	Plant Module |	Empty Module |	Rocket Module |	Hydrolysis module |	Sleeping Module |	Magnet Module |	Storage Module |	Cryogenic Modul |	Radio Module |	Human
-------------- | ------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
+Resource | Command Module | Solar Panels | Plant Module | Empty Module | Rocket Module | Hydrolysis module | Sleeping Module | Magnet Module | Storage Module | Cryogenic Module | Radio Module | Human
+-------- | -------------- | ------------ | ------------ | ------------ | ------------- | ----------------- | --------------- | ------------- | --------------- | ------------------ | ------------- | -----
 H2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 120 | 0 | 0
 O2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
 H20 | 0 | 0 | 100 |	0 |	100 | 0 | 0 | 0 | 0 | 600 | 0 | 0
@@ -30,10 +30,10 @@ Electricity | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
 Fe | 0 | 50 | 150 | 50 | 600 | 200 | 200 | 100 | 150 | 1200 | 300 | 0
 Si | 0 | 25 | 0 | 0 | 200 | 100 | 0 | 200 | 0 | 800 | 150 | 0
 
-**Production/ Upkeep cost**
+**Production/ Upkeep cost** (per day or use)
 
-  | Command Module | Solar Panels |	Plant Module |	Empty Module |	Rocket Module |	Hydrolysis module |	Sleeping Module |	Magnet Module |	Storage Module |	Cryogenic Modul |	Radio Module |	Human
-------------- | ------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
+Resource | Command Module | Solar Panels | Plant Module | Empty Module | Rocket Module | Hydrolysis module | Sleeping Module | Magnet Module | Storage Module | Cryogenic Module | Radio Module | Human
+-------- | -------------- | ------------ | ------------ | ------------ | ------------- | ----------------- | --------------- | ------------- | --------------- | ------------------ | ------------- | -----
 H2 | 
 O2 | 
 H20 | 
@@ -44,8 +44,8 @@ Si |
 
 **Storage Capacity**
 
-  | Command Module | Solar Panels |	Plant Module |	Empty Module |	Rocket Module |	Hydrolysis module |	Sleeping Module |	Magnet Module |	Storage Module |	Cryogenic Modul |	Radio Module |	Human
-------------- | ------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
+Resource | Command Module | Solar Panels | Plant Module | Empty Module | Rocket Module | Hydrolysis module | Sleeping Module | Magnet Module | Storage Module | Cryogenic Module | Radio Module | Human
+-------- | -------------- | ------------ | ------------ | ------------ | ------------- | ----------------- | --------------- | ------------- | --------------- | ------------------ | ------------- | -----
 H2 | 
 O2 | 
 H20 | 

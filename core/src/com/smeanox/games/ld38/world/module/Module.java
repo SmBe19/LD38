@@ -41,7 +41,11 @@ public abstract class Module {
 	}
 
 	public float getBuildSpeed(){
-		return Consts.BUILD_SPEED;
+		return Consts.BUILD_SPEED * getBuildSpeedMultiplier();
+	}
+
+	protected float getBuildSpeedMultiplier(){
+		return 1.f;
 	}
 
 	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta){
@@ -69,6 +73,10 @@ public abstract class Module {
 
 	public void setFinished(boolean finished) {
 		this.finished = finished;
+	}
+
+	public boolean canWalkThrough(){
+		return isFinished();
 	}
 
 	public float getBuildProgress() {
@@ -126,6 +134,8 @@ public abstract class Module {
 					module.getModuleLocation().setRotY(portLocation.second - module.getModuleLocation().getRotHeight() / 2);
 					break;
 			}
+		} else {
+			return null;
 		}
 		for (final Module amodule : SpaceStation.get().getModules()) {
 			final GenericRapper<Boolean> eminem = new GenericRapper<Boolean>(true);
@@ -158,8 +168,11 @@ public abstract class Module {
 				Pair<Integer, Integer> portLocation = module.getModuleLocation().getPortLocation(i);
 				Module other = SpaceStation.get().getModule(portLocation.first, portLocation.second);
 				if(other != null && other.canAddNeighbor(ModuleLocation.flipDirection(i))){
-					module.setNeighbor(i, other);
-					other.setNeighbor(ModuleLocation.flipDirection(i), module);
+					Pair<Integer, Integer> otherPortLocation = other.getModuleLocation().getPortLocation(ModuleLocation.flipDirection(i));
+					if(module.getModuleLocation().isPointInModule(otherPortLocation.first, otherPortLocation.second)) {
+						module.setNeighbor(i, other);
+						other.setNeighbor(ModuleLocation.flipDirection(i), module);
+					}
 				}
 			}
 		}
@@ -254,8 +267,12 @@ public abstract class Module {
 		return moduleLocation;
 	}
 
+	public boolean isWorking(){
+		return finished && active && !SpaceStation.get().isSolarFlare();
+	}
+
 	public boolean isActive() {
-		return finished && active;
+		return active;
 	}
 
 	public void setActive(boolean active) {
@@ -277,8 +294,8 @@ public abstract class Module {
 	public void drawBackground(SpriteBatch batch, float time) {
 		TextureRegion textureInterior = getTextureInterior(time);
 		if (textureInterior != null) {
+			Color oldColor = batch.getColor().cpy();
 			if (!finished) {
-				Color oldColor = batch.getColor().cpy();
 				batch.setColor(1, 1, 1, Consts.BUILDING_ALPHA);
 				TextureRegion buildTexture = new TextureRegion(textureInterior);
 				buildTexture.setRegionWidth((int) (textureInterior.getRegionWidth() * buildProgress));
@@ -286,13 +303,16 @@ public abstract class Module {
 						buildTexture.getRegionWidth() / (float) Consts.SPRITE_SIZE,
 						buildTexture.getRegionHeight() / Consts.SPRITE_SIZE,
 						1, 1, getModuleLocation().getRotation() * 90);
-				batch.setColor(oldColor);
 			} else {
+				if(!isWorking()){
+					batch.setColor(Consts.INACTIVE_BRIGHTNESS, Consts.INACTIVE_BRIGHTNESS, Consts.INACTIVE_BRIGHTNESS, 1);
+				}
 				batch.draw(textureInterior, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
 						textureInterior.getRegionWidth() / Consts.SPRITE_SIZE,
 						textureInterior.getRegionHeight() / Consts.SPRITE_SIZE,
 						1, 1, getModuleLocation().getRotation() * 90);
 			}
+			batch.setColor(oldColor);
 		}
 	}
 

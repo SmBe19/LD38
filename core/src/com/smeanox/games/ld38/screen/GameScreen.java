@@ -18,6 +18,7 @@ import com.smeanox.games.ld38.world.module.Module;
 import com.smeanox.games.ld38.world.module.ModuleFactory;
 import com.smeanox.games.ld38.world.module.SolarModule;
 
+import java.util.HashSet;
 import java.util.Map;
 
 public class GameScreen implements Screen {
@@ -26,7 +27,8 @@ public class GameScreen implements Screen {
 	private Camera camera, uiCamera;
 	private float time, scale;
 	private float wWidth, wHeight;
-	private Window buildWindow, buildInfoWindow, recourceInfoWindow, moduleWindow;
+	private Window buildWindow, buildInfoWindow, recourceInfoWindow, moduleWindow, messageWindow;
+	private boolean paused;
 
 	private Class<? extends Module> buildClazz, hoverBuildClazz;
 	private Module buildModule, buildNeighbor;
@@ -37,6 +39,7 @@ public class GameScreen implements Screen {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		uiCamera = new OrthographicCamera();
+		paused = false;
 
 		initBuild();
 	}
@@ -60,11 +63,11 @@ public class GameScreen implements Screen {
 		if (recourceInfoWindow != null) {
 			Window.windows95.remove(recourceInfoWindow);
 		}
-		buildWindow = new BuildWindow(wWidth - 150, 0, 100, 0);
+		buildWindow = new BuildWindow();
 		Window.windows95.add(buildWindow);
-		buildInfoWindow = new BuildInfoWindow(wWidth - 250, 0, 70, 0);
+		buildInfoWindow = new BuildInfoWindow();
 		Window.windows95.add(buildInfoWindow);
-		recourceInfoWindow = new ResourceInfoWindow(0, wHeight - 30, 0, 20);
+		recourceInfoWindow = new ResourceInfoWindow();
 		Window.windows95.add(recourceInfoWindow);
 	}
 
@@ -74,34 +77,44 @@ public class GameScreen implements Screen {
 	}
 
 	private void update(float delta){
-		SpaceStation.get().update(delta);
+		if(!paused) {
+			SpaceStation.get().update(delta);
+			if (SpaceStation.get().peekMessage() != null) {
+				paused = true;
+				messageWindow = new MessageWindow(SpaceStation.get().popMessage());
+				Window.windows95.add(messageWindow);
+			}
+		}
 	}
 
-	private void findBuildParams(float mousex, float mousey){
+	private void findBuildParams(float mousex, float mousey, boolean allowRotation){
 		buildModule = null;
 		buildNeighbor = null;
 		buildDirection = 0;
 		float minVal = Float.MAX_VALUE;
-		for(int x = buildX - Consts.BUILD_SEARCH_DIST; x <= buildX + Consts.BUILD_SEARCH_DIST; x++){
-			for(int y = buildY - Consts.BUILD_SEARCH_DIST; y <= buildY + Consts.BUILD_SEARCH_DIST; y++){
+		for (int x = buildX - Consts.BUILD_SEARCH_DIST; x <= buildX + Consts.BUILD_SEARCH_DIST; x++) {
+			for (int y = buildY - Consts.BUILD_SEARCH_DIST; y <= buildY + Consts.BUILD_SEARCH_DIST; y++) {
 				Module neighbor = SpaceStation.get().getModule(x, y);
 				if (neighbor != null) {
-					for(int i = 0; i < 4; i++){
-						Module module;
-						if (buildClazz == SolarModule.class) {
-							module = neighbor.tryAddSolar(i, buildX, buildY);
-						} else {
-							module = neighbor.tryAddNeighbor(i, buildRotation, buildClazz);
-						}
-						if (module != null) {
-							float xdist = (module.getModuleLocation().getRotX() + module.getModuleLocation().getRotWidth() / 2.f - mousex);
-							float ydist = (module.getModuleLocation().getRotY() + module.getModuleLocation().getRotHeight() / 2.f - mousey);
-							float val = xdist * xdist + ydist * ydist;
-							if(val < minVal){
-								buildModule = module;
-								buildNeighbor = neighbor;
-								buildDirection = i;
-								minVal = val;
+					for (int dir = 0; dir < 4; dir++) {
+						for(int rot = 0; rot < 4; rot++) {
+							Module module;
+							if (buildClazz == SolarModule.class) {
+								module = neighbor.tryAddSolar(dir, buildX, buildY);
+							} else {
+								module = neighbor.tryAddNeighbor(dir, rot, buildClazz);
+							}
+							if (module != null) {
+								float xdist = (module.getModuleLocation().getRotX() + module.getModuleLocation().getRotWidth() / 2.f - mousex);
+								float ydist = (module.getModuleLocation().getRotY() + module.getModuleLocation().getRotHeight() / 2.f - mousey);
+								float val = xdist * xdist + ydist * ydist;
+								if (val < minVal) {
+									buildModule = module;
+									buildNeighbor = neighbor;
+									buildDirection = dir;
+									buildRotation = rot;
+									minVal = val;
+								}
 							}
 						}
 					}
@@ -125,51 +138,55 @@ public class GameScreen implements Screen {
 		mouse = unprojectMouseUI();
 		x = (int) Math.floor(mouse.x);
 		y = (int) Math.floor(mouse.y);
-		for (Window window : Window.windows95) {
+		for (Window window : new HashSet<Window>(Window.windows95)) {
 			window.update(delta, x, y, isMouseDown);
 		}
 
-		mouse = unprojectMouse();
-		x = (int) Math.floor(mouse.x);
-		y = (int) Math.floor(mouse.y);
-		if(buildClazz != null) {
-			if (x != buildX || y != buildY) {
-				buildX = x;
-				buildY = y;
-				buildChanged = true;
-			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-				buildRotation = (buildRotation + 1) % 4;
-				buildChanged = true;
-			}
-			if (buildChanged) {
-				findBuildParams(mouse.x, mouse.y);
-			}
-			if (buildModule != null && wasDown[0] && !isMouseDown[0]) {
-				if(SpaceStation.get().buyModule(buildClazz, false)) {
-					if (buildClazz == SolarModule.class) {
-						buildNeighbor.addSolar(buildDirection, buildX, buildY);
-					} else {
-						buildNeighbor.addNeighbor(buildDirection, buildRotation, buildClazz);
+		if(!paused) {
+			mouse = unprojectMouse();
+			x = (int) Math.floor(mouse.x);
+			y = (int) Math.floor(mouse.y);
+			if (buildClazz != null) {
+				if (x != buildX || y != buildY) {
+					buildX = x;
+					buildY = y;
+					buildChanged = true;
+				}
+				if (buildChanged) {
+					findBuildParams(mouse.x, mouse.y, true);
+				}
+				if (buildModule != null && wasDown[0] && !isMouseDown[0]) {
+					if (SpaceStation.get().buyModule(buildClazz, false)) {
+						if (buildClazz == SolarModule.class) {
+							buildNeighbor.addSolar(buildDirection, buildX, buildY);
+						} else {
+							buildNeighbor.addNeighbor(buildDirection, buildRotation, buildClazz);
+						}
+						findBuildParams(mouse.x, mouse.y, true);
 					}
-					findBuildParams(mouse.x, mouse.y);
 				}
-			}
-			if (wasDown[1] && !isMouseDown[1]) {
-				initBuild();
-			}
-		} else {
-			if(wasDown[0] && !isMouseDown[0]){
-				if (moduleWindow != null) {
-					Window.windows95.remove(moduleWindow);
-					moduleWindow = null;
+				if (wasDown[1] && !isMouseDown[1]) {
+					initBuild();
 				}
-				Module module = SpaceStation.get().getModule(x, y);
-				if (module != null) {
-					Vector3 mouse2 = unprojectMouseUI();
-					moduleWindow = module.createWindow(mouse2.x, mouse2.y);
+			} else {
+				if (wasDown[0] && !isMouseDown[0]) {
 					if (moduleWindow != null) {
-						Window.windows95.add(moduleWindow);
+						Window.windows95.remove(moduleWindow);
+						moduleWindow = null;
+					}
+					Module module = SpaceStation.get().getModule(x, y);
+					if (module != null && module.isFinished()) {
+						Vector3 mouse2 = unprojectMouseUI();
+						moduleWindow = module.createWindow(mouse2.x, mouse2.y);
+						if (moduleWindow != null) {
+							Window.windows95.add(moduleWindow);
+						}
+					}
+				}
+				if (wasDown[1] && !isMouseDown[0]) {
+					if (moduleWindow != null) {
+						Window.windows95.remove(moduleWindow);
+						moduleWindow = null;
 					}
 				}
 			}
@@ -186,6 +203,14 @@ public class GameScreen implements Screen {
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.A)){
 			camera.translate(-Consts.CAMERA_SPEED * delta, 0, 0);
+		}
+
+		// cheats
+		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+			for (Resource resource : Resource.values()) {
+				SpaceStation.get().getResources().get(resource).value = Float.POSITIVE_INFINITY;
+				SpaceStation.get().getResourceMax().get(resource).value = Float.POSITIVE_INFINITY;
+			}
 		}
 
 		wasDown = isMouseDown;
@@ -289,18 +314,18 @@ public class GameScreen implements Screen {
 
 	private class BuildWindow extends Window {
 
-		public BuildWindow(float x, float y, float width, float height) {
-			super(x, y, width, height);
+		public BuildWindow() {
+			super(wWidth - 150, 0, 100, 100);
 		}
 
 		@Override
 		public void init() {
-			height = 15 + ModuleFactory.moduleClasses.size() * 15;
+			height = 20 + ModuleFactory.moduleClasses.size() * 20;
 			y = wHeight - 100 - height;
 
 			float ay = height - 15;
 			for (final Class<? extends Module> module : ModuleFactory.moduleClasses) {
-				uiElements.add(new ButtonWithHover(5, ay, 80, 10, ModuleFactory.getModuleName(module), new LabelActionHandler() {
+				uiElements.add(new ButtonWithHover(5, ay, 90, 10, ModuleFactory.getModuleName(module), new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
 						label.color = SpaceStation.get().buyModule(module, true) ? Color.BLACK : Color.FIREBRICK;
@@ -321,24 +346,13 @@ public class GameScreen implements Screen {
 						hoverBuildClazz = module;
 					}
 				}));
-				ay -= 15;
+				ay -= 20;
 			}
 
-			uiElements.add(new Button(5, ay, 80, 10, "Cancel", new LabelActionHandler() {
-				private boolean wasNull = false;
-
+			uiElements.add(new Button(5, ay, 90, 10, "Cancel", new LabelActionHandler() {
 				@Override
 				public void actionHappened(Label label, float delta) {
-					if(buildClazz == null){
-						if (!wasNull) {
-							label.text = "";
-						}
-					} else {
-						if (wasNull) {
-							label.text = "Cancel";
-						}
-					}
-					wasNull = buildClazz == null;
+					label.visible = buildClazz != null;
 				}
 			}, new LabelActionHandler() {
 				@Override
@@ -359,8 +373,8 @@ public class GameScreen implements Screen {
 
 		private Class<? extends Module> lastBuildModule;
 
-		public BuildInfoWindow(float x, float y, float width, float height) {
-			super(x, y, width, height);
+		public BuildInfoWindow() {
+			super(wWidth - 250, 0, 70, 0);
 			visible = false;
 			lastBuildModule = null;
 		}
@@ -404,8 +418,8 @@ public class GameScreen implements Screen {
 
 	private class ResourceInfoWindow extends Window {
 
-		public ResourceInfoWindow(float x, float y, float width, float height) {
-			super(x, y, width, height);
+		public ResourceInfoWindow() {
+			super(0, wHeight - 30, 0, 20);
 		}
 
 		@Override
@@ -426,6 +440,29 @@ public class GameScreen implements Screen {
 				uiElements.add(new Label(ax, 0, 10, 10, resource.icon, IOFont.icons, Color.WHITE, null));
 				ax += 90;
 			}
+		}
+	}
+
+	private class MessageWindow extends Window {
+
+		private String text;
+
+		public MessageWindow(String text) {
+			super(200, 150, wWidth - 400, wHeight - 300, true);
+			this.text = text;
+			init();
+		}
+
+		@Override
+		public void init() {
+			uiElements.add(new Label(10, height - 25, width - 50, 10, text, null));
+			uiElements.add(new Button(width - 50, 10, 20, 10, "Ok", null, new LabelActionHandler() {
+				@Override
+				public void actionHappened(Label label, float delta) {
+					paused = false;
+					windows95.remove(MessageWindow.this);
+				}
+			}));
 		}
 	}
 }

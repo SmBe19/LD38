@@ -26,6 +26,11 @@ public class CrossModule extends Module {
 	}
 
 	@Override
+	protected float getBuildSpeedMultiplier() {
+		return 5;
+	}
+
+	@Override
 	public TextureRegion getTextureInterior(float time) {
 		return IOAnimation.ModuleCross.texture();
 	}

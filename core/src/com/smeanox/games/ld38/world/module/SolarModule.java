@@ -45,7 +45,7 @@ public class SolarModule extends Module {
 
 	@Override
 	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta) {
-		boolean isNight = SpaceStation.get().getTimeOfDay() > (Consts.DURATION_DAY - Consts.DURATION_NIGHT);
+		boolean isNight = SpaceStation.get().getTimeOfDay() > (Consts.DURATION_DAY - Consts.DURATION_NIGHT) || SpaceStation.get().isEclipse();
 		hadEnoughResources = tryUseResource(resources, delta, Resource.Electricity, isNight ? 0 : -180);
 	}
 }

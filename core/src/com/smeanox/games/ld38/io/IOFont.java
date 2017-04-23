@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.smeanox.games.ld38.Consts;
 
 public enum IOFont {
-	grusigPunktBdf(IOTexture.font.texture, 7, 11, "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!?.,;\"/0123456789"),
+	grusigPunktBdf(IOTexture.font.texture, 7, 11, "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!?.,;\"'/+-*0123456789"),
 	icons(IOTexture.icons.texture, 16, 16, "MOHEWFSD"),
 	;
 
@@ -29,13 +29,12 @@ public enum IOFont {
 			if(idx >= 0) {
 				batch.draw(texture, ax, ay, scaledWidth, scaledHeight,
 						idx * width, 0, width, height, false, false);
-			} else {
-				if(text.charAt(i) == '\n'){
-					ax = x;
-					ay -= height * Consts.LINE_SPACING;
-				}
 			}
 			ax += scaledWidth;
+			if(text.charAt(i) == '\n'){
+				ax = x;
+				ay -= height * Consts.LINE_SPACING;
+			}
 		}
 	}
 
@@ -50,12 +49,12 @@ public enum IOFont {
 		for(int i = 0; i < text.length(); i++){
 			int idx = chars.indexOf(text.charAt(i));
 			if(idx < 0) {
-				if(text.charAt(i) == '\n'){
-					res = Math.max(res, ax - x);
-					ax = x;
-				}
 			}
 			ax += scaledWidth;
+			if(text.charAt(i) == '\n'){
+				res = Math.max(res, ax - x - scaledWidth);
+				ax = x;
+			}
 		}
 		res = Math.max(res, ax - x);
 		return res;

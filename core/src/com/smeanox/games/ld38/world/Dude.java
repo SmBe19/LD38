@@ -21,7 +21,7 @@ import java.util.Map;
 public class Dude {
 
 	private IOAnimation textureIdle, textureWalk;
-	private float animationOffset;
+	private float animationOffset, damageMultiplier;
 	private float x, y, hp, destX, destY;
 	private boolean hadEnoughResources, flipped;
 	private Task currentTask;
@@ -39,6 +39,7 @@ public class Dude {
 		currentTask = null;
 		currentPath = null;
 		this.animationOffset = MathUtils.random() * textureWalk.animation.getAnimationDuration();
+		this.damageMultiplier = MathUtils.random() + 1.f;
 		flipped = false;
 	}
 
@@ -68,7 +69,7 @@ public class Dude {
 	protected boolean tryUseResource(Map<Resource, GenericRapper<Float>> resources, float delta, Resource resource, float valuePerDay, float hpLose) {
 		resources.get(resource).value -= valuePerDay * delta / Consts.DURATION_DAY;
 		if (resources.get(resource).value <= 0) {
-			hp -= hpLose * delta;
+			hp -= hpLose * delta * damageMultiplier;
 		}
 		return resources.get(resource).value > 0;
 	}
@@ -140,7 +141,7 @@ public class Dude {
 			Module current = q.removeFirst();
 			for(int i = 0; i < 4; i++) {
 				Module neighbor = current.getNeighbor(i);
-				if (neighbor != null && neighbor.isFinished() && !par.containsKey(neighbor)) {
+				if (neighbor != null && neighbor.canWalkThrough() && !par.containsKey(neighbor)) {
 					q.addLast(neighbor);
 					par.put(neighbor, current);
 				}
@@ -148,6 +149,7 @@ public class Dude {
 		}
 		Module destModule = SpaceStation.get().getModule((int) destX, (int) destY);
 		if (destModule == null) {
+			currentPath = null;
 			return;
 		}
 		// path is backwards
@@ -158,6 +160,7 @@ public class Dude {
 			path.add(destModule);
 		}
 		if (destModule == null) {
+			currentPath = null;
 			return;
 		}
 		destModule = SpaceStation.get().getModule((int) destX, (int) destY);
@@ -231,6 +234,11 @@ public class Dude {
 			}
 			if (module == null) {
 				throw new RuntimeException("Booooom!!!");
+			}
+			if (!module.canWalkThrough()) {
+				Task task = new WaitTask(MathUtils.random(Consts.MAX_WAIT_TIME));
+				task.setIdleTask(true);
+				return task;
 			}
 			Task task = new WalkTask(module.getModuleLocation().getCenter().first, module.getModuleLocation().getCenter().second);
 			task.setIdleTask(true);

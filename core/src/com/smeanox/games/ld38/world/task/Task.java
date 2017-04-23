@@ -22,6 +22,7 @@ public abstract class Task {
 	protected abstract void onAccept();
 
 	protected void returnTask(){
+		System.out.println("return task");
 		dude.removeTask();
 		setAccepted(false);
 		if(!isIdleTask()) {

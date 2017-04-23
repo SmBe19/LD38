@@ -31,12 +31,12 @@ public class SleepingModule extends Module {
 
 	@Override
 	public TextureRegion getTextureInterior(float time) {
-		return IOAnimation.ModuleEmpty3.texture();
+		return IOAnimation.ModuleSleeping.texture();
 	}
 
 	@Override
 	public TextureRegion getTextureHull(float time) {
-		return IOAnimation.HullDefault3.texture();
+		return IOAnimation.HullWide3.texture();
 	}
 
 	@Override

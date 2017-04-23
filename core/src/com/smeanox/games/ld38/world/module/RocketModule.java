@@ -27,18 +27,24 @@ public class RocketModule extends Module {
 	public RocketModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);
 
+		allowNeighbors[Consts.RIGHT] = false;
 		allowNeighbors[Consts.UP] = false;
 		allowNeighbors[Consts.DOWN] = false;
 	}
 
 	@Override
+	protected float getBuildSpeedMultiplier() {
+		return 0.25f;
+	}
+
+	@Override
 	public TextureRegion getTextureInterior(float time) {
-		return IOAnimation.ModuleEmpty3.texture();
+		return IOAnimation.ModuleRockets.texture();
 	}
 
 	@Override
 	public TextureRegion getTextureHull(float time) {
-		return IOAnimation.HullDefault3.texture();
+		return null;
 	}
 
 	@Override

@@ -11,16 +11,21 @@ public class Consts {
 	public static final float LINE_SPACING = 1.5f;
 	public static final float BUILD_PREVIEW_ALPHA = 0.5f;
 	public static final float BUILDING_ALPHA = 0.5f;
+	public static final float INACTIVE_BRIGHTNESS = 0.5f;
 	public static final float MAX_WAIT_TIME = 10.f;
 
-	public static final float BUILD_SPEED = 0.2f;
+	public static final float BUILD_SPEED = 0.1f;
 	public static final float WALK_SPEED = 2.5f;
-	public static final float DURATION_DAY = 180;
-	public static final float DURATION_NIGHT = 60;
+	public static final float DURATION_DAY = 10; // 180
+	public static final float DELIVERY_TIME = DURATION_DAY / 3.f;
+	public static final float DURATION_NIGHT = DURATION_DAY / 3.f;
+	public static final float DELIVERY_LIMIT = 1200;
 	public static final float HEALTH_LOSE_O2 = 1.f/20;
 	public static final float HEALTH_LOSE_H2O = 1.f/60;
 	public static final float HEALTH_LOSE_Food = 1.f/180;
 	public static final float HEALTH_REGENERATE = 1.f/180;
+	public static final float EVENT_SOLARFLARE_DURATION = 120;
+	public static final float EVENT_MAX_RESOURCE = 400;
 
 	public static final float ARRIVAL_DISTANCE = 0.05f;
 }

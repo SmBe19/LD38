@@ -30,6 +30,11 @@ public class EmptyModule extends Module {
 	}
 
 	@Override
+	protected float getBuildSpeedMultiplier() {
+		return 2;
+	}
+
+	@Override
 	public TextureRegion getTextureInterior(float time) {
 		return IOAnimation.ModuleEmpty3.texture();
 	}

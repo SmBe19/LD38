@@ -3,6 +3,8 @@ package com.smeanox.games.ld38.world.module;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOAnimation;
+import com.smeanox.games.ld38.screen.ActivateWindow;
+import com.smeanox.games.ld38.screen.Window;
 import com.smeanox.games.ld38.world.GenericRapper;
 import com.smeanox.games.ld38.world.Resource;
 
@@ -46,5 +48,10 @@ public class HydrolysisModule extends Module {
 				tryUseResource(resources, delta, Resource.Electricity, 180) &&
 				tryUseResource(resources, delta, Resource.H2, -20) &&
 				tryUseResource(resources, delta, Resource.O2, -160);
+	}
+
+	@Override
+	public Window createWindow(float x, float y) {
+		return new ActivateWindow(x, y, this);
 	}
 }

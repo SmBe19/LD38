@@ -22,6 +22,8 @@ public enum IOAnimation {
 	ModuleRadio(IOTexture.station, 8, 0, 2, 3),
 	ModuleStorage(IOTexture.station, 4, 9, 2, 3),
 
+	Rocket(IOTexture.station, 11, 0, 2, 5),
+
 	Char1MIdle(IOTexture.charMale, 1.f, 0, 0, 2),
 	Char1MMove(IOTexture.charMale, 0.2f, 0, 1, 7),
 	Char2MIdle(IOTexture.charMale, 1.f, 0, 2, 2),

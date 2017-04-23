@@ -8,8 +8,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.smeanox.games.ld38.Consts;
+import com.smeanox.games.ld38.io.IOAnimation;
 import com.smeanox.games.ld38.io.IOFont;
 import com.smeanox.games.ld38.world.Dude;
 import com.smeanox.games.ld38.world.Resource;
@@ -208,8 +211,8 @@ public class GameScreen implements Screen {
 		// cheats
 		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
 			for (Resource resource : Resource.values()) {
-				SpaceStation.get().getResources().get(resource).value = Float.POSITIVE_INFINITY;
-				SpaceStation.get().getResourceMax().get(resource).value = Float.POSITIVE_INFINITY;
+				SpaceStation.get().getResources().get(resource).value += 1000;
+				SpaceStation.get().getResourceMax().get(resource).value += 1000;
 			}
 		}
 
@@ -224,6 +227,31 @@ public class GameScreen implements Screen {
 		return uiCamera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 	}
 
+	private void drawDeliveryRocket(float delta){
+		float progress = Math.abs(SpaceStation.get().getTimeOfDay() - Consts.DELIVERY_TIME);
+		if (SpaceStation.get().isLaunchFailure() ||
+				progress > Consts.ROCKET_ANIMATION_DURATION + Consts.ROCKET_DOCKED_DURATION ||
+				SpaceStation.get().isSavedDeliveryEmpty()) {
+			return;
+		}
+		TextureRegion texture = IOAnimation.Rocket.keyFrame(time);
+		float interp = 1, fade = 1, scale = 1, offset = 0;
+		if (progress > Consts.ROCKET_DOCKED_DURATION) {
+			progress -= Consts.ROCKET_DOCKED_DURATION;
+			interp = MathUtils.cos(MathUtils.PI * progress / Consts.ROCKET_ANIMATION_DURATION) / 2 + .5f;
+			offset = Consts.ROCKET_ANIMATION_OFFSET - interp * Consts.ROCKET_ANIMATION_OFFSET;
+			fade = MathUtils.clamp(interp * 2.f, 0, 1);
+		}
+		float width, height;
+		width = texture.getRegionWidth() * scale / Consts.SPRITE_SIZE;
+		height = texture.getRegionHeight() * scale / Consts.SPRITE_SIZE;
+		Color oldColor = batch.getColor().cpy();
+		batch.setColor(1, 1, 1, fade);
+		batch.draw(texture, Consts.ROCKET_DOCKED_POSITION_X - width / 2,
+				Consts.ROCKET_DOCKED_POSITION_Y + offset - height / 2, width, height);
+		batch.setColor(oldColor);
+	}
+
 	private void draw(float delta){
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -231,6 +259,7 @@ public class GameScreen implements Screen {
 		batch.setProjectionMatrix(camera.combined);
 		batch.setColor(1, 1, 1, 1);
 		batch.begin();
+		drawDeliveryRocket(delta);
 		for (Module module : SpaceStation.get().getModules()) {
 			module.drawBackground(batch, time);
 		}

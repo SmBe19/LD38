@@ -216,7 +216,7 @@ public class Dude {
 	protected Task getIdleTask(){
 		int idleTask = MathUtils.random(1);
 		if(SpaceStation.get().getModules().size() <= 1 || idleTask == 0) {
-			Task task = new WaitTask(MathUtils.random(Consts.MAX_WAIT_TIME));
+			Task task = new WaitTask(MathUtils.random(Consts.MAX_DUDE_WAIT_TIME));
 			task.setIdleTask(true);
 			return task;
 		} else if (idleTask == 1) {
@@ -236,7 +236,7 @@ public class Dude {
 				throw new RuntimeException("Booooom!!!");
 			}
 			if (!module.canWalkThrough()) {
-				Task task = new WaitTask(MathUtils.random(Consts.MAX_WAIT_TIME));
+				Task task = new WaitTask(MathUtils.random(Consts.MAX_DUDE_WAIT_TIME));
 				task.setIdleTask(true);
 				return task;
 			}

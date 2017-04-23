@@ -35,12 +35,13 @@ public class SpaceStation {
 	private Module mainModule, rocketPlaceholderModule;
 	private Map<Resource, GenericRapper<Float>> resources;
 	private Map<Resource, GenericRapper<Float>> resourceMax;
-	private Map<Resource, GenericRapper<Float>> delivery;
+	private Map<Resource, GenericRapper<Float>> delivery, savedDelivery;
 	private Queue<Task> taskQueue;
 	private Queue<String> messageQueue;
 	private Event currentEvent;
 	private float time;
-	private boolean newDay, deliveryTime, worldWarStarted;
+	private boolean newDay, endOfOrderTime, deliveryTime, worldWarStarted;
+	private boolean savedDeliveryEmpty;
 
 	private SpaceStation() {
 		singleton = this;
@@ -49,6 +50,7 @@ public class SpaceStation {
 		resources = new HashMap<Resource, GenericRapper<Float>>();
 		resourceMax = new HashMap<Resource, GenericRapper<Float>>();
 		delivery = new HashMap<Resource, GenericRapper<Float>>();
+		savedDelivery = new HashMap<Resource, GenericRapper<Float>>();
 		taskQueue = new Queue<Task>();
 		messageQueue = new Queue<String>();
 		init();
@@ -73,6 +75,7 @@ public class SpaceStation {
 			resources.put(resource, new GenericRapper<Float>(0.f));
 			resourceMax.put(resource, new GenericRapper<Float>(0.f));
 			delivery.put(resource, new GenericRapper<Float>(0.f));
+			savedDelivery.put(resource, new GenericRapper<Float>(0.f));
 		}
 		resources.get(Resource.H2).value = 0.f;
 		resources.get(Resource.O2).value = 360.f;
@@ -92,8 +95,8 @@ public class SpaceStation {
 		rocketPlaceholderModule.setFinished(true);
 		addModule(rocketPlaceholderModule);
 
-		addDude(Dude.getRandomDude(1.5f, 1.5f));
-		addDude(Dude.getRandomDude(1.5f, 0.5f));
+		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
+		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
 	}
 
 	public void addModule(Module module) {
@@ -255,6 +258,14 @@ public class SpaceStation {
 		return deliveryTime;
 	}
 
+	public boolean isEndOfOrderTime() {
+		return endOfOrderTime;
+	}
+
+	public boolean isSavedDeliveryEmpty() {
+		return savedDeliveryEmpty;
+	}
+
 	public Event getCurrentEvent() {
 		return currentEvent;
 	}
@@ -310,37 +321,58 @@ public class SpaceStation {
 	}
 
 	private void acceptDelivery(){
-		if(!legalDelivery() || getDeliveryCost() < 0.01f){
+		if(isSavedDeliveryEmpty()){
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("A delivery arrived with ");
 		for (Resource resource : Resource.values()) {
-			if(delivery.get(resource).value < 0.01f){
+			if(savedDelivery.get(resource).value < 0.01f){
 				continue;
 			}
 			if(resource != Resource.Humans) {
 				resources.get(resource).value += delivery.get(resource).value;
 			}
-			sb.append(delivery.get(resource).value.intValue());
+			sb.append(savedDelivery.get(resource).value.intValue());
 			sb.append(" ");
 			sb.append(resource.displayName);
 			sb.append(", ");
 		}
 		sb.replace(sb.length - 2, sb.length, ".");
 		addMessage(sb.toString());
-		for(int i = 0; i < delivery.get(Resource.Humans).value.intValue(); i++) {
-			addDude(Dude.getRandomDude(1.5f, 1.5f));
+		for(int i = 0; i < savedDelivery.get(Resource.Humans).value.intValue(); i++) {
+			addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
 		}
 		delivery.get(Resource.Humans).value = 0.f;
+	}
+
+	private void saveDelivery(){
+		System.out.println("save delivery");
+		savedDeliveryEmpty = true;
+		if(!legalDelivery() || getDeliveryCost() < 0.01f){
+			for (Resource resource : Resource.values()) {
+				savedDelivery.get(resource).value = 0.f;
+			}
+			return;
+		}
+		for (Resource resource : Resource.values()) {
+			savedDelivery.get(resource).value = delivery.get(resource).value;
+			if (delivery.get(resource).value > 0.01f) {
+				savedDeliveryEmpty = false;
+			}
+		}
 	}
 
 	public void update(float delta){
 		newDay = (getTimeOfDay() + delta > Consts.DURATION_DAY);
 		deliveryTime = getTimeOfDay() < Consts.DELIVERY_TIME && getTimeOfDay() + delta >= Consts.DELIVERY_TIME;
+		endOfOrderTime = getTimeOfDay() < Consts.ENDOFORDER_TIME && getTimeOfDay() + delta >= Consts.ENDOFORDER_TIME;
 
 		time += delta;
 
+		if (isEndOfOrderTime()) {
+			saveDelivery();
+		}
 		if (isDeliveryTime() && !isLaunchFailure()) {
 			acceptDelivery();
 		}

@@ -12,12 +12,20 @@ public class Consts {
 	public static final float BUILD_PREVIEW_ALPHA = 0.5f;
 	public static final float BUILDING_ALPHA = 0.5f;
 	public static final float INACTIVE_BRIGHTNESS = 0.5f;
-	public static final float MAX_WAIT_TIME = 10.f;
+	public static final float MAX_DUDE_WAIT_TIME = 10.f;
+	public static final float ROCKET_ANIMATION_OFFSET = 5f;
+	public static final float ROCKET_ANIMATION_DURATION = 5.f;
+	public static final float ROCKET_DOCKED_DURATION = 2.f;
+	public static final float ROCKET_DOCKED_POSITION_X = 1.5f;
+	public static final float ROCKET_DOCKED_POSITION_Y = 4.25f;
+	public static final float NEW_DUDE_POSITION_X = 1.5f;
+	public static final float NEW_DUDE_POSITION_Y = 1.5f;
 
 	public static final float BUILD_SPEED = 0.1f;
 	public static final float WALK_SPEED = 2.5f;
-	public static final float DURATION_DAY = 10; // 180
+	public static final float DURATION_DAY = 25; // 180
 	public static final float DELIVERY_TIME = DURATION_DAY / 3.f;
+	public static final float ENDOFORDER_TIME = DELIVERY_TIME - ROCKET_ANIMATION_DURATION - ROCKET_DOCKED_DURATION;
 	public static final float DURATION_NIGHT = DURATION_DAY / 3.f;
 	public static final float DELIVERY_LIMIT = 1200;
 	public static final float HEALTH_LOSE_O2 = 1.f/20;

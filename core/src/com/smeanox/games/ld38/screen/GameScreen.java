@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOFont;
-import com.smeanox.games.ld38.screen.window.Window;
 import com.smeanox.games.ld38.world.Dude;
 import com.smeanox.games.ld38.world.Resource;
 import com.smeanox.games.ld38.world.SpaceStation;
@@ -27,7 +26,7 @@ public class GameScreen implements Screen {
 	private Camera camera, uiCamera;
 	private float time, scale;
 	private float wWidth, wHeight;
-	private Window buildWindow, buildInfoWindow, recourceInfoWindow;
+	private Window buildWindow, buildInfoWindow, recourceInfoWindow, moduleWindow;
 
 	private Class<? extends Module> buildClazz, hoverBuildClazz;
 	private Module buildModule, buildNeighbor;
@@ -63,7 +62,7 @@ public class GameScreen implements Screen {
 		}
 		buildWindow = new BuildWindow(wWidth - 150, 0, 100, 0);
 		Window.windows95.add(buildWindow);
-		buildInfoWindow = new BuildInfoWindow(wWidth - 270, 0, 100, 0);
+		buildInfoWindow = new BuildInfoWindow(wWidth - 250, 0, 70, 0);
 		Window.windows95.add(buildInfoWindow);
 		recourceInfoWindow = new ResourceInfoWindow(0, wHeight - 30, 0, 20);
 		Window.windows95.add(recourceInfoWindow);
@@ -159,6 +158,21 @@ public class GameScreen implements Screen {
 			if (wasDown[1] && !isMouseDown[1]) {
 				initBuild();
 			}
+		} else {
+			if(wasDown[0] && !isMouseDown[0]){
+				if (moduleWindow != null) {
+					Window.windows95.remove(moduleWindow);
+					moduleWindow = null;
+				}
+				Module module = SpaceStation.get().getModule(x, y);
+				if (module != null) {
+					Vector3 mouse2 = unprojectMouseUI();
+					moduleWindow = module.createWindow(mouse2.x, mouse2.y);
+					if (moduleWindow != null) {
+						Window.windows95.add(moduleWindow);
+					}
+				}
+			}
 		}
 		// view
 		if(Gdx.input.isKeyPressed(Input.Keys.W)){
@@ -207,6 +221,9 @@ public class GameScreen implements Screen {
 			buildModule.drawBackground(batch, time);
 			buildModule.drawForeground(batch, time);
 			batch.setColor(oldColor);
+		}
+		for (Dude dude : SpaceStation.get().getDudes()) {
+			dude.drawUI(batch, time);
 		}
 		batch.end();
 
@@ -278,12 +295,10 @@ public class GameScreen implements Screen {
 
 		@Override
 		public void init() {
-			height = 30 + ModuleFactory.moduleClasses.size() * 15;
+			height = 15 + ModuleFactory.moduleClasses.size() * 15;
 			y = wHeight - 100 - height;
 
-			uiElements.add(new Label(5, height - 15, 80, 10, "Construction", null));
-
-			float ay = height - 30;
+			float ay = height - 15;
 			for (final Class<? extends Module> module : ModuleFactory.moduleClasses) {
 				uiElements.add(new ButtonWithHover(5, ay, 80, 10, ModuleFactory.getModuleName(module), new LabelActionHandler() {
 					@Override
@@ -295,6 +310,10 @@ public class GameScreen implements Screen {
 					public void actionHappened(Label label, float delta) {
 						initBuild();
 						buildClazz = module;
+						if (moduleWindow != null) {
+							Window.windows95.remove(moduleWindow);
+							moduleWindow = null;
+						}
 					}
 				}, new LabelActionHandler() {
 					@Override
@@ -368,12 +387,13 @@ public class GameScreen implements Screen {
 					float ay = height - 15;
 					for (final Resource resource : Resource.values()) {
 						if (moduleBuildCost.containsKey(resource)) {
-							uiElements.add(new Label(5, ay, 80, 10, resource.displayName + " " + moduleBuildCost.get(resource).intValue(), new LabelActionHandler() {
+							uiElements.add(new Label(25, ay, 40, 10, leftPad("" + moduleBuildCost.get(resource).intValue(), 5), new LabelActionHandler() {
 								@Override
 								public void actionHappened(Label label, float delta) {
 									label.color = SpaceStation.get().getResource(resource) < moduleBuildCost.get(resource) ? Color.FIREBRICK : Color.BLACK;
 								}
 							}));
+							uiElements.add(new Label(5, ay - 2, 10, 10, resource.icon, IOFont.icons, Color.WHITE, null));
 							ay -= 15;
 						}
 					}
@@ -390,19 +410,21 @@ public class GameScreen implements Screen {
 
 		@Override
 		public void init() {
-			width = 80 * Resource.values().length;
+			width = 90 * Resource.values().length;
 			x = (wWidth - width) / 2;
 
 			float ax = 5;
 			for (final Resource resource : Resource.values()) {
-				uiElements.add(new Label(ax, 2, 80, 10, "", new LabelActionHandler() {
+				uiElements.add(new Label(ax + 20, 2, 70, 10, "", new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
-						label.text = resource.icon + " " + ((int) SpaceStation.get().getResource(resource))
+						label.text = ((int) SpaceStation.get().getResource(resource))
 								+ "/" + ((int) SpaceStation.get().getResourceMax(resource));
+						label.color = SpaceStation.get().getResource(resource) < 0.5f ? Color.FIREBRICK : Color.BLACK;
 					}
 				}));
-				ax += 80;
+				uiElements.add(new Label(ax, 0, 10, 10, resource.icon, IOFont.icons, Color.WHITE, null));
+				ax += 90;
 			}
 		}
 	}

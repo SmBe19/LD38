@@ -10,20 +10,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ModuleInformation(
-		name = "Hydrolysis",
+		name = "Sleep Module",
 		width = 2,
-		height = 1
+		height = 3
 )
-public class HydrolysisModule extends Module {
+public class SleepingModule extends Module {
 
 	static{
 		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
 		buildCost.put(Resource.Fe, 200.f);
-		buildCost.put(Resource.Si, 100.f);
-		ModuleFactory.putBuildCost(HydrolysisModule.class, buildCost);
+		ModuleFactory.putBuildCost(SleepingModule.class, buildCost);
 	}
 
-	public HydrolysisModule(ModuleLocation moduleLocation) {
+	public SleepingModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);
 
 		allowNeighbors[Consts.UP] = false;
@@ -32,19 +31,21 @@ public class HydrolysisModule extends Module {
 
 	@Override
 	public TextureRegion getTextureInterior(float time) {
-		return IOAnimation.ModuleHydrolysis.texture();
+		return IOAnimation.ModuleEmpty3.texture();
 	}
 
 	@Override
 	public TextureRegion getTextureHull(float time) {
-		return IOAnimation.HullDefault2.texture();
+		return IOAnimation.HullDefault3.texture();
+	}
+
+	@Override
+	public void adjustResourceMax(Map<Resource, GenericRapper<Float>> resources, boolean add) {
+		resources.get(Resource.Humans).value += (add ? 1 : -1) * 2;
 	}
 
 	@Override
 	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta) {
-		hadEnoughResources = tryUseResource(resources, delta, Resource.H2O, 180) &&
-				tryUseResource(resources, delta, Resource.Electricity, 180) &&
-				tryUseResource(resources, delta, Resource.H2, -20) &&
-				tryUseResource(resources, delta, Resource.O2, -160);
+		hadEnoughResources = tryUseResource(resources, delta, Resource.Electricity, 60);
 	}
 }

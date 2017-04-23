@@ -10,20 +10,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ModuleInformation(
-		name = "Hydrolysis",
-		width = 2,
-		height = 1
+		name = "Rockets",
+		width = 3,
+		height = 3
 )
-public class HydrolysisModule extends Module {
+public class RocketModule extends Module {
 
 	static{
 		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 200.f);
-		buildCost.put(Resource.Si, 100.f);
-		ModuleFactory.putBuildCost(HydrolysisModule.class, buildCost);
+		buildCost.put(Resource.H2O, 100.f);
+		buildCost.put(Resource.Fe, 600.f);
+		buildCost.put(Resource.Si, 200.f);
+		ModuleFactory.putBuildCost(RocketModule.class, buildCost);
 	}
 
-	public HydrolysisModule(ModuleLocation moduleLocation) {
+	public RocketModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);
 
 		allowNeighbors[Consts.UP] = false;
@@ -32,19 +33,16 @@ public class HydrolysisModule extends Module {
 
 	@Override
 	public TextureRegion getTextureInterior(float time) {
-		return IOAnimation.ModuleHydrolysis.texture();
+		return IOAnimation.ModuleEmpty3.texture();
 	}
 
 	@Override
 	public TextureRegion getTextureHull(float time) {
-		return IOAnimation.HullDefault2.texture();
+		return IOAnimation.HullDefault3.texture();
 	}
 
 	@Override
 	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta) {
-		hadEnoughResources = tryUseResource(resources, delta, Resource.H2O, 180) &&
-				tryUseResource(resources, delta, Resource.Electricity, 180) &&
-				tryUseResource(resources, delta, Resource.H2, -20) &&
-				tryUseResource(resources, delta, Resource.O2, -160);
+		hadEnoughResources = tryUseResource(resources, delta, Resource.Electricity, 5);
 	}
 }

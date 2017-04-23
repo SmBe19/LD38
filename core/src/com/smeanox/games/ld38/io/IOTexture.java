@@ -6,8 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 public enum IOTexture {
 	station("img/station.png"),
 	dude("img/dude.png"),
+	charMale("img/CharMale.png"),
+	charFemale("img/CharFemale.png"),
 	font("img/font.png"),
-	windowBorder("img/ui.png"),
+	icons("img/icons.png"),
+	ui("img/ui.png"),
 	;
 
 	public final Texture texture;

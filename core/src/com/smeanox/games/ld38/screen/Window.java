@@ -1,13 +1,13 @@
-package com.smeanox.games.ld38.screen.window;
+package com.smeanox.games.ld38.screen;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.StringBuilder;
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOFont;
 import com.smeanox.games.ld38.io.IOTexture;
 
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -53,15 +53,15 @@ public abstract class Window {
 		if (!visible) {
 			return;
 		}
-		batch.draw(IOTexture.windowBorder.texture, x - 8, y + height, 0, 0, 8, 8);
-		batch.draw(IOTexture.windowBorder.texture, x + width, y + height, 9, 0, 8, 8);
-		batch.draw(IOTexture.windowBorder.texture, x + width, y - 8, 9, 9, 8, 8);
-		batch.draw(IOTexture.windowBorder.texture, x - 8, y - 8, 0, 9, 8, 8);
-		batch.draw(IOTexture.windowBorder.texture, x, y, width, height, 8, 8, 1, 1, false, false);
-		batch.draw(IOTexture.windowBorder.texture, x - 8, y, 8, height, 0, 8, 8, 1, false, false);
-		batch.draw(IOTexture.windowBorder.texture, x + width, y, 8, height, 9, 8, 8, 1, false, false);
-		batch.draw(IOTexture.windowBorder.texture, x, y - 8, width, 8, 8, 9, 1, 8, false, false);
-		batch.draw(IOTexture.windowBorder.texture, x, y + height, width, 8, 8, 0, 1, 8, false, false);
+		batch.draw(IOTexture.ui.texture, x - 8, y + height, 0, 0, 8, 8);
+		batch.draw(IOTexture.ui.texture, x + width, y + height, 9, 0, 8, 8);
+		batch.draw(IOTexture.ui.texture, x + width, y - 8, 9, 9, 8, 8);
+		batch.draw(IOTexture.ui.texture, x - 8, y - 8, 0, 9, 8, 8);
+		batch.draw(IOTexture.ui.texture, x, y, width, height, 8, 8, 1, 1, false, false);
+		batch.draw(IOTexture.ui.texture, x - 8, y, 8, height, 0, 8, 8, 1, false, false);
+		batch.draw(IOTexture.ui.texture, x + width, y, 8, height, 9, 8, 8, 1, false, false);
+		batch.draw(IOTexture.ui.texture, x, y - 8, width, 8, 8, 9, 1, 8, false, false);
+		batch.draw(IOTexture.ui.texture, x, y + height, width, 8, 8, 0, 1, 8, false, false);
 		for (Label label : uiElements) {
 			label.draw(batch, delta);
 		}
@@ -99,9 +99,19 @@ public abstract class Window {
 		this.height = height;
 	}
 
+	protected String leftPad(String text, int width) {
+		StringBuilder sb = new StringBuilder();
+		while (sb.length() + text.length() < width) {
+			sb.append(" ");
+		}
+		sb.append(text);
+		return sb.toString();
+	}
+
 	public class Label {
 		public float x, y, width, height;
 		public String text;
+		public IOFont font;
 		public Color color;
 		protected LabelActionHandler updater;
 
@@ -112,7 +122,14 @@ public abstract class Window {
 			this.height = height;
 			this.text = text;
 			this.updater = updater;
+			this.font = IOFont.grusigPunktBdf;
 			this.color = Color.BLACK;
+		}
+
+		public Label(float x, float y, float width, float height, String text, IOFont font, Color color, LabelActionHandler updater) {
+			this(x, y, width, height, text, updater);
+			this.font = font;
+			this.color = color;
 		}
 
 		public void update(float delta, int mouseX, int mouseY, boolean[] mouseButtons){
@@ -124,7 +141,7 @@ public abstract class Window {
 		public void draw(SpriteBatch batch, float delta) {
 			Color oldColor = batch.getColor().cpy();
 			batch.setColor(color);
-			IOFont.grusigPunktBdf.draw(batch, (int) (Window.this.x + x), (int) (Window.this.y + y), Consts.SPRITE_SIZE, text);
+			font.draw(batch, (int) (Window.this.x + x), (int) (Window.this.y + y), Consts.SPRITE_SIZE, text);
 			batch.setColor(oldColor);
 		}
 	}

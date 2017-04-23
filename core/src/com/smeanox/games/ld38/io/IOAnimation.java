@@ -16,7 +16,23 @@ public enum IOAnimation {
 	ModuleMain(IOTexture.station, 3, 6, 3, 3),
 	SolarPanel(IOTexture.station, 0, 4, 4, 2),
 	ModuleCross(IOTexture.station, 4, 0, 1, 1),
-	Dude1(IOTexture.dude, 1.f, 0, 0, 3),
+
+	Char1MIdle(IOTexture.charMale, 1.f, 0, 0, 2),
+	Char1MMove(IOTexture.charMale, 0.2f, 0, 1, 7),
+	Char2MIdle(IOTexture.charMale, 1.f, 0, 2, 2),
+	Char2MMove(IOTexture.charMale, 0.2f, 0, 3, 7),
+	Char3MIdle(IOTexture.charMale, 1.f, 0, 4, 2),
+	Char3MMove(IOTexture.charMale, 0.2f, 0, 5, 7),
+	Char4MIdle(IOTexture.charMale, 1.f, 0, 6, 2),
+	Char4MMove(IOTexture.charMale, 0.2f, 0, 7, 7),
+	Char1FIdle(IOTexture.charFemale, 1.f, 0, 0, 2),
+	Char1FMove(IOTexture.charFemale, 0.2f, 0, 1, 7),
+	Char2FIdle(IOTexture.charFemale, 1.f, 0, 2, 2),
+	Char2FMove(IOTexture.charFemale, 0.2f, 0, 3, 7),
+	Char3FIdle(IOTexture.charFemale, 1.f, 0, 4, 2),
+	Char3FMove(IOTexture.charFemale, 0.2f, 0, 5, 7),
+	Char4FIdle(IOTexture.charFemale, 1.f, 0, 6, 2),
+	Char4FMove(IOTexture.charFemale, 0.2f, 0, 7, 7),
 	;
 
 	public final Animation<TextureRegion> animation;

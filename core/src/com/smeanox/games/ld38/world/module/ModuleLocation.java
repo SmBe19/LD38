@@ -154,6 +154,10 @@ public class ModuleLocation {
 		return getRotX() <= x && x < getRotRight() && getRotY() <= y && y < getRotTop();
 	}
 
+	public Pair<Float, Float> getCenter(){
+		return new Pair<Float, Float>(getRotX() + getRotWidth() / 2.f, getRotY() + getRotHeight() / 2.f);
+	}
+
 	public Pair<Integer, Integer> getPortLocation(int direction){
 		switch(direction){
 			case Consts.UP:

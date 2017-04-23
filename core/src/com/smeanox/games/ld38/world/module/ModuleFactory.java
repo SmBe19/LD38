@@ -17,6 +17,12 @@ public class ModuleFactory {
 		moduleClasses.add(HydrolysisModule.class);
 		moduleClasses.add(GardenModule.class);
 		moduleClasses.add(SolarModule.class);
+		moduleClasses.add(SleepingModule.class);
+		moduleClasses.add(StorageModule.class);
+		moduleClasses.add(RadioModule.class);
+		moduleClasses.add(RocketModule.class);
+		moduleClasses.add(MagnetModule.class);
+		moduleClasses.add(CryogenicModule.class);
 	}
 
 	public static ModuleLocation createModuleLocation(Class<? extends Module> clazz) {

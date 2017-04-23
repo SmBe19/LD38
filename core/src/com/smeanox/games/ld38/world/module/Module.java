@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.smeanox.games.ld38.Consts;
+import com.smeanox.games.ld38.screen.Window;
 import com.smeanox.games.ld38.world.GenericRapper;
 import com.smeanox.games.ld38.world.Pair;
 import com.smeanox.games.ld38.world.Resource;
 import com.smeanox.games.ld38.world.SpaceStation;
+import com.smeanox.games.ld38.world.task.BuildTask;
 
 import java.util.Map;
 
@@ -15,7 +17,7 @@ public abstract class Module {
 	protected ModuleLocation moduleLocation;
 	protected Module[] neighbors = new Module[4];
 	protected boolean[] allowNeighbors = new boolean[4];
-	protected boolean finished, hadEnoughResources;
+	protected boolean finished, justFinished, hadEnoughResources, active;
 	protected float buildProgress;
 
 	public Module(ModuleLocation moduleLocation) {
@@ -25,7 +27,9 @@ public abstract class Module {
 		allowNeighbors[Consts.RIGHT] = allowNeighbors[Consts.LEFT] = moduleLocation.getHeight() % 2 == 1;
 
 		finished = false;
+		justFinished = false;
 		hadEnoughResources = true;
+		active = true;
 	}
 
 	private int rotateDirection(int direction){
@@ -44,12 +48,16 @@ public abstract class Module {
 		hadEnoughResources = true;
 	}
 
-	protected boolean tryUseResource(Map<Resource, GenericRapper<Float>> resources, Resource resource, float valueUse) {
-		resources.get(resource).value -= valueUse;
+	protected boolean tryUseResource(Map<Resource, GenericRapper<Float>> resources, float delta, Resource resource, float valuePerDay) {
+		resources.get(resource).value -= valuePerDay * delta / Consts.DURATION_DAY;
 		return resources.get(resource).value > 0;
 	}
 
 	public void adjustResourceMax(Map<Resource, GenericRapper<Float>> resources, boolean add){}
+
+	public Window createWindow(float x, float y){
+		return null;
+	}
 
 	public boolean isHadEnoughResources() {
 		return hadEnoughResources;
@@ -76,6 +84,7 @@ public abstract class Module {
 			buildProgress += delta * getBuildSpeed();
 			if (buildProgress >= 1.f) {
 				finished = true;
+				justFinished = true;
 			}
 		}
 	}
@@ -143,6 +152,7 @@ public abstract class Module {
 		setNeighbor(direction, module);
 		module.setNeighbor(ModuleLocation.flipDirection(direction), this);
 		SpaceStation.get().addModule(module);
+		SpaceStation.get().addTask(new BuildTask(module));
 		for(int i = 0; i < 4; i++){
 			if(module.canAddNeighbor(i)){
 				Pair<Integer, Integer> portLocation = module.getModuleLocation().getPortLocation(i);
@@ -236,11 +246,28 @@ public abstract class Module {
 			return null;
 		}
 		SpaceStation.get().addModule(module);
+		SpaceStation.get().addTask(new BuildTask(module));
 		return module;
 	}
 
 	public ModuleLocation getModuleLocation() {
 		return moduleLocation;
+	}
+
+	public boolean isActive() {
+		return finished && active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public boolean isJustFinished() {
+		return justFinished;
+	}
+
+	public void setJustFinished(boolean justFinished) {
+		this.justFinished = justFinished;
 	}
 
 	public abstract TextureRegion getTextureInterior(float time);
@@ -273,10 +300,14 @@ public abstract class Module {
 		TextureRegion textureHull = getTextureHull(time);
 		if (textureHull != null) {
 			Color oldColor = batch.getColor().cpy();
+			if (!isHadEnoughResources()) {
+				batch.setColor(1, 0.5f, 0.5f, 1);
+			}
 			batch.draw(textureHull, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
 					textureHull.getRegionWidth() / Consts.SPRITE_SIZE,
 					textureHull.getRegionHeight() / Consts.SPRITE_SIZE,
 					1, 1, getModuleLocation().getRotation() * 90);
+			batch.setColor(oldColor);
 		}
 	}
 }

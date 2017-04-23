@@ -2,13 +2,14 @@ package com.smeanox.games.ld38.world.module;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.smeanox.games.ld38.io.IOAnimation;
+import com.smeanox.games.ld38.world.GenericRapper;
 import com.smeanox.games.ld38.world.Resource;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @ModuleInformation(
-		name = "Cross Connector",
+		name = "X Connector",
 		width = 1,
 		height = 1
 )
@@ -16,8 +17,7 @@ public class CrossModule extends Module {
 
 	static{
 		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Electricity, 5.f);
-		buildCost.put(Resource.Fe, 125.f);
+		buildCost.put(Resource.Fe, 25.f);
 		ModuleFactory.putBuildCost(CrossModule.class, buildCost);
 	}
 
@@ -33,5 +33,10 @@ public class CrossModule extends Module {
 	@Override
 	public TextureRegion getTextureHull(float time) {
 		return IOAnimation.HullCross.texture();
+	}
+
+	@Override
+	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta) {
+		hadEnoughResources = tryUseResource(resources, delta, Resource.Electricity, 5);
 	}
 }

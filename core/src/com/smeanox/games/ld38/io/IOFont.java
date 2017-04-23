@@ -6,6 +6,7 @@ import com.smeanox.games.ld38.Consts;
 
 public enum IOFont {
 	grusigPunktBdf(IOTexture.font.texture, 7, 11, "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!?.,;\"/0123456789"),
+	icons(IOTexture.icons.texture, 16, 16, "MOHEWFSD"),
 	;
 
 	private final Texture texture;

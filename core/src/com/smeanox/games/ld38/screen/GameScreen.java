@@ -14,14 +14,20 @@ import com.badlogic.gdx.math.Vector3;
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOAnimation;
 import com.smeanox.games.ld38.io.IOFont;
+import com.smeanox.games.ld38.io.IOTexture;
 import com.smeanox.games.ld38.world.Dude;
+import com.smeanox.games.ld38.world.Pair;
 import com.smeanox.games.ld38.world.Resource;
 import com.smeanox.games.ld38.world.SpaceStation;
 import com.smeanox.games.ld38.world.module.Module;
 import com.smeanox.games.ld38.world.module.ModuleFactory;
+import com.smeanox.games.ld38.world.module.ModuleLocation;
 import com.smeanox.games.ld38.world.module.SolarModule;
+import com.smeanox.games.ld38.world.task.WalkTask;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 public class GameScreen implements Screen {
@@ -36,7 +42,10 @@ public class GameScreen implements Screen {
 	private Class<? extends Module> buildClazz, hoverBuildClazz;
 	private Module buildModule, buildNeighbor;
 	private int buildX, buildY, buildDirection, buildRotation;
+	private Dude currentDude;
 	private boolean[] wasDown = new boolean[2];
+
+	private static List<Pair<Color, Pair<Float, Float>>> debugPoints = new ArrayList<Pair<Color, Pair<Float, Float>>>();
 
 	public GameScreen() {
 		batch = new SpriteBatch();
@@ -54,6 +63,7 @@ public class GameScreen implements Screen {
 		buildX = Integer.MAX_VALUE;
 		buildY = Integer.MAX_VALUE;
 		buildRotation = 0;
+		currentDude = null;
 	}
 
 	private void initWindows2000(){
@@ -139,16 +149,16 @@ public class GameScreen implements Screen {
 		isMouseDown[1] = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
 
 		mouse = unprojectMouseUI();
-		x = (int) Math.floor(mouse.x);
-		y = (int) Math.floor(mouse.y);
+		x = MathUtils.floor(mouse.x);
+		y = MathUtils.floor(mouse.y);
 		for (Window window : new HashSet<Window>(Window.windows95)) {
 			window.update(delta, x, y, isMouseDown);
 		}
 
 		if(!paused) {
 			mouse = unprojectMouse();
-			x = (int) Math.floor(mouse.x);
-			y = (int) Math.floor(mouse.y);
+			x = MathUtils.floor(mouse.x);
+			y = MathUtils.floor(mouse.y);
 			if (buildClazz != null) {
 				if (x != buildX || y != buildY) {
 					buildX = x;
@@ -186,10 +196,21 @@ public class GameScreen implements Screen {
 						}
 					}
 				}
-				if (wasDown[1] && !isMouseDown[0]) {
+				if (wasDown[1] && !isMouseDown[1]) {
 					if (moduleWindow != null) {
 						Window.windows95.remove(moduleWindow);
 						moduleWindow = null;
+					} else {
+						if(currentDude != null){
+							if (currentDude.getCurrentTask() == null || currentDude.getCurrentTask().isIdleTask()) {
+								WalkTask newTask = new WalkTask(mouse.x, mouse.y);
+								newTask.setIdleTask(true);
+								currentDude.setCurrentTask(newTask);
+							}
+							currentDude = null;
+						} else {
+							currentDude = SpaceStation.get().getDude(x, y);
+						}
 					}
 				}
 			}
@@ -252,9 +273,22 @@ public class GameScreen implements Screen {
 		batch.setColor(oldColor);
 	}
 
+	private void drawBG(float delta) {
+		batch.setProjectionMatrix(uiCamera.combined);
+		batch.setColor(1, 1, 1, 1);
+		batch.begin();
+		for(int ax = 0; ax < wWidth; ax += Consts.DESIGN_WIDTH){
+			for(int ay = 0; ay < wHeight; ay += Consts.DESIGN_HEIGHT){
+				batch.draw(IOTexture.bg.texture, ax, ay, Consts.DESIGN_WIDTH, Consts.DESIGN_HEIGHT);
+			}
+		}
+		batch.end();
+	}
+
 	private void draw(float delta){
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		drawBG(delta);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		batch.setColor(1, 1, 1, 1);
@@ -279,6 +313,7 @@ public class GameScreen implements Screen {
 		for (Dude dude : SpaceStation.get().getDudes()) {
 			dude.drawUI(batch, time);
 		}
+		drawDebugStuff(delta);
 		batch.end();
 
 		drawUI(delta);
@@ -286,12 +321,47 @@ public class GameScreen implements Screen {
 
 	private void drawUI(float delta) {
 		batch.setProjectionMatrix(uiCamera.combined);
+		batch.setColor(1, 1, 1, 1);
 		batch.begin();
 		for (Window window : Window.windows95) {
 			window.draw(batch, delta);
 		}
 		IOFont.grusigPunktBdf.draw(batch, 16, 16, Consts.SPRITE_SIZE, Consts.GAME_NAME);
 		batch.end();
+	}
+
+	public static void addDebugPoint(float x, float y, Color color) {
+		debugPoints.add(new Pair<Color, Pair<Float, Float>>(color, new Pair<Float, Float>(x, y)));
+	}
+
+	public static void addDebugLine(float x1, float y1, float x2, float y2, Color color) {
+		float dx = x2 - x1, dy = y2 - y1;
+		dx /= 50;
+		dy /= 50;
+		for(int i = 0; i < 50; i++) {
+			addDebugPoint(x1 + i * dx, y1 + i * dy, color);
+		}
+	}
+
+	public static void addDebugLine(ModuleLocation loc1, ModuleLocation loc2, Color color) {
+		addDebugLine(loc1.getCenter().first, loc1.getCenter().second, loc2.getCenter().first, loc2.getCenter().second, color);
+	}
+
+	public static void addDebugLine(Module m1, Module m2, Color color) {
+		if (m1 == null || m2 == null) {
+			return;
+		}
+	}
+
+	private void drawDebugStuff(float delta) {
+		batch.setColor(1, 0, 0, 1);
+		for (Pair<Color, Pair<Float, Float>> point : debugPoints) {
+			batch.setColor(point.first);
+			batch.draw(IOTexture.pixel, point.second.first, point.second.second, 0.1f, 0.1f);
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+			debugPoints.clear();
+		}
 	}
 
 	@Override

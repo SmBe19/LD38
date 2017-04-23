@@ -15,7 +15,6 @@ public class SolarFlareEvent extends Event {
 
 	@Override
 	public void startEvent() {
-		System.out.println("Event: " + this);
 		SpaceStation.get().getResources().get(Resource.Electricity).value *= 0.5f;
 	}
 
@@ -29,6 +28,6 @@ public class SolarFlareEvent extends Event {
 
 	@Override
 	public String getDescription() {
-		return "There was a solar flare and your equipment doesn't work at the moment.";
+		return "There was a solar flare and your\nequipment doesn't work at the moment.";
 	}
 }

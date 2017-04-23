@@ -55,7 +55,7 @@ public abstract class Window {
 		}
 	}
 
-	protected void drawBorder(SpriteBatch batch, Texture texture, float x, float y, float width, float height, int sx, int sy, int size){
+	public static void drawBorder(SpriteBatch batch, Texture texture, float x, float y, float width, float height, int sx, int sy, int size){
 		batch.draw(IOTexture.ui.texture, x - size, y + height, sx, sy, size, size); // top left
 		batch.draw(IOTexture.ui.texture, x + width, y + height, sx + size + 1, sy, size, size); // top right
 		batch.draw(IOTexture.ui.texture, x + width, y - size, sx + size + 1, sy + size + 1, size, size); // bottom right
@@ -120,7 +120,7 @@ public abstract class Window {
 		return sb.toString();
 	}
 
-	public abstract interface LabelActionHandler {
+	public interface LabelActionHandler {
 		void actionHappened(Label label, float delta);
 	}
 

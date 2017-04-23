@@ -14,7 +14,7 @@ import java.util.Map;
 @ModuleInformation(
 		name = "Magnet",
 		width = 3,
-		height = 1
+		height = 3
 )
 public class MagnetModule extends Module {
 
@@ -34,12 +34,12 @@ public class MagnetModule extends Module {
 
 	@Override
 	public TextureRegion getTextureInterior(float time) {
-		return IOAnimation.ModuleEmpty3.texture();
+		return IOAnimation.ModuleMagnet.texture();
 	}
 
 	@Override
 	public TextureRegion getTextureHull(float time) {
-		return IOAnimation.HullDefault3.texture();
+		return IOAnimation.HullWide33.texture();
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.smeanox.games.ld38.world;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Queue;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.smeanox.games.ld38.Consts;
@@ -8,6 +9,7 @@ import com.smeanox.games.ld38.world.event.Event;
 import com.smeanox.games.ld38.world.event.LaunchFailureEvent;
 import com.smeanox.games.ld38.world.event.SolarFlareEvent;
 import com.smeanox.games.ld38.world.event.WorldWarEvent;
+import com.smeanox.games.ld38.world.module.CrossModule;
 import com.smeanox.games.ld38.world.module.MainModule;
 import com.smeanox.games.ld38.world.module.Module;
 import com.smeanox.games.ld38.world.module.ModuleFactory;
@@ -229,10 +231,27 @@ public class SpaceStation {
 		return rocketPlaceholderModule;
 	}
 
+	public Module getModule(float x, float y) {
+		return getModule(MathUtils.floor(x), MathUtils.floor(y));
+	}
+
 	public Module getModule(int x, int y){
 		for(Module module : modules){
 			if (module.getModuleLocation().isPointInModule(x, y)) {
 				return module;
+			}
+		}
+		return null;
+	}
+
+	public Dude getDude(float x, float y) {
+		return getDude(MathUtils.floor(x), MathUtils.floor(y));
+	}
+
+	public Dude getDude(int x, int y) {
+		for (Dude dude : dudes) {
+			if (MathUtils.floor(dude.getX()) == x && MathUtils.floor(dude.getY()) == y) {
+				return dude;
 			}
 		}
 		return null;
@@ -288,6 +307,10 @@ public class SpaceStation {
 
 	public boolean isWorldWarStarted() {
 		return worldWarStarted;
+	}
+
+	public void setWorldWarStarted(boolean worldWarStarted) {
+		this.worldWarStarted = worldWarStarted;
 	}
 
 	private void updateEvents(float delta) {

@@ -7,6 +7,7 @@ public class WorldWarEvent extends Event {
 
 	@Override
 	public void startEvent() {
+		SpaceStation.get().setWorldWarStarted(true);
 	}
 
 	@Override

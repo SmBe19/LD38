@@ -2,6 +2,7 @@ package com.smeanox.games.ld38.io;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public enum IOTexture {
 	station("img/station.png"),
@@ -11,7 +12,10 @@ public enum IOTexture {
 	font("img/font.png"),
 	icons("img/icons.png"),
 	ui("img/ui.png"),
+	bg("img/bg.png"),
 	;
+
+	public static TextureRegion pixel = new TextureRegion(IOTexture.ui.texture, 17, 0, 1, 1);
 
 	public final Texture texture;
 

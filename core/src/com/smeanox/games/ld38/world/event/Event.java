@@ -10,7 +10,7 @@ public abstract class Event {
 
 	protected static boolean hasRocketModule() {
 		for (Module module : SpaceStation.get().getModules()) {
-			if (module instanceof RocketModule) {
+			if (module.isFinished() && module instanceof RocketModule) {
 				return true;
 			}
 		}

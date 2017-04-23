@@ -36,7 +36,7 @@ public class StorageModule extends Module {
 
 	@Override
 	public TextureRegion getTextureHull(float time) {
-		return IOAnimation.HullWide3.texture();
+		return IOAnimation.HullWide23.texture();
 	}
 
 	@Override

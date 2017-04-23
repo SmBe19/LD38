@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.smeanox.games.ld38.Consts;
+import com.smeanox.games.ld38.screen.GameScreen;
 import com.smeanox.games.ld38.screen.Window;
 import com.smeanox.games.ld38.world.GenericRapper;
 import com.smeanox.games.ld38.world.Pair;
@@ -161,8 +162,6 @@ public abstract class Module {
 		}
 		setNeighbor(direction, module);
 		module.setNeighbor(ModuleLocation.flipDirection(direction), this);
-		SpaceStation.get().addModule(module);
-		SpaceStation.get().addTask(new BuildTask(module));
 		for(int i = 0; i < 4; i++){
 			if(module.canAddNeighbor(i)){
 				Pair<Integer, Integer> portLocation = module.getModuleLocation().getPortLocation(i);
@@ -176,6 +175,8 @@ public abstract class Module {
 				}
 			}
 		}
+		SpaceStation.get().addModule(module);
+		SpaceStation.get().addTask(new BuildTask(module));
 		return module;
 	}
 
@@ -193,7 +194,7 @@ public abstract class Module {
 			}
 			if (x == getModuleLocation().getRotRight() - 1){
 				Module neighbor = getNeighbor(Consts.RIGHT);
-				if(neighbor == null || !neighbor.canAttachSolarPanel()) {
+				if(neighbor == null || !neighbor.canAttachSolarPanel() || neighbor.canAddNeighbor(direction)) {
 					return null;
 				} else {
 					if(direction == Consts.UP && neighbor.getModuleLocation().getRotTop() != getModuleLocation().getRotTop() ||
@@ -258,6 +259,9 @@ public abstract class Module {
 		if (module == null) {
 			return null;
 		}
+		// there might be more than one neighbor so we don't set it
+		// setNeighbor(direction, module);
+		module.setNeighbor(ModuleLocation.flipDirection(direction), this);
 		SpaceStation.get().addModule(module);
 		SpaceStation.get().addTask(new BuildTask(module));
 		return module;

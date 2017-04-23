@@ -10,7 +10,8 @@ public enum IOAnimation {
 	HullDefault2(IOTexture.station, 0, 2, 2, 1),
 	HullMain(IOTexture.station, 0, 6, 3, 3),
 	HullCross(IOTexture.station, 3, 0, 1, 1),
-	HullWide3(IOTexture.station, 0, 9, 2, 3),
+	HullWide23(IOTexture.station, 0, 9, 2, 3),
+	HullWide33(IOTexture.station, 6, 7, 3, 3),
 	ModuleEmpty3(IOTexture.station, 5, 0, 3, 1),
 	ModuleHydrolysis(IOTexture.station, 2, 2, 2, 1),
 	ModuleFlowers(IOTexture.station, 5, 1, 3, 1),
@@ -21,6 +22,8 @@ public enum IOAnimation {
 	ModuleRockets(IOTexture.station, 0, 12, 3, 3),
 	ModuleRadio(IOTexture.station, 8, 0, 2, 3),
 	ModuleStorage(IOTexture.station, 4, 9, 2, 3),
+	ModuleCryogenic(IOTexture.station, 9, 7, 3, 3),
+	ModuleMagnet(IOTexture.station, 12, 7, 3, 3),
 
 	Rocket(IOTexture.station, 11, 0, 2, 5),
 

@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Queue;
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOAnimation;
 import com.smeanox.games.ld38.io.IOTexture;
+import com.smeanox.games.ld38.screen.GameScreen;
 import com.smeanox.games.ld38.world.module.Module;
 import com.smeanox.games.ld38.world.task.Task;
 import com.smeanox.games.ld38.world.task.WaitTask;
@@ -75,8 +76,8 @@ public class Dude {
 	}
 
 	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta){
-		hadEnoughResources = tryUseResource(resources, delta, Resource.O2, 90, Consts.HEALTH_LOSE_O2) &&
-				tryUseResource(resources, delta, Resource.H2O, 60, Consts.HEALTH_LOSE_H2O) &&
+		hadEnoughResources = tryUseResource(resources, delta, Resource.O2, 90, Consts.HEALTH_LOSE_O2) &
+				tryUseResource(resources, delta, Resource.H2O, 60, Consts.HEALTH_LOSE_H2O) &
 				tryUseResource(resources, delta, Resource.Food, 36, Consts.HEALTH_LOSE_Food);
 
 		if (hadEnoughResources) {
@@ -116,6 +117,11 @@ public class Dude {
 		return destY;
 	}
 
+	public void setCurrentTask(Task currentTask) {
+		this.currentTask = currentTask;
+		this.currentTask.accept(this);
+	}
+
 	public Task getCurrentTask() {
 		return currentTask;
 	}
@@ -134,7 +140,7 @@ public class Dude {
 
 		Queue<Module> q = new Queue<Module>();
 		Map<Module, Module> par = new HashMap<Module, Module>();
-		Module start = SpaceStation.get().getModule((int) x, (int) y);
+		Module start = SpaceStation.get().getModule(x, y);
 		q.addLast(start);
 		par.put(start, start);
 		while (q.size > 0) {
@@ -147,8 +153,13 @@ public class Dude {
 				}
 			}
 		}
-		Module destModule = SpaceStation.get().getModule((int) destX, (int) destY);
+		Module destModule = SpaceStation.get().getModule(destX, destY);
 		if (destModule == null) {
+			currentPath = null;
+			throw new RuntimeException("boiatend");
+			// return;
+		}
+		if (par.get(destModule) == null) {
 			currentPath = null;
 			return;
 		}
@@ -161,9 +172,10 @@ public class Dude {
 		}
 		if (destModule == null) {
 			currentPath = null;
-			return;
+			throw new RuntimeException("dndrtnd");
+			// return;
 		}
-		destModule = SpaceStation.get().getModule((int) destX, (int) destY);
+		destModule = SpaceStation.get().getModule(destX, destY);
 		currentPath = new Queue<Pair<Float, Float>>();
 		for(int i = path.size()-1; i > 0; i--) {
 			currentPath.addLast(path.get(i).getModuleLocation().getCenter());
@@ -221,7 +233,7 @@ public class Dude {
 			return task;
 		} else if (idleTask == 1) {
 			int val = MathUtils.random(SpaceStation.get().getModules().size() - 2);
-			Module module = null, currentModule = SpaceStation.get().getModule((int) x, (int) y);
+			Module module = null, currentModule = SpaceStation.get().getModule(x, y);
 			for (Module amodule : SpaceStation.get().getModules()) {
 				if (amodule == currentModule) {
 					continue;
@@ -278,7 +290,7 @@ public class Dude {
 		Color oldColor = batch.getColor().cpy();
 		Color color = Color.RED.cpy().lerp(Color.GREEN, hp * 2 - 1);
 		batch.setColor(color);
-		batch.draw(IOTexture.ui.texture, x - hp / 2, y + .5f, hp, .1f, 17, 0, 1, 1, false, false);
+		batch.draw(IOTexture.pixel, x - hp / 2, y + .5f, hp, .1f);
 		batch.setColor(oldColor);
 	}
 }

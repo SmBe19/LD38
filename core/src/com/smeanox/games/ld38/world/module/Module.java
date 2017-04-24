@@ -10,6 +10,7 @@ import com.smeanox.games.ld38.world.GenericRapper;
 import com.smeanox.games.ld38.world.Pair;
 import com.smeanox.games.ld38.world.Resource;
 import com.smeanox.games.ld38.world.SpaceStation;
+import com.smeanox.games.ld38.world.event.Event;
 import com.smeanox.games.ld38.world.task.BuildTask;
 
 import java.util.Map;
@@ -271,10 +272,12 @@ public abstract class Module {
 		return moduleLocation;
 	}
 
-	
+	public boolean isAffectedBySolarFlare(){
+		return SpaceStation.get().isSolarFlare() && !Event.hasMagnetModule();
+	}
 
 	public boolean isWorking(){
-		return finished && active && !SpaceStation.get().isSolarFlare();
+		return isFinished() && isActive() && !isAffectedBySolarFlare();
 	}
 
 	public boolean isActive() {

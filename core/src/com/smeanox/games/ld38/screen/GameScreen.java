@@ -304,10 +304,12 @@ public class GameScreen implements Screen {
 		}
 		batch.end();
 		batch.setShader(earthShader);
-		earthShader.begin();
 		IOTexture.clouds.texture.bind(1);
-		earthShader.setUniformf("u_textureClouds", 1);
+		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+		earthShader.begin();
+		earthShader.setUniformi("u_textureClouds", 1);
 		earthShader.setUniformf("u_rotation", MathUtils.PI2 * SpaceStation.get().getTimeOfDay() / Consts.DURATION_DAY);
+		earthShader.end();
 		batch.begin();
 		float size = wWidth * 1.2f;
 		batch.draw(IOTexture.map.texture, (wWidth - size) / 2, size*0.2f - size, size, size);

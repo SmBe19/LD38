@@ -12,7 +12,7 @@ uniform sampler2D u_texture;
 uniform sampler2D u_textureClouds;
 
 const float u_mercator_fov = 2.5;
-const float u_cloud_limit = 0.5;
+const float u_cloud_limit = 0.4;
 
 void main() {
 	vec2 pos = 2.0*v_uv - 1.0;

@@ -37,6 +37,10 @@ public class MagnetModule extends Module {
 
 	@Override
 	public Window createWindow(float x, float y) {
-		return new ActivateWindow(x, y, this);
+		if(!isAffectedBySolarFlare()) {
+			return new ActivateWindow(x, y, this);
+		} else {
+			return null;
+		}
 	}
 }

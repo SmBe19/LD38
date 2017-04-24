@@ -3,14 +3,24 @@ package com.smeanox.games.ld38.world.event;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.smeanox.games.ld38.world.SpaceStation;
+import com.smeanox.games.ld38.world.module.MagnetModule;
 import com.smeanox.games.ld38.world.module.Module;
 import com.smeanox.games.ld38.world.module.RocketModule;
 
 public abstract class Event {
 
-	protected static boolean hasRocketModule() {
+	public static boolean hasRocketModule() {
 		for (Module module : SpaceStation.get().getModules()) {
 			if (module.isFinished() && module instanceof RocketModule) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean hasMagnetModule() {
+		for (Module module : SpaceStation.get().getModules()) {
+			if (module.isFinished() && module.isActive() && module instanceof MagnetModule) {
 				return true;
 			}
 		}

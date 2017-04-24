@@ -52,13 +52,11 @@ public class RadioModule extends Module {
 				uiElements.add(new Button(5, 5, width - 10, 10, "Scan for signals", null, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
-						SpaceStation.get().addMessage("You don't receive any signals.\nThere are no survivors on earth");
-					}
-				}));
-			} else {
-				uiElements.add(new Button(5, 5, width - 10, 10, "Scan for humans", null, new LabelActionHandler() {
-					@Override
-					public void actionHappened(Label label, float delta) {
+						if(SpaceStation.get().isWorldWarStarted()) {
+							SpaceStation.get().addMessage("You don't receive any signals.\nThere are no survivors on earth.");
+						} else {
+							SpaceStation.get().addMessage("You receive many signals.\nThere doesn't seem to be anything interesting.");
+						}
 					}
 				}));
 			}

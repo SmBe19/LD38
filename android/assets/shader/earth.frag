@@ -24,8 +24,8 @@ void main() {
 	vec2 pos = 2.0*v_uv - 1.0;
 	if (length(pos) > 1.)
 		discard;
-	vec3 normal = vec3(pos, inversesqrt(1.-dot(pos, pos)));
-	vec3 sun = vec3(0., cos(u_rotation), sin(u_rotation));
+	vec3 normal = vec3(pos, sqrt(1.-dot(pos, pos)));
+	vec3 sun = vec3(0., cos(-u_rotation), sin(-u_rotation));
 
 	float lat = asin(pos.x);
 	float lon = asin(pos.y/cos(lat)) - u_rotation;

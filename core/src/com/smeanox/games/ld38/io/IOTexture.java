@@ -13,6 +13,7 @@ public enum IOTexture {
 	icons("img/icons.png"),
 	ui("img/ui.png"),
 	bg("img/bg.png"),
+	map("img/map.png"),
 	;
 
 	public static TextureRegion pixel = new TextureRegion(IOTexture.ui.texture, 17, 0, 1, 1);

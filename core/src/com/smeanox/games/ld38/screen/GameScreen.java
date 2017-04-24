@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.smeanox.games.ld38.Consts;
@@ -20,7 +22,6 @@ import com.smeanox.games.ld38.world.Pair;
 import com.smeanox.games.ld38.world.Resource;
 import com.smeanox.games.ld38.world.SpaceStation;
 import com.smeanox.games.ld38.world.module.Module;
-import com.smeanox.games.ld38.world.module.ModuleFactory;
 import com.smeanox.games.ld38.world.module.ModuleLocation;
 import com.smeanox.games.ld38.world.module.ModuleType;
 import com.smeanox.games.ld38.world.task.WalkTask;
@@ -39,6 +40,8 @@ public class GameScreen implements Screen {
 	private Window buildWindow, buildInfoWindow, recourceInfoWindow, moduleWindow, messageWindow;
 	private boolean paused;
 
+	private ShaderProgram earthShader;
+
 	private List<ModuleType> buildModuleTypes;
 	private ModuleType buildType, hoverBuildType;
 	private Module buildModule, buildNeighbor;
@@ -53,6 +56,15 @@ public class GameScreen implements Screen {
 		camera = new OrthographicCamera();
 		uiCamera = new OrthographicCamera();
 		paused = false;
+
+		ShaderProgram.pedantic = false;
+		earthShader = new ShaderProgram(Gdx.files.internal("shader/earth.vert"), Gdx.files.internal("shader/earth.frag"));
+		System.out.println(earthShader.getLog());
+		if (!earthShader.isCompiled()) {
+			throw new RuntimeException("No shader for you!");
+		}
+		IOTexture.map.texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
+		IOTexture.map.texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
 
 		buildModuleTypes = new ArrayList<ModuleType>();
 		for (ModuleType moduleType : ModuleType.values()) {
@@ -268,8 +280,8 @@ public class GameScreen implements Screen {
 		if (progress > Consts.ROCKET_DOCKED_DURATION) {
 			progress -= Consts.ROCKET_DOCKED_DURATION;
 			interp = MathUtils.cos(MathUtils.PI * progress / Consts.ROCKET_ANIMATION_DURATION) / 2 + .5f;
-			offset = Consts.ROCKET_ANIMATION_OFFSET - interp * Consts.ROCKET_ANIMATION_OFFSET;
-			fade = MathUtils.clamp(interp * 2.f, 0, 1);
+			offset = (1 - interp) * Consts.ROCKET_ANIMATION_OFFSET;
+			fade = MathUtils.clamp(interp * Consts.ROCKET_ANIMATION_FADESPEED, 0, 1);
 		}
 		float width, height;
 		width = texture.getRegionWidth() * scale / Consts.SPRITE_SIZE;
@@ -291,6 +303,14 @@ public class GameScreen implements Screen {
 			}
 		}
 		batch.end();
+		batch.setShader(earthShader);
+		earthShader.begin();
+		earthShader.setUniformf("u_rotation", MathUtils.PI2 * SpaceStation.get().getTimeOfDay() / Consts.DURATION_DAY);
+		batch.begin();
+		float size = wWidth * 1.2f;
+		batch.draw(IOTexture.map.texture, (wWidth - size) / 2, size*0.2f - size, size, size);
+		batch.end();
+		batch.setShader(null);
 	}
 
 	private void draw(float delta){

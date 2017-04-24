@@ -271,6 +271,8 @@ public abstract class Module {
 		return moduleLocation;
 	}
 
+	
+
 	public boolean isWorking(){
 		return finished && active && !SpaceStation.get().isSolarFlare();
 	}

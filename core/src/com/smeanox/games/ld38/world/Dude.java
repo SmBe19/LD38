@@ -262,6 +262,9 @@ public class Dude {
 
 	public void update(float delta) {
 		if (hp < 0) {
+			if (currentTask != null && !currentTask.isIdleTask()) {
+				SpaceStation.get().addTask(currentTask);
+			}
 			SpaceStation.get().removeDude(this);
 		}
 		handleTasks(delta);

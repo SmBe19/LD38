@@ -13,6 +13,7 @@ public class Consts {
 	public static final float BUILDING_ALPHA = 0.5f;
 	public static final float INACTIVE_BRIGHTNESS = 0.5f;
 	public static final float MAX_DUDE_WAIT_TIME = 10.f;
+	public static final float ROCKET_ANIMATION_FADESPEED = 4f;
 	public static final float ROCKET_ANIMATION_OFFSET = 5f;
 	public static final float ROCKET_ANIMATION_DURATION = 5.f;
 	public static final float ROCKET_DOCKED_DURATION = 2.f;
@@ -29,11 +30,11 @@ public class Consts {
 	public static final float ENDOFORDER_TIME = DELIVERY_TIME - ROCKET_ANIMATION_DURATION - ROCKET_DOCKED_DURATION;
 	public static final float DURATION_NIGHT = DURATION_DAY / 3.f;
 	public static final float DELIVERY_LIMIT = 1200;
-	public static final float HEALTH_LOSE_O2 = 1.f/20;
-	public static final float HEALTH_LOSE_H2O = 1.f/60;
-	public static final float HEALTH_LOSE_Food = 1.f/180;
-	public static final float HEALTH_REGENERATE = 1.f/180;
-	public static final float EVENT_SOLARFLARE_DURATION = 120;
+	public static final float HEALTH_LOSE_O2 = 6.f/DURATION_DAY;
+	public static final float HEALTH_LOSE_H2O = 3.f/DURATION_DAY;
+	public static final float HEALTH_LOSE_Food = 1.f/DURATION_DAY;
+	public static final float HEALTH_REGENERATE = 1.f/DURATION_DAY;
+	public static final float EVENT_SOLARFLARE_DURATION = DURATION_DAY / 2.f;
 	public static final float EVENT_MAX_RESOURCE = 400;
 
 	public static final float ARRIVAL_DISTANCE = 0.05f;

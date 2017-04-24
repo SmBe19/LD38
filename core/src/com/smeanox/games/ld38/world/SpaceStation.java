@@ -44,7 +44,7 @@ public class SpaceStation {
 	private Set<ModuleType> enabledModuleTypes;
 	private float time;
 	private boolean nightStart, newDay, endOfOrderTime, deliveryTime, worldWarStarted;
-	private boolean savedDeliveryEmpty;
+	private boolean savedDeliveryEmpty, contacetdEarth;
 	private String gameOverMessage;
 
 	private SpaceStation() {
@@ -64,10 +64,13 @@ public class SpaceStation {
 	public void init(){
 		time = 0;
 		currentEvent = null;
+		nightStart = false;
 		newDay = false;
 		deliveryTime = false;
+		savedDeliveryEmpty = false;
 		worldWarStarted = false;
 		gameOverMessage = null;
+		contacetdEarth = false;
 
 		messageManager = new MessageManager();
 		storyManager = new StoryManager();
@@ -323,6 +326,14 @@ public class SpaceStation {
 		return savedDeliveryEmpty;
 	}
 
+	public boolean isContacetdEarth() {
+		return contacetdEarth;
+	}
+
+	public void setContacetdEarth(boolean contacetdEarth) {
+		this.contacetdEarth = contacetdEarth;
+	}
+
 	public Event getCurrentEvent() {
 		return currentEvent;
 	}
@@ -357,7 +368,10 @@ public class SpaceStation {
 			if (currentEvent != null) {
 				currentEvent.startEvent();
 			}
-			addMessage(messageManager.dayStart(getDay(), isWorldWarStarted(), currentEvent));
+			MessageManager.Message message = messageManager.dayStart(getDay(), isWorldWarStarted(), currentEvent);
+			if(message != null) {
+				addMessage(message);
+			}
 		}
 		if (currentEvent != null) {
 			currentEvent.update(delta);

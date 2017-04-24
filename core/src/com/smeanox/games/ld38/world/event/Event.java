@@ -2,6 +2,7 @@ package com.smeanox.games.ld38.world.event;
 
 
 import com.badlogic.gdx.math.MathUtils;
+import com.smeanox.games.ld38.world.MessageManager;
 import com.smeanox.games.ld38.world.SpaceStation;
 import com.smeanox.games.ld38.world.module.MagnetModule;
 import com.smeanox.games.ld38.world.module.Module;
@@ -55,6 +56,10 @@ public abstract class Event {
 	public abstract void update(float delta);
 
 	public abstract String getDescription();
+
+	public MessageManager.Message getMessage(){
+		return new MessageManager.Message(getDescription());
+	}
 
 	public boolean isFinished() {
 		return finished;

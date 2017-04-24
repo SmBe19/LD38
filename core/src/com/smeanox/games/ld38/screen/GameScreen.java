@@ -354,25 +354,31 @@ public class GameScreen implements Screen {
 			module.drawRockets(batch, time);
 		}
 
+		batch.flush();
 		batch.setShader(bitAlphaShader);
 		Gdx.gl.glClearDepthf(1);
 		Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
-		Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
 		Gdx.gl.glDepthMask(true);
 
 		for (Module module : SpaceStation.get().getModules()) {
 			module.drawBackground(batch, time);
 		}
+
+		batch.flush();
+		batch.setShader(null);
+		Gdx.gl.glDepthMask(false);
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
 
 		for (Dude dude : SpaceStation.get().getDudes()) {
 			dude.draw(batch, time);
+			dude.setX(dude.getX() + 2);
+			dude.draw(batch, time);
+			dude.setX(dude.getX() -2);
 		}
 
+		batch.flush();
 		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-		Gdx.gl.glDepthMask(false);
-		batch.setShader(null);
 
 		for (Module module : SpaceStation.get().getModules()) {
 			module.drawForeground(batch, time);

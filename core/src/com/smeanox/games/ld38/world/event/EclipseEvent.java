@@ -18,6 +18,6 @@ public class EclipseEvent extends Event {
 
 	@Override
 	public String getDescription() {
-		return "Today there is an eclipse.\nThe solar panels won't produce electricity.";
+		return "Would you look at that? An eclipse in space. But this does mean that that our solar panels won’t be working for a while.";
 	}
 }

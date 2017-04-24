@@ -33,9 +33,9 @@ public class SolarFlareEvent extends Event {
 	@Override
 	public String getDescription() {
 		if(SpaceStation.get().isWorldWarStarted()){
-			return "There was a solar flare and your\nequipment doesn't work at the moment.\nA working magnet will save it.";
+			return "Our sensors indicate that the sun is heavily active today. The nuclear bombs of the war have changed the Earth’s magnetic field so much that it won’t protect us. We need to set up our own magnets.";
 		} else {
-			return "There was a solar flare but\nthe magnet field of the earth\nprotected you.";
+			return "Scientists have predicted increased solar activity today. This means any electrical device not protected by a magnet will work very unreliably. Luckily, the earth’s magnetic field protects us from these effects.";
 		}
 	}
 }

@@ -63,6 +63,7 @@ public class RadioModule extends Module {
 							SpaceStation.get().getEnabledModuleTypes().add(ModuleType.CryogenicModule);
 							SpaceStation.get().getStoryManager().highlighted = ModuleType.CryogenicModule;
 							SpaceStation.get().addMessage(SpaceStation.get().getMessageManager().noSurvivors());
+							SpaceStation.get().setContacetdEarth(true);
 						} else {
 							SpaceStation.get().addMessage("You receive many signals.\nThere doesn't seem to be anything interesting.");
 						}

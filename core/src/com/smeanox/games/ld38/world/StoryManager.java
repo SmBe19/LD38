@@ -50,7 +50,7 @@ public class StoryManager {
 			case 0:
 				SpaceStation.get().getEnabledModuleTypes().add(ModuleType.StorageModule);
 				highlighted = ModuleType.StorageModule;
-				SpaceStation.get().addMessage(messageManager.tut1());
+				SpaceStation.get().addMessage(messageManager.startGameplay());
 				state++;
 				break;
 			case 1:
@@ -69,7 +69,8 @@ public class StoryManager {
 				SpaceStation.get().getEnabledModuleTypes().add(ModuleType.EmptyModule);
 				SpaceStation.get().getEnabledModuleTypes().add(ModuleType.SolarModule);
 				highlighted = ModuleType.SolarModule;
-				SpaceStation.get().addMessage(messageManager.tut2());
+				SpaceStation.get().addMessage(messageManager.storeSupplies());
+				SpaceStation.get().addMessage(messageManager.electricity());
 				state++;
 				break;
 			case 3:
@@ -86,7 +87,7 @@ public class StoryManager {
 			case 4:
 				SpaceStation.get().getEnabledModuleTypes().add(ModuleType.SleepingModule);
 				highlighted = ModuleType.SleepingModule;
-				SpaceStation.get().addMessage(messageManager.tut3());
+				SpaceStation.get().addMessage(messageManager.sleep());
 				state++;
 				break;
 			case 5:
@@ -101,39 +102,39 @@ public class StoryManager {
 				}
 				break;
 			case 6:
-				SpaceStation.get().addMessage(messageManager.tut4());
-				SpaceStation.get().addMessage(messageManager.tut5());
+				SpaceStation.get().addMessage(messageManager.survivePossible());
+				SpaceStation.get().addMessage(messageManager.orderOxygen());
 				state++;
 				break;
 			case 7:
 				if(SpaceStation.get().isEndOfOrderTime()){
-					SpaceStation.get().addMessage(messageManager.tut6());
+					SpaceStation.get().addMessage(messageManager.firstDelvieryArrived());
 					state++;
 				}
 				break;
 			case 8:
 				if (SpaceStation.get().isDeliveryTime()) {
-					SpaceStation.get().addMessage(messageManager.tut7());
+					SpaceStation.get().addMessage(messageManager.shipIsHere());
 					for (ModuleType moduleType : ModuleType.values()) {
 						if(moduleType == ModuleType.CryogenicModule){
 							continue;
 						}
 						SpaceStation.get().getEnabledModuleTypes().add(moduleType);
 					}
-					SpaceStation.get().addMessage(messageManager.tut8());
+					SpaceStation.get().addMessage(messageManager.stationGoal());
 					state++;
 				}
 				break;
 			case 9:
 				if (SpaceStation.get().isNightStart()) {
-					SpaceStation.get().addMessage(messageManager.tut9());
+					SpaceStation.get().addMessage(messageManager.selectShipment());
 					state++;
 				}
 				break;
 			case 10:
 				if (SpaceStation.get().isWorldWarStarted() && !SpaceStation.get().isWorldWarToday()) {
 					highlighted = ModuleType.RadioModule;
-					SpaceStation.get().addMessage(messageManager.tut10());
+					SpaceStation.get().addMessage(messageManager.dayAfterWar());
 					state++;
 				}
 				break;
@@ -146,7 +147,7 @@ public class StoryManager {
 				})){
 					state++;
 					highlighted = null;
-					SpaceStation.get().addMessage(messageManager.tut11());
+					SpaceStation.get().addMessage(messageManager.scanForSurvivors());
 				}
 			case 12:
 				if(hasModule(new ModuleChecker() {
@@ -186,7 +187,7 @@ public class StoryManager {
 				}
 				break;
 			case 14:
-				SpaceStation.get().addMessage(messageManager.tut12());
+				SpaceStation.get().addMessage(messageManager.wereDoneHere());
 				state++;
 				timeout = 7;
 				break;

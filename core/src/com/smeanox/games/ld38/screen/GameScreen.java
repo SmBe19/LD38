@@ -570,7 +570,9 @@ public class GameScreen implements Screen {
 				uiElements.add(new ButtonWithHover(5, ay, 90, 10, moduleType.displayName, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
-						if(!SpaceStation.get().getEnabledModuleTypes().contains(moduleType)) {
+						if(buildType == moduleType){
+							label.color = Color.ORANGE;
+						} else if(!SpaceStation.get().getEnabledModuleTypes().contains(moduleType)) {
 							label.color = Color.DARK_GRAY;
 						} else if (SpaceStation.get().getStoryManager().highlighted == moduleType) {
 							label.color = Color.YELLOW;
@@ -742,7 +744,7 @@ public class GameScreen implements Screen {
 		private boolean startedMessage;
 
 		public MessageWindow(MessageManager.Message message) {
-			super(200, 150, wWidth - 400, wHeight - 300, true);
+			super(100, 100, wWidth - 300, wHeight - 200, true);
 			this.message = message;
 			init();
 		}

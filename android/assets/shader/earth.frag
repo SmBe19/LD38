@@ -62,7 +62,7 @@ void main() {
 	float posabovelon = asin(posabove.x / cos(posabovelat)) - u_rotation;
 
 	float diffuse = clamp(dot(normal, sun), 0.2, 1.);
-	float grounddiffuse = texture2D(u_textureClouds, vec2(to_tex(posabovelat, posabovelon).r))*diffuse;
+	float grounddiffuse = texture2D(u_textureClouds, to_tex(posabovelat, posabovelon)).r*diffuse;
 	float specular = 0.5*grounddiffuse + 0.5*exp(-1. + dot(sun, reflect(vec3(0., 0., -1.), normal)));
 
 

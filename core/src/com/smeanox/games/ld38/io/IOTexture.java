@@ -14,6 +14,7 @@ public enum IOTexture {
 	ui("img/ui.png"),
 	bg("img/bg.png"),
 	map("img/map.png"),
+	clouds("img/clouds.png"),
 	;
 
 	public static TextureRegion pixel = new TextureRegion(IOTexture.ui.texture, 17, 0, 1, 1);

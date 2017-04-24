@@ -129,6 +129,7 @@ public abstract class Window {
 		public String text;
 		public IOFont font;
 		public Color color;
+		public float autoWrap;
 		protected LabelActionHandler updater;
 		public boolean visible;
 
@@ -142,6 +143,12 @@ public abstract class Window {
 			this.visible = true;
 			this.font = IOFont.grusigPunktBdf;
 			this.color = Color.BLACK;
+			this.autoWrap = -1;
+		}
+
+		public Label(float x, float y, float width, float height, String text, LabelActionHandler updater, float autoWrap) {
+			this(x, y, width, height, text, updater);
+			this.autoWrap = autoWrap;
 		}
 
 		public Label(float x, float y, float width, float height, String text, IOFont font, Color color, LabelActionHandler updater) {
@@ -162,7 +169,7 @@ public abstract class Window {
 			}
 			Color oldColor = batch.getColor().cpy();
 			batch.setColor(color);
-			font.draw(batch, (int) (Window.this.x + x), (int) (Window.this.y + y), text);
+			font.draw(batch, (int) (Window.this.x + x), (int) (Window.this.y + y), text, autoWrap);
 			batch.setColor(oldColor);
 		}
 	}

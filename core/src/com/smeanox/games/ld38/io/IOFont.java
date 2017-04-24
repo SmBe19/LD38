@@ -20,7 +20,7 @@ public enum IOFont {
 		this.chars = chars;
 	}
 
-	public void draw(SpriteBatch batch, int x, int y, int scale, String text){
+	public void draw(SpriteBatch batch, int x, int y, int scale, String text, float autoWrap){
 		float scaledWidth = width * scale / (float) Consts.SPRITE_SIZE;
 		float scaledHeight = height * scale / (float) Consts.SPRITE_SIZE;
 		float ax = x, ay = y;
@@ -31,15 +31,19 @@ public enum IOFont {
 						idx * width, 0, width, height, false, false);
 			}
 			ax += scaledWidth;
-			if(text.charAt(i) == '\n'){
+			if(text.charAt(i) == '\n' || (autoWrap > 0 && text.charAt(i) == ' ' && ax - x > autoWrap)){
 				ax = x;
 				ay -= scaledHeight * Consts.LINE_SPACING;
 			}
 		}
 	}
 
+	public void draw(SpriteBatch batch, int x, int y, String text, float autoWrap){
+		draw(batch, x, y, Consts.SPRITE_SIZE, text, autoWrap);
+	}
+
 	public void draw(SpriteBatch batch, int x, int y, String text){
-		draw(batch, x, y, Consts.SPRITE_SIZE, text);
+		draw(batch, x, y, Consts.SPRITE_SIZE, text, -1);
 	}
 
 	public float width(int scale, String text) {

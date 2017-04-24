@@ -753,7 +753,7 @@ public class GameScreen implements Screen {
 
 		@Override
 		public void init() {
-			uiElements.add(new Label(10, height - 25, width - 50, 10, message.message, null));
+			uiElements.add(new Label(10, height - 25, width - 50, 10, message.message, null, width - 100));
 			uiElements.add(new Button(width - 50, 10, 30, 15, "Ok", new LabelActionHandler() {
 				@Override
 				public void actionHappened(Label label, float delta) {

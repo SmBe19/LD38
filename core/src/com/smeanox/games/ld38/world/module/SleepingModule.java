@@ -9,18 +9,7 @@ import com.smeanox.games.ld38.world.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Sleep Module",
-		width = 2,
-		height = 3
-)
 public class SleepingModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 200.f);
-		ModuleFactory.putBuildCost(SleepingModule.class, buildCost);
-	}
 
 	public SleepingModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

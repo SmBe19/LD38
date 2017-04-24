@@ -8,22 +8,7 @@ import com.smeanox.games.ld38.world.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Cryogenic",
-		width = 3,
-		height = 3
-)
 public class CryogenicModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.H2, 120.f);
-		buildCost.put(Resource.H2O, 600.f);
-		buildCost.put(Resource.H2O, 300.f);
-		buildCost.put(Resource.Fe, 1200.f);
-		buildCost.put(Resource.Si, 800.f);
-		ModuleFactory.putBuildCost(CryogenicModule.class, buildCost);
-	}
 
 	public CryogenicModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

@@ -9,18 +9,7 @@ import com.smeanox.games.ld38.world.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Storage",
-		width = 2,
-		height = 3
-)
 public class StorageModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 150.f);
-		ModuleFactory.putBuildCost(StorageModule.class, buildCost);
-	}
 
 	public StorageModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

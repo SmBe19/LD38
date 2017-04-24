@@ -10,19 +10,7 @@ import com.smeanox.games.ld38.world.SpaceStation;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Radio",
-		width = 2,
-		height = 3
-)
 public class RadioModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 300.f);
-		buildCost.put(Resource.Si, 150.f);
-		ModuleFactory.putBuildCost(RadioModule.class, buildCost);
-	}
 
 	public RadioModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);
@@ -61,14 +49,14 @@ public class RadioModule extends Module {
 		@Override
 		public void init() {
 			if(SpaceStation.get().isWorldWarStarted()) {
-				uiElements.add(new Button(5, 5, width - 10, 10, "Scan for humans", null, new LabelActionHandler() {
+				uiElements.add(new Button(5, 5, width - 10, 10, "Scan for signals", null, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
-						SpaceStation.get().addMessage("There are no survivors");
+						SpaceStation.get().addMessage("You don't receive any signals.\nThere are no survivors on earth");
 					}
 				}));
 			} else {
-				uiElements.add(new Button(5, 5, width - 10, 10, "???", null, new LabelActionHandler() {
+				uiElements.add(new Button(5, 5, width - 10, 10, "Scan for humans", null, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
 					}

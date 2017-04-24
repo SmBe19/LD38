@@ -110,11 +110,11 @@ public abstract class Module {
 		return allowNeighbors[rotateDirection(direction)] && neighbors[rotateDirection(direction)] == null;
 	}
 
-	public Module tryAddNeighbor(int direction, int rotation, Class<? extends Module> clazz){
+	public Module tryAddNeighbor(int direction, int rotation, ModuleType moduleType){
 		if(!canAddNeighbor(direction)){
 			return null;
 		}
-		Module module = ModuleFactory.createModule(clazz, getModuleLocation().getRotX(), getModuleLocation().getRotY(), rotation);
+		Module module = ModuleFactory.createModule(moduleType, getModuleLocation().getRotX(), getModuleLocation().getRotY(), rotation);
 		if(module.canAddNeighbor(ModuleLocation.flipDirection(direction))) {
 			Pair<Integer, Integer> portLocation = getModuleLocation().getPortLocation(direction);
 			switch (direction) {
@@ -155,8 +155,8 @@ public abstract class Module {
 		return module;
 	}
 
-	public Module addNeighbor(int direction, int rotation, Class<? extends Module> clazz){
-		Module module = tryAddNeighbor(direction, rotation, clazz);
+	public Module addNeighbor(int direction, int rotation, ModuleType moduleType){
+		Module module = tryAddNeighbor(direction, rotation, moduleType);
 		if (module == null) {
 			return null;
 		}
@@ -187,7 +187,7 @@ public abstract class Module {
 		if (!canAttachSolarPanel()) {
 			return null;
 		}
-		Module module = ModuleFactory.createModule(SolarModule.class, x, y, direction);
+		Module module = ModuleFactory.createModule(ModuleType.SolarModule, x, y, direction);
 		if(direction == Consts.UP || direction == Consts.DOWN){
 			if(x < getModuleLocation().getRotX() || getModuleLocation().getRotRight() - 1 < x){
 				return null;

@@ -9,20 +9,7 @@ import com.smeanox.games.ld38.world.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Rockets",
-		width = 3,
-		height = 3
-)
 public class RocketModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.H2O, 100.f);
-		buildCost.put(Resource.Fe, 600.f);
-		buildCost.put(Resource.Si, 200.f);
-		ModuleFactory.putBuildCost(RocketModule.class, buildCost);
-	}
 
 	public RocketModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

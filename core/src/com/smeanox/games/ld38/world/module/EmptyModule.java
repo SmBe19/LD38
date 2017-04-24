@@ -9,18 +9,7 @@ import com.smeanox.games.ld38.world.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Connector",
-		width = 3,
-		height = 1
-)
 public class EmptyModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 50.f);
-		ModuleFactory.putBuildCost(EmptyModule.class, buildCost);
-	}
 
 	public EmptyModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

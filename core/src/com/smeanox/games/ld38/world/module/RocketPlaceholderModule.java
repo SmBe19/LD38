@@ -9,18 +9,7 @@ import com.smeanox.games.ld38.world.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Rocket Placeholder",
-		width = 3,
-		height = 5
-)
 public class RocketPlaceholderModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 1200.f);
-		ModuleFactory.putBuildCost(RocketPlaceholderModule.class, buildCost);
-	}
 
 	public RocketPlaceholderModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

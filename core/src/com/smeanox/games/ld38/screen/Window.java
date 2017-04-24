@@ -162,7 +162,7 @@ public abstract class Window {
 			}
 			Color oldColor = batch.getColor().cpy();
 			batch.setColor(color);
-			font.draw(batch, (int) (Window.this.x + x), (int) (Window.this.y + y), Consts.SPRITE_SIZE, text);
+			font.draw(batch, (int) (Window.this.x + x), (int) (Window.this.y + y), text);
 			batch.setColor(oldColor);
 		}
 	}

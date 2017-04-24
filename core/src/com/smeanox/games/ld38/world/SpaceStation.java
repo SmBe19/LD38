@@ -13,6 +13,7 @@ import com.smeanox.games.ld38.world.module.CrossModule;
 import com.smeanox.games.ld38.world.module.MainModule;
 import com.smeanox.games.ld38.world.module.Module;
 import com.smeanox.games.ld38.world.module.ModuleFactory;
+import com.smeanox.games.ld38.world.module.ModuleType;
 import com.smeanox.games.ld38.world.module.RocketPlaceholderModule;
 import com.smeanox.games.ld38.world.task.Task;
 
@@ -87,12 +88,12 @@ public class SpaceStation {
 		resources.get(Resource.Electricity).value = 300.f;
 		resources.get(Resource.Food).value = 160.f;
 
-		mainModule = ModuleFactory.createModule(MainModule.class, 0, 0);
+		mainModule = ModuleFactory.createModule(ModuleType.MainModule, 0, 0);
 		mainModule.setBuildProgress(1);
 		mainModule.setFinished(true);
 		mainModule.setJustFinished(true);
 		addModule(mainModule);
-		rocketPlaceholderModule = ModuleFactory.createModule(RocketPlaceholderModule.class, 0, 2);
+		rocketPlaceholderModule = ModuleFactory.createModule(ModuleType.RocketPlaceholder, 0, 2);
 		rocketPlaceholderModule.setBuildProgress(1);
 		rocketPlaceholderModule.setFinished(true);
 		addModule(rocketPlaceholderModule);
@@ -197,13 +198,13 @@ public class SpaceStation {
 		return sum;
 	}
 
-	public boolean buyModule(Class<? extends Module> clazz, boolean tryOnly) {
+	public boolean buyModule(ModuleType moduleType, boolean tryOnly) {
 		if (!tryOnly) {
-			if (!buyModule(clazz, true)) {
+			if (!buyModule(moduleType, true)) {
 				return false;
 			}
 		}
-		Map<Resource, Float> moduleBuildCost = ModuleFactory.getModuleBuildCost(clazz);
+		Map<Resource, Float> moduleBuildCost = moduleType.buildCost;
 		for (Resource resource : moduleBuildCost.keySet()) {
 			if (moduleBuildCost.get(resource) > resources.get(resource).value) {
 				return false;

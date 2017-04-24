@@ -11,19 +11,7 @@ import com.smeanox.games.ld38.world.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Magnet",
-		width = 3,
-		height = 3
-)
 public class MagnetModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 100.f);
-		buildCost.put(Resource.Si, 200.f);
-		ModuleFactory.putBuildCost(MagnetModule.class, buildCost);
-	}
 
 	public MagnetModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

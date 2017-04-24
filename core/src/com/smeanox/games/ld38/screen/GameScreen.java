@@ -22,7 +22,7 @@ import com.smeanox.games.ld38.world.SpaceStation;
 import com.smeanox.games.ld38.world.module.Module;
 import com.smeanox.games.ld38.world.module.ModuleFactory;
 import com.smeanox.games.ld38.world.module.ModuleLocation;
-import com.smeanox.games.ld38.world.module.SolarModule;
+import com.smeanox.games.ld38.world.module.ModuleType;
 import com.smeanox.games.ld38.world.task.WalkTask;
 
 import java.util.ArrayList;
@@ -39,7 +39,8 @@ public class GameScreen implements Screen {
 	private Window buildWindow, buildInfoWindow, recourceInfoWindow, moduleWindow, messageWindow;
 	private boolean paused;
 
-	private Class<? extends Module> buildClazz, hoverBuildClazz;
+	private List<ModuleType> buildModuleTypes;
+	private ModuleType buildType, hoverBuildType;
 	private Module buildModule, buildNeighbor;
 	private int buildX, buildY, buildDirection, buildRotation;
 	private Dude currentDude;
@@ -53,11 +54,18 @@ public class GameScreen implements Screen {
 		uiCamera = new OrthographicCamera();
 		paused = false;
 
+		buildModuleTypes = new ArrayList<ModuleType>();
+		for (ModuleType moduleType : ModuleType.values()) {
+			if (moduleType.canBuild) {
+				buildModuleTypes.add(moduleType);
+			}
+		}
+
 		initBuild();
 	}
 
 	private void initBuild() {
-		buildClazz = null;
+		buildType = null;
 		buildModule = null;
 		buildNeighbor = null;
 		buildX = Integer.MAX_VALUE;
@@ -112,10 +120,10 @@ public class GameScreen implements Screen {
 					for (int dir = 0; dir < 4; dir++) {
 						for(int rot = 0; rot < 4; rot++) {
 							Module module;
-							if (buildClazz == SolarModule.class) {
+							if (buildType == ModuleType.SolarModule) {
 								module = neighbor.tryAddSolar(dir, buildX, buildY);
 							} else {
-								module = neighbor.tryAddNeighbor(dir, rot, buildClazz);
+								module = neighbor.tryAddNeighbor(dir, rot, buildType);
 							}
 							if (module != null) {
 								float xdist = (module.getModuleLocation().getRotX() + module.getModuleLocation().getRotWidth() / 2.f - mousex);
@@ -159,7 +167,7 @@ public class GameScreen implements Screen {
 			mouse = unprojectMouse();
 			x = MathUtils.floor(mouse.x);
 			y = MathUtils.floor(mouse.y);
-			if (buildClazz != null) {
+			if (buildType != null) {
 				if (x != buildX || y != buildY) {
 					buildX = x;
 					buildY = y;
@@ -169,11 +177,11 @@ public class GameScreen implements Screen {
 					findBuildParams(mouse.x, mouse.y, true);
 				}
 				if (buildModule != null && wasDown[0] && !isMouseDown[0]) {
-					if (SpaceStation.get().buyModule(buildClazz, false)) {
-						if (buildClazz == SolarModule.class) {
+					if (SpaceStation.get().buyModule(buildType, false)) {
+						if (buildType == ModuleType.SolarModule) {
 							buildNeighbor.addSolar(buildDirection, buildX, buildY);
 						} else {
-							buildNeighbor.addNeighbor(buildDirection, buildRotation, buildClazz);
+							buildNeighbor.addNeighbor(buildDirection, buildRotation, buildType);
 						}
 						findBuildParams(mouse.x, mouse.y, true);
 					}
@@ -326,7 +334,7 @@ public class GameScreen implements Screen {
 		for (Window window : Window.windows95) {
 			window.draw(batch, delta);
 		}
-		IOFont.grusigPunktBdf.draw(batch, 16, 16, Consts.SPRITE_SIZE, Consts.GAME_NAME);
+		IOFont.grusigPunktBdf.draw(batch, 16, 16, Consts.GAME_NAME);
 		batch.end();
 	}
 
@@ -419,21 +427,21 @@ public class GameScreen implements Screen {
 
 		@Override
 		public void init() {
-			height = 20 + ModuleFactory.moduleClasses.size() * 20;
+			height = 20 + buildModuleTypes.size() * 20;
 			y = wHeight - 100 - height;
 
 			float ay = height - 15;
-			for (final Class<? extends Module> module : ModuleFactory.moduleClasses) {
-				uiElements.add(new ButtonWithHover(5, ay, 90, 10, ModuleFactory.getModuleName(module), new LabelActionHandler() {
+			for (final ModuleType moduleType : buildModuleTypes) {
+				uiElements.add(new ButtonWithHover(5, ay, 90, 10, moduleType.displayName, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
-						label.color = SpaceStation.get().buyModule(module, true) ? Color.BLACK : Color.FIREBRICK;
+						label.color = SpaceStation.get().buyModule(moduleType, true) ? Color.BLACK : Color.FIREBRICK;
 					}
 				}, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
 						initBuild();
-						buildClazz = module;
+						buildType = moduleType;
 						if (moduleWindow != null) {
 							Window.windows95.remove(moduleWindow);
 							moduleWindow = null;
@@ -442,7 +450,7 @@ public class GameScreen implements Screen {
 				}, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
-						hoverBuildClazz = module;
+						hoverBuildType = moduleType;
 					}
 				}));
 				ay -= 20;
@@ -451,7 +459,7 @@ public class GameScreen implements Screen {
 			uiElements.add(new Button(5, ay, 90, 10, "Cancel", new LabelActionHandler() {
 				@Override
 				public void actionHappened(Label label, float delta) {
-					label.visible = buildClazz != null;
+					label.visible = buildType != null;
 				}
 			}, new LabelActionHandler() {
 				@Override
@@ -463,14 +471,14 @@ public class GameScreen implements Screen {
 
 		@Override
 		public void update(float delta, int mouseX, int mouseY, boolean[] mouseButtons) {
-			hoverBuildClazz = null;
+			hoverBuildType = null;
 			super.update(delta, mouseX, mouseY, mouseButtons);
 		}
 	}
 
 	private class BuildInfoWindow extends Window {
 
-		private Class<? extends Module> lastBuildModule;
+		private ModuleType lastBuildModule;
 
 		public BuildInfoWindow() {
 			super(wWidth - 250, 0, 70, 0);
@@ -485,17 +493,21 @@ public class GameScreen implements Screen {
 		public void update(float delta, int mouseX, int mouseY, boolean[] mouseButtons) {
 			super.update(delta, mouseX, mouseY, mouseButtons);
 
-			if (lastBuildModule != hoverBuildClazz) {
-				lastBuildModule = hoverBuildClazz;
+			if (lastBuildModule != hoverBuildType) {
+				lastBuildModule = hoverBuildType;
 				uiElements.clear();
 
 				if (lastBuildModule == null) {
 					visible = false;
 				} else {
 					visible = true;
-					final Map<Resource, Float> moduleBuildCost = ModuleFactory.getModuleBuildCost(lastBuildModule);
+					final Map<Resource, Float> moduleBuildCost = lastBuildModule.buildCost;
 					int count = moduleBuildCost.size();
-					height = count * 15;
+					height = count * 20;
+					if (lastBuildModule.tooltip.length() > 0) {
+						System.out.println(IOFont.icons.height(lastBuildModule.tooltip));
+						height += 15 + IOFont.icons.height(lastBuildModule.tooltip);
+					}
 					y = wHeight - 100 - height;
 					float ay = height - 15;
 					for (final Resource resource : Resource.values()) {
@@ -507,8 +519,12 @@ public class GameScreen implements Screen {
 								}
 							}));
 							uiElements.add(new Label(5, ay - 2, 10, 10, resource.icon, IOFont.icons, Color.WHITE, null));
-							ay -= 15;
+							ay -= 20;
 						}
+					}
+					if(lastBuildModule.tooltip.length() > 0){
+						ay -= 15;
+						uiElements.add(new Label(5, ay, 60, 10, lastBuildModule.tooltip, IOFont.icons, Color.WHITE, null));
 					}
 				}
 			}

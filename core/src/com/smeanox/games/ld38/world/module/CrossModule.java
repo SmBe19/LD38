@@ -8,18 +8,7 @@ import com.smeanox.games.ld38.world.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "X Connector",
-		width = 1,
-		height = 1
-)
 public class CrossModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 25.f);
-		ModuleFactory.putBuildCost(CrossModule.class, buildCost);
-	}
 
 	public CrossModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

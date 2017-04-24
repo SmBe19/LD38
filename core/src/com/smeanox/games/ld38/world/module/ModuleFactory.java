@@ -1,79 +1,47 @@
 package com.smeanox.games.ld38.world.module;
 
 import com.smeanox.games.ld38.Consts;
-import com.smeanox.games.ld38.world.Resource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ModuleFactory {
 
-	public static final List<Class<? extends Module>> moduleClasses = new ArrayList<Class<? extends Module>>();
-	static{
-		moduleClasses.add(EmptyModule.class);
-		moduleClasses.add(CrossModule.class);
-		moduleClasses.add(HydrolysisModule.class);
-		moduleClasses.add(GardenModule.class);
-		moduleClasses.add(SolarModule.class);
-		moduleClasses.add(SleepingModule.class);
-		moduleClasses.add(StorageModule.class);
-		moduleClasses.add(RadioModule.class);
-		moduleClasses.add(RocketModule.class);
-		moduleClasses.add(MagnetModule.class);
-		moduleClasses.add(CryogenicModule.class);
+	public static ModuleLocation createModuleLocation(ModuleType moduleType, int x, int y, int rotation) {
+		return new ModuleLocation(x, y, moduleType.width, moduleType.height, rotation);
 	}
 
-	public static ModuleLocation createModuleLocation(Class<? extends Module> clazz) {
-		return createModuleLocation(clazz, 0, 0, 0);
-	}
-
-	public static ModuleLocation createModuleLocation(Class<? extends Module> clazz, int x, int y, int rotation) {
-		return new ModuleLocation(x, y,
-				clazz.getAnnotation(ModuleInformation.class).width(),
-				clazz.getAnnotation(ModuleInformation.class).height(), rotation);
-	}
-
-	static Map<Class<? extends Module>, Map<Resource, Float>> buildCostCache = new HashMap<Class<? extends Module>, Map<Resource, Float>>();
-
-	public static void putBuildCost(Class<? extends Module> clazz, Map<Resource, Float> cost){
-		buildCostCache.put(clazz, cost);
-	}
-
-	public static String getModuleName(Class<? extends Module> clazz){
-		return clazz.getAnnotation(ModuleInformation.class).name();
-	}
-
-	private static boolean tryLoadClass(Class<? extends Module> clazz) {
-		try {
-			Class.forName(clazz.getCanonicalName());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+	public static Module createModule(ModuleType moduleType, int x, int y, int rotation) {
+		ModuleLocation moduleLocation = createModuleLocation(moduleType, x, y, rotation);
+		switch (moduleType) {
+			case EmptyModule:
+				return new EmptyModule(moduleLocation);
+			case CrossModule:
+				return new CrossModule(moduleLocation);
+			case HydrolysisModule:
+				return new HydrolysisModule(moduleLocation);
+			case GardenModule:
+				return new GardenModule(moduleLocation);
+			case SolarModule:
+				return new SolarModule(moduleLocation);
+			case SleepingModule:
+				return new SleepingModule(moduleLocation);
+			case StorageModule:
+				return new StorageModule(moduleLocation);
+			case RadioModule:
+				return new RadioModule(moduleLocation);
+			case RocketModule:
+				return new RocketModule(moduleLocation);
+			case MagnetModule:
+				return new MagnetModule(moduleLocation);
+			case CryogenicModule:
+				return new CryogenicModule(moduleLocation);
+			case MainModule:
+				return new MainModule(moduleLocation);
+			case RocketPlaceholder:
+				return new RocketPlaceholderModule(moduleLocation);
 		}
-		return true;
+		throw new RuntimeException("Unknown module type");
 	}
 
-	public static Map<Resource, Float> getModuleBuildCost(Class<? extends Module> clazz) {
-		if(!buildCostCache.containsKey(clazz)) {
-			if(!tryLoadClass(clazz) || !buildCostCache.containsKey(clazz)) {
-				throw new RuntimeException("Unknown module type: " + clazz);
-			}
-		}
-		return buildCostCache.get(clazz);
-	}
-
-	public static Module createModule(Class<? extends Module> clazz, int x, int y, int rotation) {
-		try {
-			return clazz.getDeclaredConstructor(ModuleLocation.class).newInstance(createModuleLocation(clazz, x, y, rotation));
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Unknown module type", e);
-		}
-	}
-
-	public static Module createModule(Class<? extends Module> clazz, int x, int y) {
-		return createModule(clazz, x, y, Consts.RIGHT);
+	public static Module createModule(ModuleType moduleType, int x, int y) {
+		return createModule(moduleType, x, y, Consts.RIGHT);
 	}
 }

@@ -13,18 +13,7 @@ import com.smeanox.games.ld38.world.SpaceStation;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Command Module",
-		width = 3,
-		height = 3
-)
 public class MainModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 1200.f);
-		ModuleFactory.putBuildCost(MainModule.class, buildCost);
-	}
 
 	public MainModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

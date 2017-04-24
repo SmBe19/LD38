@@ -10,19 +10,7 @@ import com.smeanox.games.ld38.world.SpaceStation;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Solar Panel",
-		width = 4,
-		height = 2
-)
 public class SolarModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 50.f);
-		buildCost.put(Resource.Si, 25.f);
-		ModuleFactory.putBuildCost(SolarModule.class, buildCost);
-	}
 
 	public SolarModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

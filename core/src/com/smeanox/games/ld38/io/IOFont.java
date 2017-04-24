@@ -6,7 +6,7 @@ import com.smeanox.games.ld38.Consts;
 
 public enum IOFont {
 	grusigPunktBdf(IOTexture.font.texture, 7, 11, "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz!?.,;\"'/+-*0123456789"),
-	icons(IOTexture.icons.texture, 16, 16, "MOHEWFSD"),
+	icons(IOTexture.icons.texture, 16, 16, "MOHEWFSD+-"),
 	;
 
 	private final Texture texture;
@@ -33,30 +33,47 @@ public enum IOFont {
 			ax += scaledWidth;
 			if(text.charAt(i) == '\n'){
 				ax = x;
-				ay -= height * Consts.LINE_SPACING;
+				ay -= scaledHeight * Consts.LINE_SPACING;
 			}
 		}
 	}
 
 	public void draw(SpriteBatch batch, int x, int y, String text){
-		draw(batch, x, y, 1, text);
+		draw(batch, x, y, Consts.SPRITE_SIZE, text);
 	}
 
-	public float width(int x, int y, int scale, String text) {
+	public float width(int scale, String text) {
 		float res = 0;
 		float scaledWidth = width * scale / (float) Consts.SPRITE_SIZE;
-		float ax = x;
+		float ax = 0;
 		for(int i = 0; i < text.length(); i++){
 			int idx = chars.indexOf(text.charAt(i));
-			if(idx < 0) {
-			}
 			ax += scaledWidth;
 			if(text.charAt(i) == '\n'){
-				res = Math.max(res, ax - x - scaledWidth);
-				ax = x;
+				res = Math.max(res, ax - scaledWidth);
+				ax = 0;
 			}
 		}
-		res = Math.max(res, ax - x);
+		res = Math.max(res, ax);
 		return res;
+	}
+
+	public float width(String text) {
+		return width(Consts.SPRITE_SIZE, text);
+	}
+
+	public float height(int scale, String text){
+		float scaledHeight = height * scale / (float) Consts.SPRITE_SIZE;
+		int occ = 0;
+		for(int i = 0; i < text.length(); i++) {
+			if (text.charAt(i) == '\n') {
+				occ++;
+			}
+		}
+		return scaledHeight * Consts.LINE_SPACING * (occ + 1);
+	}
+
+	public float height(String text) {
+		return height(Consts.SPRITE_SIZE, text);
 	}
 }

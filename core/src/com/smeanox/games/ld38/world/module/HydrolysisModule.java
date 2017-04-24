@@ -11,19 +11,7 @@ import com.smeanox.games.ld38.world.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-@ModuleInformation(
-		name = "Hydrolysis",
-		width = 2,
-		height = 1
-)
 public class HydrolysisModule extends Module {
-
-	static{
-		Map<Resource, Float> buildCost = new HashMap<Resource, Float>();
-		buildCost.put(Resource.Fe, 200.f);
-		buildCost.put(Resource.Si, 100.f);
-		ModuleFactory.putBuildCost(HydrolysisModule.class, buildCost);
-	}
 
 	public HydrolysisModule(ModuleLocation moduleLocation) {
 		super(moduleLocation);

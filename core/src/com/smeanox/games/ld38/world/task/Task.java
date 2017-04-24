@@ -31,7 +31,7 @@ public abstract class Task {
 		}
 	}
 
-	protected boolean isArrived(float destX, float destY) {
+	public boolean isArrived(float destX, float destY) {
 		return (dude.getX() - destX) * (dude.getX() - destX) + (dude.getY() - destY) * (dude.getY() - destY) < Consts.ARRIVAL_DISTANCE;
 	}
 

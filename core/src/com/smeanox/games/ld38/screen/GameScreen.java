@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.smeanox.games.ld38.Consts;
+import com.smeanox.games.ld38.world.MessageManager;
 import com.smeanox.games.ld38.io.IOAnimation;
 import com.smeanox.games.ld38.io.IOFont;
 import com.smeanox.games.ld38.io.IOTexture;
@@ -485,13 +486,23 @@ public class GameScreen implements Screen {
 				uiElements.add(new ButtonWithHover(5, ay, 90, 10, moduleType.displayName, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
-						label.color = SpaceStation.get().buyModule(moduleType, true) ? Color.BLACK : Color.FIREBRICK;
+						if(!SpaceStation.get().getEnabledModuleTypes().contains(moduleType)) {
+							label.color = Color.DARK_GRAY;
+						} else if (SpaceStation.get().getTutorialManager().highlighted == moduleType) {
+							label.color = Color.YELLOW;
+						} else if (SpaceStation.get().buyModule(moduleType, true)) {
+							label.color = Color.BLACK;
+						} else {
+							label.color = Color.FIREBRICK;
+						}
 					}
 				}, new LabelActionHandler() {
 					@Override
 					public void actionHappened(Label label, float delta) {
 						initBuild();
-						buildType = moduleType;
+						if(SpaceStation.get().getEnabledModuleTypes().contains(moduleType)) {
+							buildType = moduleType;
+						}
 						if (moduleWindow != null) {
 							Window.windows95.remove(moduleWindow);
 							moduleWindow = null;
@@ -609,24 +620,31 @@ public class GameScreen implements Screen {
 
 	private class MessageWindow extends Window {
 
-		private String text;
+		private MessageManager.Message message;
 
-		public MessageWindow(String text) {
+		public MessageWindow(MessageManager.Message message) {
 			super(200, 150, wWidth - 400, wHeight - 300, true);
-			this.text = text;
+			this.message = message;
 			init();
 		}
 
 		@Override
 		public void init() {
-			uiElements.add(new Label(10, height - 25, width - 50, 10, text, null));
+			uiElements.add(new Label(10, height - 25, width - 50, 10, message.message, null));
 			uiElements.add(new Button(width - 50, 10, 20, 10, "Ok", null, new LabelActionHandler() {
 				@Override
 				public void actionHappened(Label label, float delta) {
 					paused = false;
+					if (message.narration != null) {
+						message.narration.stop();
+						message.narration.dispose();
+					}
 					windows95.remove(MessageWindow.this);
 				}
 			}));
+			if (message.narration != null) {
+				message.narration.play();
+			}
 		}
 	}
 }

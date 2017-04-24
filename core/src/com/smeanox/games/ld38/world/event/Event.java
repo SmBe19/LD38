@@ -28,17 +28,20 @@ public abstract class Event {
 	}
 
 	public static Event getRandomEvent(){
+		if (SpaceStation.get().getDay() < 3) {
+			return null;
+		}
 		if(!SpaceStation.get().isWorldWarStarted() && (SpaceStation.get().getDay() > 10 || hasRocketModule())){
 			return new WorldWarEvent();
 		}
 		float randVal = MathUtils.random();
-		if (randVal < 0.2f) {
+		if (randVal < 0.08f) {
 			return new SolarFlareEvent();
-		} else if (randVal < 0.4f) {
+		} else if (randVal < 0.16f) {
 			return new LaunchFailureEvent();
-		} else if (randVal < 0.6f) {
+		} else if (randVal < 0.24f) {
 			return new EclipseEvent();
-		} else if (randVal < 0.8f) {
+		} else if (randVal < 0.26f) {
 			return new FoundResourceEvent();
 		} else {
 			return null;

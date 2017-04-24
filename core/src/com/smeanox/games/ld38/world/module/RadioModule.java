@@ -7,6 +7,7 @@ import com.smeanox.games.ld38.io.IOAnimation;
 import com.smeanox.games.ld38.screen.Window;
 import com.smeanox.games.ld38.world.Resource;
 import com.smeanox.games.ld38.world.SpaceStation;
+import com.smeanox.games.ld38.world.TutorialManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +65,9 @@ public class RadioModule extends Module {
 				public void actionHappened(Label label, float delta) {
 					if (isWorking()) {
 						if (SpaceStation.get().isWorldWarStarted()) {
-							SpaceStation.get().addMessage("You don't receive any signals.\nThere are no survivors on earth.");
+							SpaceStation.get().getEnabledModuleTypes().add(ModuleType.CryogenicModule);
+							SpaceStation.get().getTutorialManager().highlighted = ModuleType.CryogenicModule;
+							SpaceStation.get().addMessage(SpaceStation.get().getMessageManager().noSurvivors());
 						} else {
 							SpaceStation.get().addMessage("You receive many signals.\nThere doesn't seem to be anything interesting.");
 						}

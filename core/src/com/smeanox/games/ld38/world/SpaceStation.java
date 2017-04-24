@@ -9,12 +9,9 @@ import com.smeanox.games.ld38.world.event.Event;
 import com.smeanox.games.ld38.world.event.LaunchFailureEvent;
 import com.smeanox.games.ld38.world.event.SolarFlareEvent;
 import com.smeanox.games.ld38.world.event.WorldWarEvent;
-import com.smeanox.games.ld38.world.module.CrossModule;
-import com.smeanox.games.ld38.world.module.MainModule;
 import com.smeanox.games.ld38.world.module.Module;
 import com.smeanox.games.ld38.world.module.ModuleFactory;
 import com.smeanox.games.ld38.world.module.ModuleType;
-import com.smeanox.games.ld38.world.module.RocketPlaceholderModule;
 import com.smeanox.games.ld38.world.task.Task;
 
 import java.util.HashMap;
@@ -33,6 +30,8 @@ public class SpaceStation {
 		return singleton;
 	}
 
+	private MessageManager messageManager;
+	private TutorialManager tutorialManager;
 	private Set<Module> modules;
 	private Set<Dude> dudes;
 	private Module mainModule, rocketPlaceholderModule;
@@ -40,10 +39,11 @@ public class SpaceStation {
 	private Map<Resource, GenericRapper<Float>> resourceMax;
 	private Map<Resource, GenericRapper<Float>> delivery, savedDelivery;
 	private Queue<Task> taskQueue;
-	private Queue<String> messageQueue;
+	private Queue<MessageManager.Message> messageQueue;
 	private Event currentEvent;
+	private Set<ModuleType> enabledModuleTypes;
 	private float time;
-	private boolean newDay, endOfOrderTime, deliveryTime, worldWarStarted;
+	private boolean nightStart, newDay, endOfOrderTime, deliveryTime, worldWarStarted;
 	private boolean savedDeliveryEmpty;
 
 	private SpaceStation() {
@@ -55,24 +55,29 @@ public class SpaceStation {
 		delivery = new HashMap<Resource, GenericRapper<Float>>();
 		savedDelivery = new HashMap<Resource, GenericRapper<Float>>();
 		taskQueue = new Queue<Task>();
-		messageQueue = new Queue<String>();
+		messageQueue = new Queue<MessageManager.Message>();
+		enabledModuleTypes = new HashSet<ModuleType>();
 		init();
 	}
 
-	private void init(){
+	public void init(){
 		time = 0;
 		currentEvent = null;
 		newDay = false;
 		deliveryTime = false;
 		worldWarStarted = false;
 
+		messageManager = new MessageManager();
+		tutorialManager = new TutorialManager();
 		modules.clear();
 		dudes.clear();
 		resources.clear();
 		resourceMax.clear();
 		delivery.clear();
+		savedDelivery.clear();
 		taskQueue.clear();
 		messageQueue.clear();
+		enabledModuleTypes.clear();
 
 		for (Resource resource : Resource.values()) {
 			resources.put(resource, new GenericRapper<Float>(0.f));
@@ -101,7 +106,7 @@ public class SpaceStation {
 		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
 		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
 
-		mainModule.addNeighbor(Consts.LEFT, 2, ModuleType.RocketModule).setFinished(true);
+		addMessage(messageManager.intro());
 	}
 
 	public void addModule(Module module) {
@@ -142,18 +147,22 @@ public class SpaceStation {
 	}
 
 	public void addMessage(String message) {
-		System.out.println(message);
+		addMessage(new MessageManager.Message(message, null));
+	}
+
+	public void addMessage(MessageManager.Message message) {
+		System.out.println(message.message);
 		messageQueue.addLast(message);
 	}
 
-	public String popMessage(){
+	public MessageManager.Message popMessage(){
 		if (messageQueue.size == 0) {
 			return null;
 		}
 		return messageQueue.removeFirst();
 	}
 
-	public String peekMessage(){
+	public MessageManager.Message peekMessage(){
 		if (messageQueue.size == 0) {
 			return null;
 		}
@@ -174,6 +183,10 @@ public class SpaceStation {
 
 	public float getResourceMax(Resource resource) {
 		return resourceMax.get(resource).value;
+	}
+
+	public Set<ModuleType> getEnabledModuleTypes() {
+		return enabledModuleTypes;
 	}
 
 	public Map<Resource, GenericRapper<Float>> getDelivery() {
@@ -216,6 +229,14 @@ public class SpaceStation {
 			}
 		}
 		return true;
+	}
+
+	public MessageManager getMessageManager() {
+		return messageManager;
+	}
+
+	public TutorialManager getTutorialManager() {
+		return tutorialManager;
 	}
 
 	public Set<Module> getModules() {
@@ -272,6 +293,10 @@ public class SpaceStation {
 		return (int) (time / Consts.DURATION_DAY);
 	}
 
+	public boolean isNightStart() {
+		return nightStart;
+	}
+
 	public boolean isNewDay() {
 		return newDay;
 	}
@@ -321,8 +346,8 @@ public class SpaceStation {
 			currentEvent = Event.getRandomEvent();
 			if (currentEvent != null) {
 				currentEvent.startEvent();
-				addMessage(currentEvent.getDescription());
 			}
+			addMessage(messageManager.dayStart(getDay(), isWorldWarStarted(), currentEvent));
 		}
 		if (currentEvent != null) {
 			currentEvent.update(delta);
@@ -390,6 +415,7 @@ public class SpaceStation {
 	}
 
 	public void update(float delta){
+		nightStart = getTimeOfDay() < Consts.DURATION_DAY - Consts.DURATION_NIGHT && getTimeOfDay() + delta >= Consts.DURATION_DAY - Consts.DURATION_NIGHT;
 		newDay = (getTimeOfDay() + delta > Consts.DURATION_DAY);
 		deliveryTime = getTimeOfDay() < Consts.DELIVERY_TIME && getTimeOfDay() + delta >= Consts.DELIVERY_TIME;
 		endOfOrderTime = getTimeOfDay() < Consts.ENDOFORDER_TIME && getTimeOfDay() + delta >= Consts.ENDOFORDER_TIME;
@@ -404,6 +430,8 @@ public class SpaceStation {
 		}
 
 		updateEvents(delta);
+
+		tutorialManager.update(delta);
 
 		for (Module module : modules) {
 			if (module.isJustFinished()) {

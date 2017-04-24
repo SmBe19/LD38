@@ -45,6 +45,10 @@ public class StoryManager {
 
 	}
 
+	public boolean canGoToSecondDay(){
+		return state > 6 && SpaceStation.get().getDeliveryCost() > 0;
+	}
+
 	public void update(float delta) {
 		switch (state){
 			case 0:

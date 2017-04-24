@@ -11,12 +11,12 @@ uniform float u_rotation;
 uniform sampler2D u_texture;
 uniform sampler2D u_textureClouds;
 uniform float u_sun_offset;
-uniform float u_cloud_limit = 0.4;
-uniform float u_cloud_brightness = 0.9;
+uniform float u_cloud_limit;
+uniform float u_cloud_brightness;
 
-uniform vec3 u_ground_color = vec3(0.22, 0.37, 0.05);
-uniform vec3 u_sea_color    = vec3(0.05, 0.25, 0.75);
-uniform float u_explosion_limit = 0.9;
+uniform vec3 u_ground_color;
+uniform vec3 u_sea_color;
+uniform float u_explosion_limit;
 
 
 const float u_mercator_fov = 2.5;
@@ -48,11 +48,11 @@ void main() {
 
 	vec2 xy = to_tex(lat, lon);
 
-	float color = smoothstep(0.4, 0.5, texture(u_texture, xy).r);
-	float cloud = texture(u_textureClouds, xy).r;
+	float color = smoothstep(0.4, 0.5, texture2D(u_texture, xy).r);
+	float cloud = texture2D(u_textureClouds, xy).r;
 
-	float rng1 = texture(u_textureClouds, xy + vec2(0.319, 0.627) + vec2(0.016, 0.073) * u_rotation).r;
-	float rng2 = texture(u_textureClouds, xy + vec2(0.536, 0.456) + vec2(0.092, 0.023) * u_rotation).r;
+	float rng1 = texture2D(u_textureClouds, xy + vec2(0.319, 0.627) + vec2(0.016, 0.073) * u_rotation).r;
+	float rng2 = texture2D(u_textureClouds, xy + vec2(0.536, 0.456) + vec2(0.092, 0.023) * u_rotation).r;
 
 	float rng = rng1 * rng2;
 
@@ -62,7 +62,7 @@ void main() {
 	float posabovelon = asin(posabove.x / cos(posabovelat)) - u_rotation;
 
 	float diffuse = clamp(dot(normal, sun), 0.2, 1.);
-	float grounddiffuse = texture(u_textureClouds, to_tex(posabovelat, posabovelon).r)*diffuse;
+	float grounddiffuse = texture2D(u_textureClouds, vec2(to_tex(posabovelat, posabovelon).r))*diffuse;
 	float specular = 0.5*grounddiffuse + 0.5*exp(-1. + dot(sun, reflect(vec3(0., 0., -1.), normal)));
 
 

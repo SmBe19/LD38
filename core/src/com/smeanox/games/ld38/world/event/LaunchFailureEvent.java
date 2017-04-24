@@ -1,6 +1,7 @@
 package com.smeanox.games.ld38.world.event;
 
 import com.smeanox.games.ld38.Consts;
+import com.smeanox.games.ld38.world.MessageManager;
 import com.smeanox.games.ld38.world.SpaceStation;
 
 public class LaunchFailureEvent extends Event {
@@ -19,5 +20,10 @@ public class LaunchFailureEvent extends Event {
 	@Override
 	public String getDescription() {
 		return "I just received the message that there’s been a failure in the launch of today’s supply rocket. There won’t be another delivery until tomorrow. We’ll have to see how we manage.";
+	}
+
+	@Override
+	public MessageManager.Message getMessage() {
+		return new MessageManager.Message("narration/LD38RadioVoiceOver097.ogg", getDescription());
 	}
 }

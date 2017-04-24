@@ -2,6 +2,7 @@ package com.smeanox.games.ld38.world.event;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.smeanox.games.ld38.Consts;
+import com.smeanox.games.ld38.world.MessageManager;
 import com.smeanox.games.ld38.world.Resource;
 import com.smeanox.games.ld38.world.SpaceStation;
 
@@ -37,5 +38,11 @@ public class SolarFlareEvent extends Event {
 		} else {
 			return "Scientists have predicted increased solar activity today. This means any electrical device not protected by a magnet will work very unreliably. Luckily, the earth’s magnetic field protects us from these effects.";
 		}
+	}
+
+	@Override
+	public MessageManager.Message getMessage() {
+		String audio = SpaceStation.get().isWorldWarStarted() ? "narration/LD38RadioVoiceOver096shit.ogg" : "narration/LD38RadioVoiceOver095.ogg";
+		return new MessageManager.Message(audio, getDescription());
 	}
 }

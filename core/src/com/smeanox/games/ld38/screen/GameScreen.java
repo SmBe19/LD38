@@ -3,6 +3,7 @@ package com.smeanox.games.ld38.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -37,11 +38,13 @@ public class GameScreen implements Screen {
 
 	private SpriteBatch batch;
 	private Camera camera, uiCamera;
-	private float time, scale;
+	private float time, scale, timeScale;
 	private float wWidth, wHeight;
-	private Window buildWindow, buildInfoWindow, recourceInfoWindow, moduleWindow, messageWindow, gameOverWindow;
+	private Window buildWindow, buildInfoWindow, recourceInfoWindow, timeWindow, moduleWindow, messageWindow, gameOverWindow;
 	private boolean paused;
 	private boolean muted;
+	private Music backgroundMusic, ambientMusic;
+	private float musicPause;
 
 	private ShaderProgram earthShader, bitAlphaShader;
 
@@ -51,6 +54,9 @@ public class GameScreen implements Screen {
 	private int buildX, buildY, buildDirection, buildRotation;
 	private Dude currentDude;
 	private boolean[] wasDown = new boolean[2];
+	private boolean isDrag;
+	private float dragDownX, dragDownY;
+	private Vector3 dragCamPos;
 
 	private static List<Pair<Color, Pair<Float, Float>>> debugPoints = new ArrayList<Pair<Color, Pair<Float, Float>>>();
 
@@ -60,6 +66,9 @@ public class GameScreen implements Screen {
 		uiCamera = new OrthographicCamera();
 		paused = false;
 		muted = false;
+		time = 0;
+		timeScale = 1;
+		dragCamPos = new Vector3();
 
 		ShaderProgram.pedantic = false;
 		earthShader = new ShaderProgram(Gdx.files.internal("shader/earth.vert"), Gdx.files.internal("shader/earth.frag"));
@@ -71,8 +80,16 @@ public class GameScreen implements Screen {
 		}
 		IOTexture.map.texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
 		IOTexture.map.texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
-		IOTexture.clouds.texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
+		IOTexture.clouds.texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 		IOTexture.clouds.texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
+
+		backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/main_theme.ogg"));
+		ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("music/ambient.ogg"));
+		backgroundMusic.setLooping(false);
+		ambientMusic.setLooping(true);
+		backgroundMusic.setVolume(0.4f);
+		ambientMusic.setVolume(0.3f);
+		musicPause = MathUtils.random(Consts.MUSIC_MAX_PAUSE);
 
 		buildModuleTypes = new ArrayList<ModuleType>();
 		for (ModuleType moduleType : ModuleType.values()) {
@@ -104,22 +121,28 @@ public class GameScreen implements Screen {
 		if (recourceInfoWindow != null) {
 			Window.windows95.remove(recourceInfoWindow);
 		}
+		if (timeWindow != null) {
+			Window.windows95.remove(timeWindow);
+		}
 		buildWindow = new BuildWindow();
 		Window.windows95.add(buildWindow);
 		buildInfoWindow = new BuildInfoWindow();
 		Window.windows95.add(buildInfoWindow);
 		recourceInfoWindow = new ResourceInfoWindow();
 		Window.windows95.add(recourceInfoWindow);
+		timeWindow = new TimeWindow();
+		Window.windows95.add(timeWindow);
 	}
 
 	@Override
 	public void show() {
-
+		backgroundMusic.play();
+		ambientMusic.play();
 	}
 
 	private void update(float delta){
 		if(!paused) {
-			SpaceStation.get().update(delta);
+			SpaceStation.get().update(delta * timeScale);
 			if(!Consts.IGNORE_MESSAGES) {
 				if (SpaceStation.get().peekMessage() != null) {
 					paused = true;
@@ -131,6 +154,14 @@ public class GameScreen implements Screen {
 				paused = true;
 				gameOverWindow = new GameOverWindow(SpaceStation.get().getGameOverMessage());
 				Window.windows95.add(gameOverWindow);
+			}
+		}
+
+		if (!backgroundMusic.isPlaying()) {
+			musicPause -= delta;
+			if (musicPause < 0) {
+				musicPause = MathUtils.random(Consts.MUSIC_MAX_PAUSE);
+				backgroundMusic.play();
 			}
 		}
 	}
@@ -222,14 +253,17 @@ public class GameScreen implements Screen {
 						Window.windows95.remove(moduleWindow);
 						moduleWindow = null;
 					}
-					Module module = SpaceStation.get().getModule(x, y);
-					if (module != null && module.isFinished()) {
-						Vector3 mouse2 = unprojectMouseUI();
-						moduleWindow = module.createWindow(mouse2.x, mouse2.y);
-						if (moduleWindow != null) {
-							Window.windows95.add(moduleWindow);
+					if(!isDrag) {
+						Module module = SpaceStation.get().getModule(x, y);
+						if (module != null && module.isFinished()) {
+							Vector3 mouse2 = unprojectMouseUI();
+							moduleWindow = module.createWindow(mouse2.x, mouse2.y);
+							if (moduleWindow != null) {
+								Window.windows95.add(moduleWindow);
+							}
 						}
 					}
+					isDrag = false;
 				}
 				if (wasDown[1] && !isMouseDown[1]) {
 					if (moduleWindow != null) {
@@ -251,6 +285,17 @@ public class GameScreen implements Screen {
 						}
 					}
 				}
+				if (!wasDown[0] && isMouseDown[0]) {
+					dragCamPos.set(camera.position);
+					dragDownX = mouse.x;
+					dragDownY = mouse.y;
+				}
+				if (isMouseDown[0]) {
+					if((mouse.x - dragDownX)*(mouse.x - dragDownX) + (mouse.y - dragDownY)*(mouse.y - dragDownY) > 0.2f){
+						isDrag = true;
+					}
+					camera.position.set(camera.position).add(dragDownX - mouse.x, dragDownY - mouse.y, 0);
+				}
 			}
 		}
 		// view
@@ -271,6 +316,9 @@ public class GameScreen implements Screen {
 			muted = !muted;
 			if (muted && ((MessageWindow) messageWindow).getMessage() != null && ((MessageWindow) messageWindow).getMessage().narration != null) {
 				((MessageWindow) messageWindow).getMessage().narration.stop();
+			}
+			if (muted && ((MessageWindow) messageWindow).getMessage() != null && ((MessageWindow) messageWindow).getMessage().prenarration != null) {
+				((MessageWindow) messageWindow).getMessage().prenarration.stop();
 			}
 		}
 
@@ -342,7 +390,7 @@ public class GameScreen implements Screen {
 		int warState = SpaceStation.get().isWorldWarStarted() ? (SpaceStation.get().isWorldWarToday() ? 1 : 2) : 0;
 		earthShader.begin();
 		earthShader.setUniformi("u_textureClouds", 1);
-		earthShader.setUniformf("u_rotation", MathUtils.PI2 * dayProgress);
+		earthShader.setUniformf("u_rotation", MathUtils.PI2 * (SpaceStation.get().getTime() / Consts.DURATION_DAY));
 		earthShader.setUniformf("u_sun_offset", -SpaceStation.get().getTime() * Consts.SUN_SPEED);
 		earthShader.setUniformf("u_cloud_limit", warState == 1 ? 0.2f : (warState == 2 ? 0.3f : 0.4f));
 		earthShader.setUniformf("u_cloud_brightness", warState == 0 ? 1.f : (warState == 1 ? 0.2f : 0.5f));
@@ -497,7 +545,8 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void hide() {
-
+		backgroundMusic.pause();
+		ambientMusic.pause();
 	}
 
 	@Override
@@ -653,9 +702,44 @@ public class GameScreen implements Screen {
 		}
 	}
 
+	private class TimeWindow extends Window {
+
+		public TimeWindow() {
+			super(wWidth - 150, wHeight - 80, 100, 20);
+		}
+
+		@Override
+		public void init() {
+			final float[] scales = new float[] {1, 2, 5, 10, 25};
+			for(int i = 0; i < 5; i++) {
+				final int finalI = i;
+				uiElements.add(new Button(5 + i * 20, 3, 15, 10, "" + (int)(scales[i]), null, new LabelActionHandler() {
+					@Override
+					public void actionHappened(Label label, float delta) {
+						timeScale = scales[finalI];
+						for (Label label1 : uiElements) {
+							label1.color = Color.BLACK;
+						}
+						label.color = Color.ORANGE;
+					}
+				}));
+			}
+			int active = 0;
+			for(int i = 0; i < scales.length; i++) {
+				if (timeScale == scales[i]) {
+					active = i;
+				}
+			}
+			if(0 <= active && active < uiElements.size()) {
+				uiElements.get(active).color = Color.ORANGE;
+			}
+		}
+	}
+
 	private class MessageWindow extends Window {
 
 		private MessageManager.Message message;
+		private boolean startedMessage;
 
 		public MessageWindow(MessageManager.Message message) {
 			super(200, 150, wWidth - 400, wHeight - 300, true);
@@ -670,10 +754,26 @@ public class GameScreen implements Screen {
 		@Override
 		public void init() {
 			uiElements.add(new Label(10, height - 25, width - 50, 10, message.message, null));
-			uiElements.add(new Button(width - 50, 10, 30, 15, "Ok", null, new LabelActionHandler() {
+			uiElements.add(new Button(width - 50, 10, 30, 15, "Ok", new LabelActionHandler() {
+				@Override
+				public void actionHappened(Label label, float delta) {
+					if(!startedMessage) {
+						if (message.prenarration != null && !message.prenarration.isPlaying()){
+							if (!muted) {
+								message.narration.play();
+								startedMessage = true;
+							}
+						}
+					}
+				}
+			}, new LabelActionHandler() {
 				@Override
 				public void actionHappened(Label label, float delta) {
 					paused = false;
+					if (message.prenarration != null) {
+						message.prenarration.stop();
+						message.prenarration.dispose();
+					}
 					if (message.narration != null) {
 						message.narration.stop();
 						message.narration.dispose();
@@ -681,9 +781,15 @@ public class GameScreen implements Screen {
 					windows95.remove(MessageWindow.this);
 				}
 			}));
-			if (message.narration != null) {
+			startedMessage = false;
+			if (message.prenarration != null) {
+				if(!muted) {
+					message.prenarration.play();
+				}
+			} else if (message.narration != null) {
 				if(!muted) {
 					message.narration.play();
+					startedMessage = true;
 				}
 			}
 		}
@@ -708,6 +814,7 @@ public class GameScreen implements Screen {
 					paused = false;
 					windows95.remove(GameOverWindow.this);
 					gameOverWindow = null;
+					timeScale = 1;
 					SpaceStation.get().init();
 					LD38.me.showMenuScreen();
 				}

@@ -368,7 +368,7 @@ public class SpaceStation {
 			if (currentEvent != null) {
 				currentEvent.startEvent();
 			}
-			MessageManager.Message message = messageManager.dayStart(getDay(), isWorldWarStarted(), currentEvent);
+			MessageManager.Message message = messageManager.dayStart(getDay(), currentEvent);
 			if(message != null) {
 				addMessage(message);
 			}
@@ -439,8 +439,12 @@ public class SpaceStation {
 	}
 
 	public void update(float delta){
+		newDay = (getTimeOfDay() + delta >= Consts.DURATION_DAY);
+		if(newDay && getDay() == 0 && !storyManager.canGoToSecondDay()){
+			time -= Consts.DURATION_DAY;
+			newDay = false;
+		}
 		nightStart = getTimeOfDay() < Consts.DURATION_DAY - Consts.DURATION_NIGHT && getTimeOfDay() + delta >= Consts.DURATION_DAY - Consts.DURATION_NIGHT;
-		newDay = (getTimeOfDay() + delta > Consts.DURATION_DAY);
 		deliveryTime = getTimeOfDay() < Consts.DELIVERY_TIME && getTimeOfDay() + delta >= Consts.DELIVERY_TIME;
 		endOfOrderTime = getTimeOfDay() < Consts.ENDOFORDER_TIME && getTimeOfDay() + delta >= Consts.ENDOFORDER_TIME;
 

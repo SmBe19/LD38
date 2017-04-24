@@ -10,6 +10,7 @@ varying vec2 v_uv;
 uniform float u_rotation;
 uniform sampler2D u_texture;
 uniform sampler2D u_textureClouds;
+uniform float u_sun_offset;
 
 const float u_mercator_fov = 2.5;
 const float u_cloud_limit = 0.4;
@@ -22,10 +23,15 @@ vec2 to_tex(float lat, float lon) {
 }
 void main() {
 	vec2 pos = 2.0*v_uv - 1.0;
-	if (length(pos) > 1.)
+	pos = 1.2 * pos;
+	if (length(pos) > 1.2)
 		discard;
+	if (length(pos) > 1.0) {
+		gl_FragColor = mix(vec4(0.4, 0.9, 1.0, 0.9), vec4(0.), (length(pos) - 1.0) / 0.2);
+		return;
+	}
 	vec3 normal = vec3(pos, sqrt(1.-dot(pos, pos)));
-	vec3 sun = vec3(0., cos(-u_rotation), sin(-u_rotation));
+	vec3 sun = vec3(0., cos(-u_rotation + u_sun_offset), sin(-u_rotation + u_sun_offset));
 
 	float lat = asin(pos.x);
 	float lon = asin(pos.y/cos(lat)) - u_rotation;

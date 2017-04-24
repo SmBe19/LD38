@@ -12,10 +12,8 @@ uniform sampler2D u_texture;
 
 void main() {
     vec4 color = v_color * texture2D(u_texture, v_texCoords);
-    if(color.a < .1){
-        gl_FragDepth = 1;
+    if(color.a < 0.1){
         discard;
     }
     gl_FragColor = color;
-    gl_FragDepth = 1;
 }

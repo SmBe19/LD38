@@ -16,7 +16,6 @@ uniform float u_cloud_brightness = 0.9;
 
 uniform vec3 u_ground_color = vec3(0.22, 0.37, 0.05);
 uniform vec3 u_sea_color    = vec3(0.05, 0.25, 0.75);
-
 uniform float u_explosion_limit = 0.9;
 
 
@@ -37,12 +36,11 @@ void main() {
 	if (length(pos) > 1.0) {
 		float len = length(pos);
 		pos = pos / len;
-		float bright = clamp(dot(sun, vec3(pos, 0.0)), 0.1., 0.8);
+		float bright = clamp(dot(sun, vec3(pos, 0.0)), 0.1, 0.8);
 		gl_FragColor = mix(bright * vec4(0.4, 0.9, 1.0, 0.9), vec4(0.), (len - 1.0) / 0.2);
 		return;
 	}
 	vec3 normal = vec3(pos, sqrt(1.-dot(pos, pos)));
-	vec3 sun = vec3(0., cos(-u_rotation + u_sun_offset), sin(-u_rotation + u_sun_offset));
 
 	float lat = asin(pos.x);
 	float lon = asin(pos.y/cos(lat)) - u_rotation;

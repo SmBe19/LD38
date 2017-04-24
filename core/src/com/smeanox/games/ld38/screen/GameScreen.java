@@ -120,10 +120,12 @@ public class GameScreen implements Screen {
 	private void update(float delta){
 		if(!paused) {
 			SpaceStation.get().update(delta);
-			if (SpaceStation.get().peekMessage() != null) {
-				paused = true;
-				messageWindow = new MessageWindow(SpaceStation.get().popMessage());
-				Window.windows95.add(messageWindow);
+			if(!Consts.IGNORE_MESSAGES) {
+				if (SpaceStation.get().peekMessage() != null) {
+					paused = true;
+					messageWindow = new MessageWindow(SpaceStation.get().popMessage());
+					Window.windows95.add(messageWindow);
+				}
 			}
 			if (gameOverWindow == null && SpaceStation.get().getGameOverMessage() != null) {
 				paused = true;
@@ -273,10 +275,17 @@ public class GameScreen implements Screen {
 		}
 
 		// cheats
-		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
-			for (Resource resource : Resource.values()) {
-				SpaceStation.get().getResources().get(resource).value += 1000;
-				SpaceStation.get().getResourceMax().get(resource).value += 1000;
+		if(Consts.DEBUG) {
+			if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+				for (Resource resource : Resource.values()) {
+					SpaceStation.get().getResources().get(resource).value += 1000;
+					SpaceStation.get().getResourceMax().get(resource).value += 1000;
+				}
+			}
+			if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)){
+				for (ModuleType moduleType : ModuleType.values()) {
+					SpaceStation.get().getEnabledModuleTypes().add(moduleType);
+				}
 			}
 		}
 
@@ -330,13 +339,20 @@ public class GameScreen implements Screen {
 		batch.setShader(earthShader);
 		IOTexture.clouds.texture.bind(1);
 		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+		int warState = SpaceStation.get().isWorldWarStarted() ? (SpaceStation.get().isWorldWarToday() ? 1 : 2) : 0;
 		earthShader.begin();
 		earthShader.setUniformi("u_textureClouds", 1);
 		earthShader.setUniformf("u_rotation", MathUtils.PI2 * dayProgress);
+		earthShader.setUniformf("u_sun_offset", -SpaceStation.get().getTime() * Consts.SUN_SPEED);
+		earthShader.setUniformf("u_cloud_limit", warState == 1 ? 0.2f : (warState == 2 ? 0.3f : 0.4f));
+		earthShader.setUniformf("u_cloud_brightness", warState == 0 ? 1.f : (warState == 1 ? 0.2f : 0.5f));
+		earthShader.setUniformf("u_ground_color", warState > 0 ? 0.1f : 0.22f, warState > 0 ? 0.15f : 0.37f, 0.05f);
+		earthShader.setUniformf("u_sea_color", 0.05f, 0.25f, 0.75f);
+		earthShader.setUniformf("u_explosion_limit", warState == 1 ? 0.25f : 1.f);
 		earthShader.end();
 		batch.begin();
 		float size = wWidth * 1.2f;
-		batch.draw(IOTexture.map.texture, (wWidth - size) / 2, size*0.2f - size, size, size);
+		batch.draw(IOTexture.map.texture, (wWidth - size) / 2, size*0.25f - size, size, size);
 		batch.end();
 		batch.setShader(null);
 	}
@@ -356,9 +372,11 @@ public class GameScreen implements Screen {
 
 		batch.flush();
 		batch.setShader(bitAlphaShader);
-		Gdx.gl.glClearDepthf(1);
-		Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
 		Gdx.gl.glDepthMask(true);
+		Gdx.gl.glClearDepthf(1f);
+		Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+		Gdx.gl.glDepthFunc(GL20.GL_ALWAYS);
 
 		for (Module module : SpaceStation.get().getModules()) {
 			module.drawBackground(batch, time);
@@ -367,14 +385,10 @@ public class GameScreen implements Screen {
 		batch.flush();
 		batch.setShader(null);
 		Gdx.gl.glDepthMask(false);
-		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
 
 		for (Dude dude : SpaceStation.get().getDudes()) {
 			dude.draw(batch, time);
-			dude.setX(dude.getX() + 2);
-			dude.draw(batch, time);
-			dude.setX(dude.getX() -2);
 		}
 
 		batch.flush();

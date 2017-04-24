@@ -23,7 +23,11 @@ public class LD38 extends Game {
 
 	@Override
 	public void create() {
-		showMenuScreen();
+		if(Consts.DEBUG) {
+			showGameScreen();
+		} else {
+			showMenuScreen();
+		}
 	}
 
 	public void showMenuScreen(){

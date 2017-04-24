@@ -1,6 +1,8 @@
 package com.smeanox.games.ld38;
 
 public class Consts {
+	public static final boolean DEBUG = true;
+	public static final boolean IGNORE_MESSAGES = true;
 	public static final int DESIGN_WIDTH = 800;
 	public static final int DESIGN_HEIGHT = 480;
 	public static final String GAME_NAME = "Faster Than Mike";
@@ -26,6 +28,7 @@ public class Consts {
 	public static final float NEW_DUDE_POSITION_Y = 1.5f;
 	public static final float BUILD_POSITION_RANDOM_OFFSET = 0.2f;
 	public static final float STAR_SPEED = 4;
+	public static final float SUN_SPEED = 0.01f;
 
 	public static final float BUILD_SPEED = 0.1f;
 	public static final float WALK_SPEED = 1.5f;

@@ -21,6 +21,11 @@ public class RocketPlaceholderModule extends Module {
 	}
 
 	@Override
+	public boolean canRandomWalk() {
+		return false;
+	}
+
+	@Override
 	public boolean canAttachSolarPanel() {
 		return false;
 	}

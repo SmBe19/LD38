@@ -26,6 +26,7 @@ public enum IOAnimation {
 	ModuleMagnet(IOTexture.station, 12, 7, 3, 3),
 
 	Rocket(IOTexture.station, 11, 0, 2, 5),
+	SmallRocket(IOTexture.station, 3, 13, 2, 1),
 
 	Char1MIdle(IOTexture.charMale, 1.f, 0, 0, 2),
 	Char1MMove(IOTexture.charMale, 0.2f, 0, 1, 7),

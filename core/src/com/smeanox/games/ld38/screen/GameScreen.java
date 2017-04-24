@@ -65,6 +65,8 @@ public class GameScreen implements Screen {
 		}
 		IOTexture.map.texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
 		IOTexture.map.texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
+		IOTexture.clouds.texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
+		IOTexture.clouds.texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
 
 		buildModuleTypes = new ArrayList<ModuleType>();
 		for (ModuleType moduleType : ModuleType.values()) {
@@ -223,9 +225,12 @@ public class GameScreen implements Screen {
 					} else {
 						if(currentDude != null){
 							if (currentDude.getCurrentTask() == null || currentDude.getCurrentTask().isIdleTask()) {
-								WalkTask newTask = new WalkTask(mouse.x, mouse.y);
-								newTask.setIdleTask(true);
-								currentDude.setCurrentTask(newTask);
+								Module module = SpaceStation.get().getModule(mouse.x, mouse.y);
+								if(module != null && module.canRandomWalk()) {
+									WalkTask newTask = new WalkTask(mouse.x, mouse.y);
+									newTask.setIdleTask(true);
+									currentDude.setCurrentTask(newTask);
+								}
 							}
 							currentDude = null;
 						} else {
@@ -529,7 +534,6 @@ public class GameScreen implements Screen {
 					int count = moduleBuildCost.size();
 					height = count * 20;
 					if (lastBuildModule.tooltip.length() > 0) {
-						System.out.println(IOFont.icons.height(lastBuildModule.tooltip));
 						height += 15 + IOFont.icons.height(lastBuildModule.tooltip);
 					}
 					y = wHeight - 100 - height;

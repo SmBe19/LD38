@@ -1,5 +1,6 @@
 package com.smeanox.games.ld38.world.task;
 
+import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.world.Dude;
 import com.smeanox.games.ld38.world.SpaceStation;
 
@@ -28,6 +29,10 @@ public abstract class Task {
 		if(!isIdleTask()) {
 			SpaceStation.get().addTask(this);
 		}
+	}
+
+	protected boolean isArrived(float destX, float destY) {
+		return (dude.getX() - destX) * (dude.getX() - destX) + (dude.getY() - destY) * (dude.getY() - destY) < Consts.ARRIVAL_DISTANCE;
 	}
 
 	public Dude getDude() {

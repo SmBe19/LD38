@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.smeanox.games.ld38.Consts;
-import com.smeanox.games.ld38.screen.GameScreen;
 import com.smeanox.games.ld38.screen.Window;
 import com.smeanox.games.ld38.world.GenericRapper;
 import com.smeanox.games.ld38.world.Pair;
@@ -34,7 +33,7 @@ public abstract class Module {
 		active = true;
 	}
 
-	private int rotateDirection(int direction){
+	public int rotateDirection(int direction){
 		return (direction + 4 - getModuleLocation().getRotation()) % 4;
 	}
 
@@ -79,6 +78,10 @@ public abstract class Module {
 
 	public boolean canWalkThrough(){
 		return isFinished();
+	}
+
+	public boolean canRandomWalk() {
+		return true;
 	}
 
 	public float getBuildProgress() {

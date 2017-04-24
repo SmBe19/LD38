@@ -48,7 +48,7 @@ public class BuildTask extends Task {
 	@Override
 	public void onUpdate(float delta) {
 		if(!dude.hasPath()){
-			if ((dude.getX() - destX) * (dude.getX() - destX) + (dude.getY() - destY) * (dude.getY() - destY) < Consts.ARRIVAL_DISTANCE) {
+			if (isArrived(destX, destY)) {
 				buildModule.doBuildProrgess(delta);
 				if (buildModule.isFinished()) {
 					finished = true;

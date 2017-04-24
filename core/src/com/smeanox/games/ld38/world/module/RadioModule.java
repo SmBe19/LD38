@@ -21,6 +21,11 @@ public class RadioModule extends Module {
 	}
 
 	@Override
+	public boolean canRandomWalk() {
+		return false;
+	}
+
+	@Override
 	protected float getBuildSpeedMultiplier() {
 		return 0.25f;
 	}

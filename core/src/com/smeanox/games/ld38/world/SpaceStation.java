@@ -100,6 +100,8 @@ public class SpaceStation {
 
 		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
 		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
+
+		mainModule.addNeighbor(Consts.RIGHT, 0, ModuleType.RocketModule).setFinished(true);
 	}
 
 	public void addModule(Module module) {
@@ -251,7 +253,7 @@ public class SpaceStation {
 
 	public Dude getDude(int x, int y) {
 		for (Dude dude : dudes) {
-			if (MathUtils.floor(dude.getX()) == x && MathUtils.floor(dude.getY()) == y) {
+			if (dude.isVisible() && MathUtils.floor(dude.getX()) == x && MathUtils.floor(dude.getY()) == y) {
 				return dude;
 			}
 		}
@@ -330,7 +332,7 @@ public class SpaceStation {
 		}
 	}
 
-	private void clampResources(){
+	public void clampResources(){
 		for (Resource resource : Resource.values()) {
 			if (resource == Resource.Humans) {
 				continue;
@@ -349,7 +351,7 @@ public class SpaceStation {
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.append("A delivery arrived with ");
+		sb.append("A delivery arrived with\n");
 		for (Resource resource : Resource.values()) {
 			if(savedDelivery.get(resource).value < 0.01f){
 				continue;
@@ -360,7 +362,7 @@ public class SpaceStation {
 			sb.append(savedDelivery.get(resource).value.intValue());
 			sb.append(" ");
 			sb.append(resource.displayName);
-			sb.append(", ");
+			sb.append(",\n");
 		}
 		sb.replace(sb.length - 2, sb.length, ".");
 		addMessage(sb.toString());

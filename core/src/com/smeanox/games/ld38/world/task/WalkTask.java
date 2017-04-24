@@ -14,7 +14,7 @@ public class WalkTask extends Task{
 	@Override
 	public void onUpdate(float delta) {
 		if(!dude.hasPath()){
-			if ((dude.getX() - destX) * (dude.getX() - destX) + (dude.getY() - destY) * (dude.getY() - destY) < Consts.ARRIVAL_DISTANCE) {
+			if (isArrived(destX, destY)) {
 				finished = true;
 			} else {
 				dude.setDest(destX, destY);

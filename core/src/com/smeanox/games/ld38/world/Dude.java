@@ -10,6 +10,8 @@ import com.smeanox.games.ld38.io.IOAnimation;
 import com.smeanox.games.ld38.io.IOTexture;
 import com.smeanox.games.ld38.screen.GameScreen;
 import com.smeanox.games.ld38.world.module.Module;
+import com.smeanox.games.ld38.world.module.RocketModule;
+import com.smeanox.games.ld38.world.module.RocketPlaceholderModule;
 import com.smeanox.games.ld38.world.task.Task;
 import com.smeanox.games.ld38.world.task.WaitTask;
 import com.smeanox.games.ld38.world.task.WalkTask;
@@ -24,6 +26,7 @@ public class Dude {
 	private IOAnimation textureIdle, textureWalk;
 	private float animationOffset, damageMultiplier;
 	private float x, y, hp, destX, destY;
+	private boolean visible;
 	private boolean hadEnoughResources, flipped;
 	private Task currentTask;
 	private Queue<Pair<Float, Float>> currentPath;
@@ -36,6 +39,7 @@ public class Dude {
 		this.hp = 1;
 		this.destX = x;
 		this.destY = y;
+		visible = true;
 		hadEnoughResources = true;
 		currentTask = null;
 		currentPath = null;
@@ -117,6 +121,14 @@ public class Dude {
 		return destY;
 	}
 
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
 	public void setCurrentTask(Task currentTask) {
 		this.currentTask = currentTask;
 		this.currentTask.accept(this);
@@ -156,8 +168,7 @@ public class Dude {
 		Module destModule = SpaceStation.get().getModule(destX, destY);
 		if (destModule == null) {
 			currentPath = null;
-			throw new RuntimeException("boiatend");
-			// return;
+			return;
 		}
 		if (par.get(destModule) == null) {
 			currentPath = null;
@@ -227,34 +238,44 @@ public class Dude {
 
 	protected Task getIdleTask(){
 		int idleTask = MathUtils.random(1);
-		if(SpaceStation.get().getModules().size() <= 1 || idleTask == 0) {
+		if(idleTask == 0) {
 			Task task = new WaitTask(MathUtils.random(Consts.MAX_DUDE_WAIT_TIME));
 			task.setIdleTask(true);
 			return task;
 		} else if (idleTask == 1) {
-			int val = MathUtils.random(SpaceStation.get().getModules().size() - 2);
 			Module module = null, currentModule = SpaceStation.get().getModule(x, y);
+			List<Module> possibleModules = new ArrayList<Module>();
 			for (Module amodule : SpaceStation.get().getModules()) {
-				if (amodule == currentModule) {
+				if (amodule == currentModule || !amodule.canRandomWalk()) {
 					continue;
 				}
-				if (val == 0) {
-					module = amodule;
-					break;
+				possibleModules.add(amodule);
+			}
+			if(possibleModules.size() > 0) {
+				int val = MathUtils.random(possibleModules.size() - 1);
+				for (Module amodule : possibleModules) {
+					if (val == 0) {
+						module = amodule;
+						break;
+					}
+					val--;
 				}
-				val--;
-			}
-			if (module == null) {
-				throw new RuntimeException("Booooom!!!");
-			}
-			if (!module.canWalkThrough()) {
+				if (module == null) {
+					throw new RuntimeException("Booooom!!!");
+				}
+				if (!module.canWalkThrough()) {
+					Task task = new WaitTask(MathUtils.random(Consts.MAX_DUDE_WAIT_TIME));
+					task.setIdleTask(true);
+					return task;
+				}
+				Task task = new WalkTask(module.getModuleLocation().getCenter().first, module.getModuleLocation().getCenter().second);
+				task.setIdleTask(true);
+				return task;
+			} else {
 				Task task = new WaitTask(MathUtils.random(Consts.MAX_DUDE_WAIT_TIME));
 				task.setIdleTask(true);
 				return task;
 			}
-			Task task = new WalkTask(module.getModuleLocation().getCenter().first, module.getModuleLocation().getCenter().second);
-			task.setIdleTask(true);
-			return task;
 		} else {
 			throw new RuntimeException("Blub");
 		}
@@ -286,10 +307,16 @@ public class Dude {
 	}
 
 	public void draw(SpriteBatch batch, float time) {
+		if (!visible) {
+			return;
+		}
 		batch.draw((hasPath() ? textureWalk.keyFrame(time + animationOffset) : textureIdle.keyFrame(time + animationOffset)), x - (flipped ? -1 : 1) * .5f, y - .5f, (flipped ? -1 : 1), 1);
 	}
 
 	public void drawUI(SpriteBatch batch, float time){
+		if (!visible) {
+			return;
+		}
 		Color oldColor = batch.getColor().cpy();
 		Color color = Color.RED.cpy().lerp(Color.GREEN, hp * 2 - 1);
 		batch.setColor(color);

@@ -19,6 +19,8 @@ public class Consts {
 	public static final float ROCKET_DOCKED_DURATION = 2.f;
 	public static final float ROCKET_DOCKED_POSITION_X = 1.5f;
 	public static final float ROCKET_DOCKED_POSITION_Y = 4.25f;
+	public static final float SMALLROCKET_ANIMATION_OFFSET = 5f;
+	public static final float SMALLROCKET_ANIMATION_DURATION = 5.f;
 	public static final float NEW_DUDE_POSITION_X = 1.5f;
 	public static final float NEW_DUDE_POSITION_Y = 1.5f;
 	public static final float BUILD_POSITION_RANDOM_OFFSET = 0.2f;
@@ -36,6 +38,10 @@ public class Consts {
 	public static final float HEALTH_REGENERATE = 1.f/DURATION_DAY;
 	public static final float EVENT_SOLARFLARE_DURATION = DURATION_DAY / 2.f;
 	public static final float EVENT_MAX_RESOURCE = 400;
+	public static final float ROCKET_MIN_TIME = DURATION_DAY * 0.5f;
+	public static final float ROCKET_MAX_TIME = DURATION_DAY * 1.f;
+	public static final float ROCKET_MIN_RETURN = 0.5f;
+	public static final float ROCKET_MAX_RETURN = 2f;
 
 	public static final float ARRIVAL_DISTANCE = 0.05f;
 }

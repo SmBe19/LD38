@@ -46,7 +46,7 @@ public class RocketTask extends Task {
 
 	public RocketTask(RocketModule rocketModule) {
 		this.rocketModule = rocketModule;
-		int direction = rocketModule.rotateDirection(Consts.LEFT);
+		int direction = rocketModule.antiRotateDirection(Consts.LEFT);
 		Pair<Integer, Integer> portLocation = rocketModule.getNeighbor(direction).getModuleLocation().getPortLocation(ModuleLocation.flipDirection(direction));
 		destX = portLocation.first + .5f;
 		destY = portLocation.second + .5f;

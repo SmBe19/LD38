@@ -1,5 +1,6 @@
 package com.smeanox.games.ld38.world.module;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOAnimation;
@@ -53,18 +54,23 @@ public class RadioModule extends Module {
 
 		@Override
 		public void init() {
-			if(SpaceStation.get().isWorldWarStarted()) {
-				uiElements.add(new Button(5, 5, width - 10, 10, "Scan for signals", null, new LabelActionHandler() {
-					@Override
-					public void actionHappened(Label label, float delta) {
-						if(SpaceStation.get().isWorldWarStarted()) {
+			uiElements.add(new Button(5, 5, width - 10, 10, "Scan for signals", new LabelActionHandler() {
+				@Override
+				public void actionHappened(Label label, float delta) {
+					label.color = isWorking() ? Color.BLACK : Color.FIREBRICK;
+				}
+			}, new LabelActionHandler() {
+				@Override
+				public void actionHappened(Label label, float delta) {
+					if (isWorking()) {
+						if (SpaceStation.get().isWorldWarStarted()) {
 							SpaceStation.get().addMessage("You don't receive any signals.\nThere are no survivors on earth.");
 						} else {
 							SpaceStation.get().addMessage("You receive many signals.\nThere doesn't seem to be anything interesting.");
 						}
 					}
-				}));
-			}
+				}
+			}));
 		}
 	}
 }

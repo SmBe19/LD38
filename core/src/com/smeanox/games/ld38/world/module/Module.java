@@ -37,6 +37,10 @@ public abstract class Module {
 		return (direction + 4 - getModuleLocation().getRotation()) % 4;
 	}
 
+	public int antiRotateDirection(int direction){
+		return (direction + getModuleLocation().getRotation()) % 4;
+	}
+
 	public boolean canAttachSolarPanel(){
 		return true;
 	}
@@ -303,6 +307,8 @@ public abstract class Module {
 
 	public abstract TextureRegion getTextureHull(float time);
 
+	public void drawRockets(SpriteBatch batch, float time) {}
+
 	public void drawBackground(SpriteBatch batch, float time) {
 		TextureRegion textureInterior = getTextureInterior(time);
 		if (textureInterior != null) {
@@ -311,6 +317,7 @@ public abstract class Module {
 				batch.setColor(1, 1, 1, Consts.BUILDING_ALPHA);
 				TextureRegion buildTexture = new TextureRegion(textureInterior);
 				buildTexture.setRegionWidth((int) (textureInterior.getRegionWidth() * buildProgress));
+
 				batch.draw(buildTexture, getModuleLocation().getX(), getModuleLocation().getY(), .5f, .5f,
 						buildTexture.getRegionWidth() / (float) Consts.SPRITE_SIZE,
 						buildTexture.getRegionHeight() / Consts.SPRITE_SIZE,

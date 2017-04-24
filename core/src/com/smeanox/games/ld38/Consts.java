@@ -28,8 +28,8 @@ public class Consts {
 	public static final float STAR_SPEED = 4;
 
 	public static final float BUILD_SPEED = 0.1f;
-	public static final float WALK_SPEED = 2.5f;
-	public static final float DURATION_DAY = 25; // 180
+	public static final float WALK_SPEED = 1.5f;
+	public static final float DURATION_DAY = 90; // 90
 	public static final float DELIVERY_TIME = DURATION_DAY / 3.f;
 	public static final float ENDOFORDER_TIME = DELIVERY_TIME - ROCKET_ANIMATION_DURATION - ROCKET_DOCKED_DURATION;
 	public static final float DURATION_NIGHT = DURATION_DAY / 3.f;
@@ -40,8 +40,8 @@ public class Consts {
 	public static final float HEALTH_REGENERATE = 1.f/DURATION_DAY;
 	public static final float EVENT_SOLARFLARE_DURATION = DURATION_DAY / 2.f;
 	public static final float EVENT_MAX_RESOURCE = 400;
-	public static final float ROCKET_MIN_TIME = DURATION_DAY * 0.5f;
-	public static final float ROCKET_MAX_TIME = DURATION_DAY * 1.f;
+	public static final float ROCKET_MIN_TIME = DURATION_DAY * 0.25f;
+	public static final float ROCKET_MAX_TIME = DURATION_DAY * 0.5f;
 	public static final float ROCKET_MIN_RETURN = 0.5f;
 	public static final float ROCKET_MAX_RETURN = 2f;
 

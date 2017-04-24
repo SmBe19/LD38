@@ -7,7 +7,7 @@ import com.smeanox.games.ld38.world.SpaceStation;
 
 public class SolarFlareEvent extends Event {
 
-	float time;
+	private float time;
 
 	public SolarFlareEvent() {
 		this.time = MathUtils.random(Consts.EVENT_SOLARFLARE_DURATION);
@@ -15,7 +15,11 @@ public class SolarFlareEvent extends Event {
 
 	@Override
 	public void startEvent() {
-		SpaceStation.get().getResources().get(Resource.Electricity).value *= 0.5f;
+		if(SpaceStation.get().isWorldWarStarted() && !hasMagnetModule()) {
+			SpaceStation.get().getResources().get(Resource.Electricity).value *= 0.5f;
+		} else {
+			time = 0;
+		}
 	}
 
 	@Override
@@ -28,6 +32,10 @@ public class SolarFlareEvent extends Event {
 
 	@Override
 	public String getDescription() {
-		return "There was a solar flare and your\nequipment doesn't work at the moment.";
+		if(SpaceStation.get().isWorldWarStarted()){
+			return "There was a solar flare and your\nequipment doesn't work at the moment.\nA working magnet will save it.";
+		} else {
+			return "There was a solar flare but\nthe magnet field of the earth\nprotected you.";
+		}
 	}
 }

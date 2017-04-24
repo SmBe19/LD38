@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.smeanox.games.ld38.Consts;
 import com.smeanox.games.ld38.io.IOAnimation;
+import com.smeanox.games.ld38.io.IOFont;
 import com.smeanox.games.ld38.screen.Window;
 import com.smeanox.games.ld38.world.GenericRapper;
 import com.smeanox.games.ld38.world.Resource;
@@ -59,7 +60,8 @@ public class RocketModule extends Module {
 		hadEnoughResources = tryUseResource(resources, delta, Resource.Electricity, 5);
 	}
 
-	private void drawRocket(SpriteBatch batch, float time) {
+	@Override
+	public void drawRockets(SpriteBatch batch, float time) {
 		if(finished) {
 			float gameTime = SpaceStation.get().getTime();
 			TextureRegion texture = IOAnimation.SmallRocket.keyFrame(time);
@@ -104,12 +106,6 @@ public class RocketModule extends Module {
 	}
 
 	@Override
-	public void drawBackground(SpriteBatch batch, float time) {
-		drawRocket(batch, time);
-		super.drawBackground(batch, time);
-	}
-
-	@Override
 	public Window createWindow(float x, float y) {
 		return new RocketWindow(x, y);
 	}
@@ -138,7 +134,9 @@ public class RocketModule extends Module {
 
 		@Override
 		public void init() {
-			uiElements.add(new Button(5, 5, width - 10, 10, "Search asteroid", new LabelActionHandler() {
+			final Map<Resource, Float> cost = RocketTask.getCost();
+			height = cost.size() * 20 + 40;
+			uiElements.add(new Button(10, height - 20, width - 20, 10, "Search asteroid", new LabelActionHandler() {
 				@Override
 				public void actionHappened(Label label, float delta) {
 					label.color = haveEnoughResources() ? Color.WHITE : Color.RED;
@@ -155,6 +153,19 @@ public class RocketModule extends Module {
 					}
 				}
 			}));
+			float ay = height - 50;
+			for (final Resource resource : Resource.values()) {
+				if (cost.containsKey(resource)) {
+					uiElements.add(new Label(25, ay, 40, 10, leftPad("" + cost.get(resource), 5), new LabelActionHandler() {
+						@Override
+						public void actionHappened(Label label, float delta) {
+							label.color = SpaceStation.get().getResource(resource) < cost.get(resource) ? Color.FIREBRICK : Color.BLACK;
+						}
+					}));
+					uiElements.add(new Label(10, ay - 2, 10, 10, resource.icon, IOFont.icons, Color.WHITE, null));
+					ay -= 20;
+				}
+			}
 		}
 	}
 }

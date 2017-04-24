@@ -101,7 +101,7 @@ public class SpaceStation {
 		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
 		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
 
-		mainModule.addNeighbor(Consts.RIGHT, 0, ModuleType.RocketModule).setFinished(true);
+		mainModule.addNeighbor(Consts.LEFT, 2, ModuleType.RocketModule).setFinished(true);
 	}
 
 	public void addModule(Module module) {

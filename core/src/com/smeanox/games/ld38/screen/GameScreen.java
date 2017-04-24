@@ -40,7 +40,7 @@ public class GameScreen implements Screen {
 	private Window buildWindow, buildInfoWindow, recourceInfoWindow, moduleWindow, messageWindow;
 	private boolean paused;
 
-	private ShaderProgram earthShader;
+	private ShaderProgram earthShader, bitAlphaShader;
 
 	private List<ModuleType> buildModuleTypes;
 	private ModuleType buildType, hoverBuildType;
@@ -59,8 +59,10 @@ public class GameScreen implements Screen {
 
 		ShaderProgram.pedantic = false;
 		earthShader = new ShaderProgram(Gdx.files.internal("shader/earth.vert"), Gdx.files.internal("shader/earth.frag"));
+		bitAlphaShader = new ShaderProgram(Gdx.files.internal("shader/bitAlpha.vert"), Gdx.files.internal("shader/bitAlpha.frag"));
 		System.out.println(earthShader.getLog());
-		if (!earthShader.isCompiled()) {
+		System.out.println(bitAlphaShader.getLog());
+		if (!earthShader.isCompiled() || !bitAlphaShader.isCompiled()) {
 			throw new RuntimeException("No shader for you!");
 		}
 		IOTexture.map.texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
@@ -333,11 +335,29 @@ public class GameScreen implements Screen {
 		batch.begin();
 		drawDeliveryRocket(delta);
 		for (Module module : SpaceStation.get().getModules()) {
+			module.drawRockets(batch, time);
+		}
+
+		batch.setShader(bitAlphaShader);
+		Gdx.gl.glClearDepthf(1);
+		Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+		Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
+		Gdx.gl.glDepthMask(true);
+
+		for (Module module : SpaceStation.get().getModules()) {
 			module.drawBackground(batch, time);
 		}
+		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+		Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
+
 		for (Dude dude : SpaceStation.get().getDudes()) {
 			dude.draw(batch, time);
 		}
+
+		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+		Gdx.gl.glDepthMask(false);
+		batch.setShader(null);
+
 		for (Module module : SpaceStation.get().getModules()) {
 			module.drawForeground(batch, time);
 		}

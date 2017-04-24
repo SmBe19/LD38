@@ -32,8 +32,8 @@ void main() {
 	float cloud = texture(u_textureClouds, vec2(x, y)).r;
 
 
-	float diffuse = clamp(dot(normal, sun), 0., 1.);
-	float specular = exp(-1. - dot(sun, reflect(vec3(0., 0., 1.), normal)));
+	float diffuse = clamp(dot(normal, -sun), 0., 1.);
+	float specular = exp(-1. + dot(-sun, reflect(vec3(0., 0., -1.), normal)));
 
 	vec4 ground = mix(diffuse * vec4(0.22, 0.37, 0.05, 1), specular * vec4(0.05, 0.25, 0.75, 1), color);
 	vec4 cloudcolor = vec4(cloud);

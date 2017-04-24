@@ -19,7 +19,7 @@ Great, now we can actually store the supplies we brought.
 
 > Highlight resources at top of screen
 
-Our next priority is to look after our electricity production. We need to construct two solar panels so we have enough power to run this thing. It might be useful to build some empty modules first so we have space for the panels.
+Our next priority is to look after the electricity production. We need to construct two solar panels so we have enough power to run this thing. It might be useful to build some empty modules first so we have space for the panels.
 
 > Solar panels and empty modules are highlighted and enabled in building list.
 
@@ -63,11 +63,12 @@ The daily shipment is about to arrive, let’s see what they brought us this tim
 
 *After Transport ship has docked*
 
-The ship will leave again in one minute. It will not be able to give us any materials that we don’t have room for.
-
-We’ll be able to expand our station with what we’ve got. If we could become more self sufficient, a smaller portion of the payload would need to be used for necessities.
+The ship will depart in exactly one minute. It will take home all the resources that we don’t have room for.
+We’ll be able to expand our station with the material we’ve received. If we became more self sufficient, a smaller portion of the payload would need to be used for necessities.
 
 > All modules in building list except cryogenic chamber are unlocked. Plant module and hydrolysis module are highlighted.
+
+The goal of our station up here is to mine asteroids that were brought into orbit around earth. They contain water and metals, which are very useful. We’re going to need to build a rocket module on this station in order to actually mine them. This might take a while.
 
 
 
@@ -81,7 +82,7 @@ We’ll need to select a shipment for the next day. Maybe getting some more crew
 
 Commander’s Log, Day 3. We’re slowly getting used to the situation up here.
 
-Some recent missions from the space agency have brought asteroids in orbit around earth. Maybe we could tap into those resources. We’ll need to build a rocket module for that.
+Within a couple of weeks, we should be able to mine the first asteroids.
 
 
 
@@ -91,31 +92,32 @@ Commander’s Log, Day x.
 
 > Before the war. One of the following options:
 
+
 - It’s all quiet up here. Nothing special’s happening today.
 - Another beautiful day up here. Well there’s not exactly a thing like bad weather in space, is there?
-- When I look down at the earth like this, I do miss my family. They’re down there on this huge world. But now we got a small world of our own up here.
+- When I look down at the earth like this, I do miss my family. They stayed down there on this huge planet. But now we got a small world of our own up here.
 - We’re hearing stories of political turmoil down on earth. None of that matters to us as long as we get our shipments on time.
 - Sometimes I miss life on Earth. But it’s important work we’re doing up here.
 - I’m looking forward to holding my son again. But I won’t be back on earth for another three months.
 - Occasionally I see some asteroids getting within a few kilometers of us. But I shouldn’t worry about it.
 - There have been no unusual events lately.
-- Sometimes I hear a bit of creaking in the storage module. The other crew members assured me that there is nothing to worry about.
-- The collaboration in the crew is working really well. I am glad to see that everyone adjusted so well to life in space.
-- It is impressive to see the collaboration among our crew despite the fact that we come from very different countries and cultures.
-- Every day I am up here makes me feel proud to do this for my country and humanity as a whole.
+- Sometimes I hear a bit of creaking in the storage module. The other crew members assured me that there was nothing to worry about.
+- The collaboration in the crew is working really well. I am glad to see that everyone adjusted so quickly to life in space.
+- Every day up here makes me feel proud to do this for my country and humanity as a whole.
 - The Aeneas is coming along pretty nicely. The new developments are promising.
+
 
 
 
 > After the war. One of the following options:
 
 - (Before trying to contact survivors) We haven’t received any signals since … the war. I wonder if anyone survived?
-- When I look down at earth now, I am overwhelmed with a feeling of sadness that humanity has actually wiped itself out.
+- When I look down at earth now, I am overwhelmed with a feeling of sadness that humanity has wiped itself out.
 - Once again, there was no light to be seen on the night side of the earth.
 - We’re alive up here while everyone is dead down there on earth. Sometimes I wonder if it’s even worth it to keep going.
 - Every time I wake up, I hope that this was all a dream… I just want to see my family again.
 - Seeing the dead planet below me makes me feel so … powerless.
-- There are no more shipments from Earth’s surface. Unless there’s some sort of miracle, our fate will be the same as the one of our brothers on Earth.
+- No more shipments from Earth’s surface. Unless there’s some sort of miracle, our fate will be the same as the one of our brothers on Earth.
 - I would have rather spent the last days of my life with my family than on this station.
 - (Before trying to contact survivors) We haven’t given up hope on finding survivors yet. We just need to scan for their signals.
 - (After trying to contact survivors) We’re the only humans left… We’re humanity’s last hope. We can’t give up now.
@@ -137,20 +139,18 @@ Why am I even still doing this? It’s not like anyone’s ever going to listen 
 - (If water critical) My throat feels so dry. *Cough* Need water.
 - (If food is getting low) The crew’s been complaining that we don’t get enough food. Our situation is indeed quite dire.
 - (If food critical) We won’t hold out much longer if we can’t get anything to eat.
-- (If electricity low) Our batteries are almost dry. This would have terrible consequences for the operation of our ship.
+- (If electricity low) Our batteries are almost dry. This would have terrible consequences for the operation of our station.
 - (If electricity critical) We have no power left. The systems of the station are shutting down and we’re freezing.
 
 **Event: Start of the War**
 
-What the fuck is that? … Explosions?
+What the fuck is going on down there? … Are those explosions?
 
 The headquarter is not responding. What the hell is going on?
 
-We’re seeing World War Three unfold right below us. This is horrifying.
+Good god … We’re seeing World War Three unfold right below us. This is horrifying.
 
 Sarah … Robin … NO!
-
-We’ve gotten reports that all nations have crumbled…
 
 What does this mean for us? There certainly won’t be any more supply ships now.
 
@@ -160,7 +160,7 @@ What does this mean for us? There certainly won’t be any more supply ships now
 
 Seeing the dark side of earth devoid of any light is haunting. How terrible.
 
-Is it possible at least someone survived? We should use a radio antenna to look for signals.
+Is it possible at least someone survived? Maybe we could look for signals with a radio antenna.
 
 > Radio antenna module is highlighted.
 
@@ -168,7 +168,7 @@ Is it possible at least someone survived? We should use a radio antenna to look 
 
 *If radio antenna module is built*
 
-> Button with „scan for signals“ is shown and highlighted
+> Button with „scan for survivors“ is shown and highlighted
 
 
 

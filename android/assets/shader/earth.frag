@@ -11,9 +11,16 @@ uniform float u_rotation;
 uniform sampler2D u_texture;
 uniform sampler2D u_textureClouds;
 uniform float u_sun_offset;
+uniform float u_cloud_limit = 0.4;
+uniform float u_cloud_brightness = 0.9;
+
+uniform vec3 u_ground_color = vec3(0.22, 0.37, 0.05);
+uniform vec3 u_sea_color    = vec3(0.05, 0.25, 0.75);
+
+uniform float u_explosion_limit = 0.9;
+
 
 const float u_mercator_fov = 2.5;
-const float u_cloud_limit = 0.4;
 
 
 vec2 to_tex(float lat, float lon) {
@@ -26,8 +33,12 @@ void main() {
 	pos = 1.2 * pos;
 	if (length(pos) > 1.2)
 		discard;
+	vec3 sun = vec3(0., cos(-u_rotation + u_sun_offset), sin(-u_rotation + u_sun_offset));
 	if (length(pos) > 1.0) {
-		gl_FragColor = mix(vec4(0.4, 0.9, 1.0, 0.9), vec4(0.), (length(pos) - 1.0) / 0.2);
+		float len = length(pos);
+		pos = pos / len;
+		float bright = clamp(dot(sun, vec3(pos, 0.0)), 0.1., 0.8);
+		gl_FragColor = mix(bright * vec4(0.4, 0.9, 1.0, 0.9), vec4(0.), (len - 1.0) / 0.2);
 		return;
 	}
 	vec3 normal = vec3(pos, sqrt(1.-dot(pos, pos)));
@@ -42,6 +53,11 @@ void main() {
 	float color = smoothstep(0.4, 0.5, texture(u_texture, xy).r);
 	float cloud = texture(u_textureClouds, xy).r;
 
+	float rng1 = texture(u_textureClouds, xy + vec2(0.319, 0.627) + vec2(0.016, 0.073) * u_rotation).r;
+	float rng2 = texture(u_textureClouds, xy + vec2(0.536, 0.456) + vec2(0.092, 0.023) * u_rotation).r;
+
+	float rng = rng1 * rng2;
+
 
 	vec3 posabove = normalize(normal + 0.1 * sun);
 	float posabovelat = asin(posabove.x);
@@ -52,8 +68,11 @@ void main() {
 	float specular = 0.5*grounddiffuse + 0.5*exp(-1. + dot(sun, reflect(vec3(0., 0., -1.), normal)));
 
 
-	vec4 ground = vec4(mix(grounddiffuse * vec3(0.22, 0.37, 0.05), specular * vec3(0.05, 0.25, 0.75), color), 1.0);
-	vec4 cloudcolor = vec4(diffuse * vec3(cloud), 1.0);
+	vec4 ground = vec4(mix(grounddiffuse * u_ground_color, specular * u_sea_color, color), 1.0);
+	vec4 cloudcolor = vec4(u_cloud_brightness * diffuse * vec3(cloud), 1.0);
 	gl_FragColor = mix(ground, cloudcolor, smoothstep(u_cloud_limit-0.1, u_cloud_limit+0.5, cloud));
+	if (u_explosion_limit != 1.0) {
+		gl_FragColor += clamp((rng-u_explosion_limit) / (1.0 - u_explosion_limit), 0., 1.) * vec4(0.9, 0.5, 0.1, 0.0);
+	}
 }
 

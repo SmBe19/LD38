@@ -31,7 +31,7 @@ public class SpaceStation {
 	}
 
 	private MessageManager messageManager;
-	private TutorialManager tutorialManager;
+	private StoryManager storyManager;
 	private Set<Module> modules;
 	private Set<Dude> dudes;
 	private Module mainModule, rocketPlaceholderModule;
@@ -45,6 +45,7 @@ public class SpaceStation {
 	private float time;
 	private boolean nightStart, newDay, endOfOrderTime, deliveryTime, worldWarStarted;
 	private boolean savedDeliveryEmpty;
+	private String gameOverMessage;
 
 	private SpaceStation() {
 		singleton = this;
@@ -66,9 +67,10 @@ public class SpaceStation {
 		newDay = false;
 		deliveryTime = false;
 		worldWarStarted = false;
+		gameOverMessage = null;
 
 		messageManager = new MessageManager();
-		tutorialManager = new TutorialManager();
+		storyManager = new StoryManager();
 		modules.clear();
 		dudes.clear();
 		resources.clear();
@@ -109,6 +111,14 @@ public class SpaceStation {
 		addMessage(messageManager.intro());
 	}
 
+	public String getGameOverMessage() {
+		return gameOverMessage;
+	}
+
+	public void setGameOverMessage(String gameOverMessage) {
+		this.gameOverMessage = gameOverMessage;
+	}
+
 	public void addModule(Module module) {
 		modules.add(module);
 	}
@@ -147,7 +157,7 @@ public class SpaceStation {
 	}
 
 	public void addMessage(String message) {
-		addMessage(new MessageManager.Message(message, null));
+		addMessage(new MessageManager.Message(message));
 	}
 
 	public void addMessage(MessageManager.Message message) {
@@ -235,8 +245,8 @@ public class SpaceStation {
 		return messageManager;
 	}
 
-	public TutorialManager getTutorialManager() {
-		return tutorialManager;
+	public StoryManager getStoryManager() {
+		return storyManager;
 	}
 
 	public Set<Module> getModules() {
@@ -431,7 +441,7 @@ public class SpaceStation {
 
 		updateEvents(delta);
 
-		tutorialManager.update(delta);
+		storyManager.update(delta);
 
 		for (Module module : modules) {
 			if (module.isJustFinished()) {
@@ -448,6 +458,10 @@ public class SpaceStation {
 		for (Dude dude : new HashSet<Dude>(dudes)) {
 			dude.doInputOutputProcessing(resources, delta);
 			dude.update(delta);
+		}
+
+		if (dudes.size() == 0) {
+			gameOverMessage = "All the astronauts died. Try again.";
 		}
 	}
 }

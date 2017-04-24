@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.smeanox.games.ld38.Consts;
+import com.smeanox.games.ld38.LD38;
 import com.smeanox.games.ld38.world.MessageManager;
 import com.smeanox.games.ld38.io.IOAnimation;
 import com.smeanox.games.ld38.io.IOFont;
@@ -38,8 +39,9 @@ public class GameScreen implements Screen {
 	private Camera camera, uiCamera;
 	private float time, scale;
 	private float wWidth, wHeight;
-	private Window buildWindow, buildInfoWindow, recourceInfoWindow, moduleWindow, messageWindow;
+	private Window buildWindow, buildInfoWindow, recourceInfoWindow, moduleWindow, messageWindow, gameOverWindow;
 	private boolean paused;
+	private boolean muted;
 
 	private ShaderProgram earthShader, bitAlphaShader;
 
@@ -57,6 +59,7 @@ public class GameScreen implements Screen {
 		camera = new OrthographicCamera();
 		uiCamera = new OrthographicCamera();
 		paused = false;
+		muted = false;
 
 		ShaderProgram.pedantic = false;
 		earthShader = new ShaderProgram(Gdx.files.internal("shader/earth.vert"), Gdx.files.internal("shader/earth.frag"));
@@ -121,6 +124,11 @@ public class GameScreen implements Screen {
 				paused = true;
 				messageWindow = new MessageWindow(SpaceStation.get().popMessage());
 				Window.windows95.add(messageWindow);
+			}
+			if (gameOverWindow == null && SpaceStation.get().getGameOverMessage() != null) {
+				paused = true;
+				gameOverWindow = new GameOverWindow(SpaceStation.get().getGameOverMessage());
+				Window.windows95.add(gameOverWindow);
 			}
 		}
 	}
@@ -255,6 +263,13 @@ public class GameScreen implements Screen {
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.A)){
 			camera.translate(-Consts.CAMERA_SPEED * delta, 0, 0);
+		}
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
+			muted = !muted;
+			if (muted && ((MessageWindow) messageWindow).getMessage() != null && ((MessageWindow) messageWindow).getMessage().narration != null) {
+				((MessageWindow) messageWindow).getMessage().narration.stop();
+			}
 		}
 
 		// cheats
@@ -488,7 +503,7 @@ public class GameScreen implements Screen {
 					public void actionHappened(Label label, float delta) {
 						if(!SpaceStation.get().getEnabledModuleTypes().contains(moduleType)) {
 							label.color = Color.DARK_GRAY;
-						} else if (SpaceStation.get().getTutorialManager().highlighted == moduleType) {
+						} else if (SpaceStation.get().getStoryManager().highlighted == moduleType) {
 							label.color = Color.YELLOW;
 						} else if (SpaceStation.get().buyModule(moduleType, true)) {
 							label.color = Color.BLACK;
@@ -628,10 +643,14 @@ public class GameScreen implements Screen {
 			init();
 		}
 
+		public MessageManager.Message getMessage() {
+			return message;
+		}
+
 		@Override
 		public void init() {
 			uiElements.add(new Label(10, height - 25, width - 50, 10, message.message, null));
-			uiElements.add(new Button(width - 50, 10, 20, 10, "Ok", null, new LabelActionHandler() {
+			uiElements.add(new Button(width - 50, 10, 30, 15, "Ok", null, new LabelActionHandler() {
 				@Override
 				public void actionHappened(Label label, float delta) {
 					paused = false;
@@ -643,8 +662,37 @@ public class GameScreen implements Screen {
 				}
 			}));
 			if (message.narration != null) {
-				message.narration.play();
+				if(!muted) {
+					message.narration.play();
+				}
 			}
+		}
+	}
+
+	private class GameOverWindow extends Window {
+
+		private String message;
+
+		public GameOverWindow(String message) {
+			super(200, 150, wWidth - 400, wHeight - 300, true);
+			this.message = message;
+			init();
+		}
+
+		@Override
+		public void init() {
+			uiElements.add(new Label(10, height - 25, width - 50, 10, message, null));
+			uiElements.add(new Button(width - 50, 10, 30, 15, "Ok", null, new LabelActionHandler() {
+				@Override
+				public void actionHappened(Label label, float delta) {
+					paused = false;
+					windows95.remove(GameOverWindow.this);
+					gameOverWindow = null;
+					SpaceStation.get().init();
+					LD38.me.showMenuScreen();
+				}
+			}));
+			paused = true;
 		}
 	}
 }

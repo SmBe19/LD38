@@ -30,7 +30,6 @@ public class RocketModule extends Module {
 	}
 
 	public void setRocketFlight(float rocketStart, float rocketArrive){
-		System.out.println("Rocket flight " + rocketStart + " " + rocketArrive + " " + SpaceStation.get().getTime());
 		this.rocketStart = rocketStart;
 		this.rocketArrive = rocketArrive;
 	}

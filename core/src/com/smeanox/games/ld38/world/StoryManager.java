@@ -8,19 +8,22 @@ import com.smeanox.games.ld38.world.module.SleepingModule;
 import com.smeanox.games.ld38.world.module.SolarModule;
 import com.smeanox.games.ld38.world.module.StorageModule;
 import com.smeanox.games.ld38.world.task.Task;
+import com.smeanox.games.ld38.world.task.WalkTask;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TutorialManager {
+public class StoryManager {
 
 	public ModuleType highlighted;
 
 	private MessageManager messageManager;
 	private int state = 0;
 	private List<Task> goToCryogenicTasks;
+	private Pair<Float, Float> cryogenicCenter;
+	private float timeout = 0;
 
-	public TutorialManager(){
+	public StoryManager(){
 		messageManager = SpaceStation.get().getMessageManager();
 		goToCryogenicTasks = new ArrayList<Task>();
 	}
@@ -154,10 +157,45 @@ public class TutorialManager {
 				})){
 					state++;
 					highlighted = null;
+					Module cryogenic = null;
+					for (Module module : SpaceStation.get().getModules()) {
+						if (module.isFinished() && module instanceof CryogenicModule) {
+							cryogenic = module;
+						}
+					}
+					if (cryogenic == null) {
+						break;
+					}
+					cryogenicCenter = cryogenic.getModuleLocation().getCenter();
+					for (Dude dude : SpaceStation.get().getDudes()) {
+						WalkTask walkTask = new WalkTask(cryogenicCenter.first, cryogenicCenter.second);
+						goToCryogenicTasks.add(walkTask);
+						dude.setCurrentTask(walkTask);
+					}
 				}
 				break;
 			case 13:
+				boolean allArrived = true;
+				for (Task task : goToCryogenicTasks) {
+					if (!task.isArrived(cryogenicCenter.first, cryogenicCenter.second)) {
+						allArrived = false;
+					}
+				}
+				if(allArrived) {
+					state++;
+				}
+				break;
+			case 14:
 				SpaceStation.get().addMessage(messageManager.tut12());
+				state++;
+				timeout = 7;
+				break;
+			case 15:
+				timeout -= delta;
+				if(timeout < 0) {
+					SpaceStation.get().setGameOverMessage("Congratulations, you finished the game!\nThank you for playing.");
+					state++;
+				}
 				break;
 			default:
 				break;

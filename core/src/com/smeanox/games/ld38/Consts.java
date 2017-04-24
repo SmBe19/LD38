@@ -19,11 +19,13 @@ public class Consts {
 	public static final float ROCKET_DOCKED_DURATION = 2.f;
 	public static final float ROCKET_DOCKED_POSITION_X = 1.5f;
 	public static final float ROCKET_DOCKED_POSITION_Y = 4.25f;
+	public static final float SMALLROCKET_ANIMATION_FADESPEED = 4f;
 	public static final float SMALLROCKET_ANIMATION_OFFSET = 5f;
 	public static final float SMALLROCKET_ANIMATION_DURATION = 5.f;
 	public static final float NEW_DUDE_POSITION_X = 1.5f;
 	public static final float NEW_DUDE_POSITION_Y = 1.5f;
 	public static final float BUILD_POSITION_RANDOM_OFFSET = 0.2f;
+	public static final float STAR_SPEED = 4;
 
 	public static final float BUILD_SPEED = 0.1f;
 	public static final float WALK_SPEED = 2.5f;

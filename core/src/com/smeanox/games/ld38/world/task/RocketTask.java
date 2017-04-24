@@ -68,7 +68,7 @@ public class RocketTask extends Task {
 		Map<Resource, GenericRapper<Float>> resources = SpaceStation.get().getResources();
 		Map<Resource, Float> aReturn = new HashMap<Resource, Float>(getReturn());
 		StringBuilder sb = new StringBuilder();
-		sb.append("You found an asteroid with\n");
+		sb.append("You mined an asteroid with\n");
 		for (Resource resource : Resource.values()) {
 			if (aReturn.containsKey(resource)) {
 				aReturn.put(resource, aReturn.get(resource) * MathUtils.random(Consts.ROCKET_MIN_RETURN, Consts.ROCKET_MAX_RETURN));

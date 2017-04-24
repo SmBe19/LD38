@@ -347,7 +347,7 @@ public class SpaceStation {
 	}
 
 	private void acceptDelivery(){
-		if(isSavedDeliveryEmpty()){
+		if(isSavedDeliveryEmpty() || isWorldWarStarted()){
 			return;
 		}
 		StringBuilder sb = new StringBuilder();

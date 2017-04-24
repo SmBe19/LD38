@@ -275,7 +275,7 @@ public class GameScreen implements Screen {
 
 	private void drawDeliveryRocket(float delta){
 		float progress = Math.abs(SpaceStation.get().getTimeOfDay() - Consts.DELIVERY_TIME);
-		if (SpaceStation.get().isLaunchFailure() ||
+		if (SpaceStation.get().isLaunchFailure() || SpaceStation.get().isWorldWarStarted() ||
 				progress > Consts.ROCKET_ANIMATION_DURATION + Consts.ROCKET_DOCKED_DURATION ||
 				SpaceStation.get().isSavedDeliveryEmpty()) {
 			return;
@@ -299,11 +299,12 @@ public class GameScreen implements Screen {
 	}
 
 	private void drawBG(float delta) {
+		float dayProgress = SpaceStation.get().getTimeOfDay() / Consts.DURATION_DAY;
 		batch.setProjectionMatrix(uiCamera.combined);
 		batch.setColor(1, 1, 1, 1);
 		batch.begin();
 		for(int ax = 0; ax < wWidth; ax += Consts.DESIGN_WIDTH){
-			for(int ay = 0; ay < wHeight; ay += Consts.DESIGN_HEIGHT){
+			for(int ay = -MathUtils.floor(Consts.STAR_SPEED * (1 - dayProgress) * Consts.DESIGN_HEIGHT); ay < wHeight; ay += Consts.DESIGN_HEIGHT){
 				batch.draw(IOTexture.bg.texture, ax, ay, Consts.DESIGN_WIDTH, Consts.DESIGN_HEIGHT);
 			}
 		}
@@ -313,7 +314,7 @@ public class GameScreen implements Screen {
 		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 		earthShader.begin();
 		earthShader.setUniformi("u_textureClouds", 1);
-		earthShader.setUniformf("u_rotation", MathUtils.PI2 * SpaceStation.get().getTimeOfDay() / Consts.DURATION_DAY);
+		earthShader.setUniformf("u_rotation", MathUtils.PI2 * dayProgress);
 		earthShader.end();
 		batch.begin();
 		float size = wWidth * 1.2f;

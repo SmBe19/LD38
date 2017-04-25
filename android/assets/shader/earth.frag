@@ -5,6 +5,12 @@
     #define LOWP
 #endif
 
+vec4 my_texture2D(sampler2D tex, vec2 pos) {
+	pos = fract(pos);
+	return texture2D(tex, pos * vec2(634.,477.) / vec2(1024., 1024.));
+}
+#define texture2D my_texture2D
+
 varying vec2 v_uv;
 
 uniform float u_rotation;

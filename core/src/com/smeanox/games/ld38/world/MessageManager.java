@@ -65,7 +65,7 @@ public class MessageManager {
 	}
 
 	public Message noSurvivors(){
-		return new Message("narration/LD38RadioVoiceOver090n91.ogg", "We didn't receive any signals. At all. This means there were no survivors... We're all alone now. It will take place for the surface of the Earth to be habitable again. But there needs to be a ways how we can preserve humanity.");
+		return new Message("narration/LD38RadioVoiceOver090n91.ogg", "We didn't receive any signals. At all. This means there were no survivors... We're all alone now. It will take years for the surface of the Earth to be habitable again. But there needs to be a ways how we can preserve humanity.");
 	}
 
 	public Message dayStart(int day, Event event) {

@@ -53,7 +53,7 @@ public class MessageManager {
 	}
 
 	public Message dayAfterWar(){
-		return new Message("narration/LD38RadioVoiceOver088useless.ogg", "Seeing the dark side of earth devoid of any light is haunting. How terrible.\n\nIs it possible at least someone survived? Maybe we could look for signals with a radio antenna.");
+		return new Message("narration/LD38RadioVoiceOver088n89.ogg", "Seeing the dark side of earth devoid of any light is haunting. How terrible.\n\nIs it possible at least someone survived? Maybe we could look for signals with a radio antenna.");
 	}
 
 	public Message scanForSurvivors(){

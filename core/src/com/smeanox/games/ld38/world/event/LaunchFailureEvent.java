@@ -19,7 +19,7 @@ public class LaunchFailureEvent extends Event {
 
 	@Override
 	public String getDescription() {
-		return "I just received the message that there’s been a failure in the launch of today’s supply rocket. There won’t be another delivery until tomorrow. We’ll have to see how we manage.";
+		return "I just received the message that there's been a failure in the launch of today's supply rocket. There won't be another delivery until tomorrow. We'll have to see how we manage.";
 	}
 
 	@Override

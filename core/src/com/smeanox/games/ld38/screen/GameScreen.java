@@ -822,7 +822,7 @@ public class GameScreen implements Screen {
 					windows95.remove(GameOverWindow.this);
 					gameOverWindow = null;
 					timeScale = 1;
-					SpaceStation.get().init();
+					SpaceStation.get().reset();
 					LD38.me.showMenuScreen();
 				}
 			}));

@@ -61,7 +61,7 @@ public class SpaceStation {
 		init();
 	}
 
-	public void init(){
+	public void reset(){
 		time = 0;
 		currentEvent = null;
 		nightStart = false;
@@ -110,6 +110,10 @@ public class SpaceStation {
 
 		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
 		addDude(Dude.getRandomDude(Consts.NEW_DUDE_POSITION_X, Consts.NEW_DUDE_POSITION_Y));
+	}
+
+	public void init(){
+		reset();
 
 		addMessage(messageManager.intro());
 	}

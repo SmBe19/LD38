@@ -13,7 +13,7 @@ public class MessageManager {
 	}
 
 	public Message startGameplay(){
-		return new Message("narration/LD38RadioVoiceOver002.ogg", "We've brought some resources with us and we should put them to good use. A storage module will give us a place to put them before we go any further.");
+		return new Message("narration/LD38RadioVoiceOver002.ogg", "We've brought some resources with us and we should put them to good use. A storage module will give us a place to put them before we go any further.\n\nHint: Use buttons on the top right to warp time.");
 	}
 
 	public Message storeSupplies(){
@@ -29,11 +29,11 @@ public class MessageManager {
 	}
 
 	public Message survivePossible(){
-		return new Message("narration/LD38RadioVoiceOver009n10.ogg", "Now we've got all the basics done to survive up here. We will receive periodic shipments of the necessary supplies like food, water, oxygen or raw materials. We need to use the command module to give an order for tomorrow.\n\nTool Tip: click on command module and adjust the order of the next day");
+		return new Message("narration/LD38RadioVoiceOver009n10.ogg", "Now we've got all the basics done to survive up here. We will receive periodic shipments of the necessary supplies like food, water, oxygen or raw materials. We need to use the command module to give an order for tomorrow.\n\nTool Tip: click on command module and adjust the order of the next day.\n\nHint: One human consumes 90 oxygen, 60 water and 36 food every day.");
 	}
 
 	public Message orderOxygen(){ 
-		return new Message("narration/LD38RadioVoiceOver011.ogg", "We need to make sure to always order enough oxygen, water and food. But then we also need building materials to expand the station.\n\nTool Tip: hover over resource to see requirement");
+		return new Message("narration/LD38RadioVoiceOver011.ogg", "We need to make sure to always order enough oxygen, water and food. But then we also need building materials to expand the station.\n\nTool Tip: hover over module in building list to see effects per day");
 	}
 
 	public Message firstDelvieryArrived(){

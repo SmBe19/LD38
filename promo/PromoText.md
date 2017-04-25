@@ -22,6 +22,6 @@ Download
 
 Desktop (Recommended): https://ludumdare.games.smeanox.com/LD38/commanderslog.jar
 
-Web (Graphics don't fully work): https://ludumdare.games.smeanox.com/LD38/web
+Web: https://ludumdare.games.smeanox.com/LD38/web
 
 Source: https://github.com/SmBe19/LD38

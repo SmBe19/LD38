@@ -85,7 +85,7 @@ public class Dude {
 				tryUseResource(resources, delta, Resource.Food, 36, Consts.HEALTH_LOSE_Food);
 
 		if (hadEnoughResources) {
-			hp = Math.min(hp, hp + Consts.HEALTH_REGENERATE * delta);
+			hp = Math.min(1, hp + Consts.HEALTH_REGENERATE * delta);
 		}
 	}
 

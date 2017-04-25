@@ -2,6 +2,7 @@ package com.smeanox.games.ld38.world;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.MathUtils;
 import com.smeanox.games.ld38.world.event.Event;
 import com.smeanox.games.ld38.world.event.WorldWarEvent;
@@ -41,7 +42,7 @@ public class MessageManager {
 	}
 
 	public Message shipIsHere(){
-		return new Message("narration/LD38RadioVoiceOver014n15.ogg", "The ship will depart in exactly one minute. It will take home all the resources that we don't have room for. \n\n We'll be able to expand our station with the material we've received. If we became more self sufficient, a smaller portion of the payload would need to be used for necessities.");
+		return new Message("narration/LD38RadioVoiceOver014n15.ogg", "The ship will depart in exactly one minute. It will take home all the resources that we don't have room for.\n\nWe'll be able to expand our station with the material we've received. If we became more self sufficient, a smaller portion of the payload would need to be used for necessities.");
 	}
 
 	public Message stationGoal(){
@@ -68,14 +69,30 @@ public class MessageManager {
 		return new Message("narration/LD38RadioVoiceOver090n91.ogg", "We didn't receive any signals. At all. This means there were no survivors... We're all alone now. It will take years for the surface of the Earth to be habitable again. But there needs to be a ways how we can preserve humanity.");
 	}
 
+	protected String getPrefile(int day) {
+		int num = day + 16;
+		if (SpaceStation.get().isWorldWarStarted()) {
+			if(day > 23){
+				return null;
+			}
+			if(day >= 9){
+				num = day + 49;
+			}
+		} else {
+			if(day > 15){
+				return null;
+			}
+		}
+		return "narration/LD38RadioVoiceOver0" + num + ".ogg";
+	}
+
 	public Message dayStart(int day, Event event) {
 		if(event != null && !(event instanceof WorldWarEvent)) {
-			String prefile = "narration/LD38RadioVoiceOver0" + (49 + SpaceStation.get().getDay()) + ".ogg";
-			if(SpaceStation.get().getDay() < 9 || !SpaceStation.get().isWorldWarStarted()){
-				prefile = "narration/LD38RadioVoiceOver0" + (16 + SpaceStation.get().getDay()) + ".ogg";
-			}
+			String prefile = getPrefile(day);
 			Message message = event.getMessage();
-			message.prenarration = Gdx.audio.newMusic(Gdx.files.internal(prefile));
+			if (prefile != null) {
+				message.prenarration = Gdx.audio.newMusic(Gdx.files.internal(prefile));
+			}
 			return message;
 		} else {
 			if(day > 23){
@@ -84,9 +101,9 @@ public class MessageManager {
 			if(day == 23) {
 				return new MessageManager.Message("narration/LD38RadioVoiceOver057.ogg", "Why am I even still doing this? It's not like anyone's ever going to listen to these logs anyway.");
 			} else if(day == 1){
-				return new Message("narration/LD38RadioVoiceOver012.ogg", "Commander's Log, Day 2. What a beautiful sight to see the glowing sun emerge behind the blue marble of our planet. \n\n Sleeping in zero g was quite an unusual experience, it'll take some time getting used to.");
+				return new Message("narration/LD38RadioVoiceOver012.ogg", "Commander's Log, Day 2. What a beautiful sight to see the glowing sun emerge behind the blue marble of our planet.\n\nSleeping in zero g was quite an unusual experience, it'll take some time getting used to.");
 			} else if (day == 2) {
-				return new Message("narration/LD38RadioVoiceOver018.ogg", "Commander's Log, Day 3. We're slowly getting used to the situation up here. \n\n Within a couple of weeks, we should be able to mine the first asteroids.");
+				return new Message("narration/LD38RadioVoiceOver018.ogg", "Commander's Log, Day 3. We're slowly getting used to the situation up here.\n\nWithin a couple of weeks, we should be able to mine the first asteroids.");
 			} else if (SpaceStation.get().isWorldWarToday()){
 				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver082.ogg", "What the fuck is going on down there? ... Are those explosions?"));
 				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver083.ogg", "The headquarter is not responding. What the hell is going on?"));
@@ -94,11 +111,8 @@ public class MessageManager {
 				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver085.ogg", "Sarah ... Robin ... NO!"));
 				return new Message("narration/LD38RadioVoiceOver087.ogg", "What does this mean for us? There certainly won't be any more supply ships now.");
 			} else if (SpaceStation.get().isWorldWarStarted()) {
-				String prefile = "narration/LD38RadioVoiceOver0" + (49 + SpaceStation.get().getDay()) + ".ogg";
+				String prefile = getPrefile(day);
 				String premessage = "Commander's Log, Day " + (1 + SpaceStation.get().getDay()) + ".\n\n";
-				if(SpaceStation.get().getDay() < 9){
-					prefile = "narration/LD38RadioVoiceOver0" + (16 + SpaceStation.get().getDay()) + ".ogg";
-				}
 
 				int val = MathUtils.random(10);
 				switch (val){
@@ -133,7 +147,7 @@ public class MessageManager {
 						return new Message(prefile, "narration/LD38RadioVoiceOver056.ogg", premessage + "We are struggling to keep going.");
 				}
 			} else {
-				String prefile = "narration/LD38RadioVoiceOver0" + (16 + SpaceStation.get().getDay()) + ".ogg";
+				String prefile = getPrefile(day);
 				String premessage = "Commander's Log, Day " + (1 + SpaceStation.get().getDay()) + ".\n\n";
 				int val = MathUtils.random(11);
 				switch (val){
@@ -150,7 +164,7 @@ public class MessageManager {
 					case 5:
 						return new Message(prefile, "narration/LD38RadioVoiceOver038.ogg", premessage + "I'm looking forward to holding my son again. But I won't be back on earth for another three months.");
 					case 6:
-						return new Message(prefile, "narration/LD38RadioVoiceOver039.ogg", premessage + "Occasionally I see some asteroids getting within a few kilometers of us. \n But I shouldn't worry about it.");
+						return new Message(prefile, "narration/LD38RadioVoiceOver039.ogg", premessage + "Occasionally I see some asteroids getting within a few kilometers of us. \nBut I shouldn't worry about it.");
 					case 7:
 						return new Message(prefile, "narration/LD38RadioVoiceOver040.ogg", premessage + "There have been no unusual events lately.");
 					case 8:
@@ -191,11 +205,42 @@ public class MessageManager {
 		}
 
 		public Message(String file, String message) {
-			this(Gdx.audio.newMusic(Gdx.files.internal(file)), message);
+			this.message = message;
+			this.narration = null;
+			this.prenarration = null;
+			if(file != null) {
+				FileHandle narrationFile = Gdx.files.internal(file);
+				if (narrationFile.exists()) {
+					this.narration = Gdx.audio.newMusic(narrationFile);
+				} else {
+					this.narration = null;
+					System.out.println("Warning: file '" + file + "' does not exist!");
+				}
+			}
 		}
 
 		public Message(String prefile, String file, String message) {
-			this(Gdx.audio.newMusic(Gdx.files.internal(prefile)), Gdx.audio.newMusic(Gdx.files.internal(file)), message);
+			this.message = message;
+			this.narration = null;
+			this.prenarration = null;
+			if(file != null) {
+				FileHandle narrationFile = Gdx.files.internal(file);
+				if (narrationFile.exists()) {
+					this.narration = Gdx.audio.newMusic(narrationFile);
+				} else {
+					this.narration = null;
+					System.out.println("Warning: file '" + file + "' does not exist!");
+				}
+			}
+			if(prefile != null) {
+				FileHandle prenarrationFile = Gdx.files.internal(prefile);
+				if (prenarrationFile.exists()) {
+					this.prenarration = Gdx.audio.newMusic(prenarrationFile);
+				} else {
+					this.prenarration = null;
+					System.out.println("Warning: file '" + prefile + "' does not exist!");
+				}
+			}
 		}
 	}
 }

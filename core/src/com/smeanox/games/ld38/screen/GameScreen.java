@@ -1,5 +1,6 @@
 package com.smeanox.games.ld38.screen;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -79,16 +80,21 @@ public class GameScreen implements Screen {
 			throw new RuntimeException("No shader for you!");
 		}
 		IOTexture.map.texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
-		IOTexture.map.texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
 		IOTexture.clouds.texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-		IOTexture.clouds.texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
+		if(Gdx.app.getType() == Application.ApplicationType.WebGL){
+			IOTexture.map.texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+			IOTexture.clouds.texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		} else {
+			IOTexture.map.texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
+			IOTexture.clouds.texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
+		}
 
 		backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/main_theme.ogg"));
 		ambientMusic = Gdx.audio.newMusic(Gdx.files.internal("music/ambient.ogg"));
 		backgroundMusic.setLooping(false);
 		ambientMusic.setLooping(true);
 		backgroundMusic.setVolume(0.4f);
-		ambientMusic.setVolume(0.3f);
+		ambientMusic.setVolume(0.4f);
 		musicPause = MathUtils.random(Consts.MUSIC_MAX_PAUSE);
 
 		buildModuleTypes = new ArrayList<ModuleType>();

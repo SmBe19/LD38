@@ -1,5 +1,6 @@
 package com.smeanox.games.ld38.io;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -22,6 +23,6 @@ public enum IOTexture {
 	public final Texture texture;
 
 	IOTexture(String file) {
-		texture = new Texture(Gdx.files.internal(file), true);
+		texture = new Texture(Gdx.files.internal(file), Gdx.app.getType() != Application.ApplicationType.WebGL);
 	}
 }

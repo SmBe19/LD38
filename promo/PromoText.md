@@ -13,6 +13,8 @@ Controls:
 * Left mouse button: Select modules and build them; Interact with modules
 * Right mouse button: Cancel
 
+You can warp time with the menu in the top right corner.
+
 Hint: All effect values are calculated per day. One astronaut consumes 90 oxygen, 60 water and 36 food per day.
 
 Download

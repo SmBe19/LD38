@@ -35,6 +35,11 @@ public class RocketModule extends Module {
 	}
 
 	@Override
+	public boolean canAttachSolarPanel() {
+		return false;
+	}
+
+	@Override
 	public boolean canRandomWalk() {
 		return false;
 	}
@@ -56,7 +61,7 @@ public class RocketModule extends Module {
 
 	@Override
 	public void doInputOutputProcessing(Map<Resource, GenericRapper<Float>> resources, float delta) {
-		hadEnoughResources = tryUseResource(resources, delta, Resource.Electricity, 5);
+		hadEnoughResources = tryUseResource(resources, delta, Resource.Electricity, 20);
 	}
 
 	@Override

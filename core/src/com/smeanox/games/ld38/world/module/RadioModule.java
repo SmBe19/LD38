@@ -18,6 +18,11 @@ public class RadioModule extends Module {
 	}
 
 	@Override
+	public boolean canAttachSolarPanel() {
+		return false;
+	}
+
+	@Override
 	public boolean canRandomWalk() {
 		return false;
 	}

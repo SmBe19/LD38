@@ -650,12 +650,15 @@ public class GameScreen implements Screen {
 					visible = true;
 					final Map<Resource, Float> moduleBuildCost = lastBuildModule.buildCost;
 					int count = moduleBuildCost.size();
-					height = count * 20;
+					height = 20 + count * 20;
 					if (lastBuildModule.tooltip.length() > 0) {
-						height += 15 + IOFont.icons.height(lastBuildModule.tooltip);
+						height += 35 + IOFont.icons.height(lastBuildModule.tooltip);
 					}
 					y = wHeight - 100 - height;
-					float ay = height - 15;
+
+					uiElements.add(new Label(5, height - 15, 60, 10, "Cost", null));
+
+					float ay = height - 35;
 					for (final Resource resource : Resource.values()) {
 						if (moduleBuildCost.containsKey(resource)) {
 							uiElements.add(new Label(25, ay, 40, 10, leftPad("" + moduleBuildCost.get(resource).intValue(), 5), new LabelActionHandler() {
@@ -670,7 +673,9 @@ public class GameScreen implements Screen {
 					}
 					if(lastBuildModule.tooltip.length() > 0){
 						ay -= 15;
-						uiElements.add(new Label(5, ay, 60, 10, lastBuildModule.tooltip, IOFont.icons, Color.WHITE, null));
+						uiElements.add(new Label(5, ay, 60, 10, "Effect", null));
+						ay -= 25;
+						uiElements.add(new Label(5, ay, 40, 10, lastBuildModule.tooltip, IOFont.icons, Color.WHITE, null));
 					}
 				}
 			}

@@ -1,8 +1,8 @@
 package com.smeanox.games.ld38;
 
 public class Consts {
-	public static final boolean DEBUG = false;
-	public static final boolean IGNORE_MESSAGES = false;
+	public static final boolean DEBUG = true;
+	public static final boolean IGNORE_MESSAGES = true;
 	public static final int DESIGN_WIDTH = 800;
 	public static final int DESIGN_HEIGHT = 480;
 	public static final String GAME_NAME = "Commander's Log";
@@ -35,7 +35,7 @@ public class Consts {
 	public static final float BUILD_SPEED = 0.1f;
 	public static final float WALK_SPEED = 1.5f;
 	public static final float DURATION_DAY = 120;
-	public static final float DELIVERY_TIME = DURATION_DAY / 3.f;
+	public static final float DELIVERY_TIME = DURATION_DAY * 0.2f;
 	public static final float ENDOFORDER_TIME = DELIVERY_TIME - ROCKET_ANIMATION_DURATION - ROCKET_DOCKED_DURATION;
 	public static final float DURATION_NIGHT = DURATION_DAY / 3.f;
 	public static final float DELIVERY_LIMIT = 1200;

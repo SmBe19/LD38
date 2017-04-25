@@ -65,7 +65,7 @@ public class MessageManager {
 	}
 
 	public Message noSurvivors(){
-		return new Message("narration/LD38RadioVoiceOver092.ogg", "We didn't receive any signals. At all. This means there were no survivors… We're all alone now.");
+		return new Message("narration/LD38RadioVoiceOver092.ogg", "We didn't receive any signals. At all. This means there were no survivors... We're all alone now.");
 	}
 
 	public Message dayStart(int day, Event event) {
@@ -88,10 +88,10 @@ public class MessageManager {
 			} else if (day == 2) {
 				return new Message("narration/LD38RadioVoiceOver018.ogg", "Commander's Log, Day 3. We're slowly getting used to the situation up here. \n\n Within a couple of weeks, we should be able to mine the first asteroids.");
 			} else if (SpaceStation.get().isWorldWarToday()){
-				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver082.ogg", "What the fuck is going on down there? … Are those explosions?"));
+				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver082.ogg", "What the fuck is going on down there? ... Are those explosions?"));
 				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver083.ogg", "The headquarter is not responding. What the hell is going on?"));
-				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver084.ogg", "Good god … We're seeing World War Three unfold right below us. This is horrifying."));
-				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver085.ogg", "Sarah … Robin … NO!"));
+				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver084.ogg", "Good god ... We're seeing World War Three unfold right below us. This is horrifying."));
+				SpaceStation.get().addMessage(new Message("narration/LD38RadioVoiceOver085.ogg", "Sarah ... Robin ... NO!"));
 				return new Message("narration/LD38RadioVoiceOver087.ogg", "What does this mean for us? There certainly won't be any more supply ships now.");
 			} else if (SpaceStation.get().isWorldWarStarted()) {
 				String prefile = "narration/LD38RadioVoiceOver0" + (49 + SpaceStation.get().getDay()) + ".ogg";
@@ -104,7 +104,7 @@ public class MessageManager {
 				switch (val){
 					case 0:
 						if(!SpaceStation.get().isContacetdEarth()) {
-							return new Message(prefile, "narration/LD38RadioVoiceOver045.ogg", premessage + "We haven't received any signals since … the war. I wonder if anyone survived?");
+							return new Message(prefile, "narration/LD38RadioVoiceOver045.ogg", premessage + "We haven't received any signals since ... the war. I wonder if anyone survived?");
 						}
 						// fall through
 					case 1:
@@ -114,16 +114,16 @@ public class MessageManager {
 					case 3:
 						return new Message(prefile, "narration/LD38RadioVoiceOver048.ogg", premessage + "We're alive up here while everyone is dead down there on earth. Sometimes I wonder if it's even worth it to keep going.");
 					case 4:
-						return new Message(prefile, "narration/LD38RadioVoiceOver049.ogg", premessage + "Every time I wake up, I hope that this was all a dream… I just want to see my family again.");
+						return new Message(prefile, "narration/LD38RadioVoiceOver049.ogg", premessage + "Every time I wake up, I hope that this was all a dream... I just want to see my family again.");
 					case 5:
-						return new Message(prefile, "narration/LD38RadioVoiceOver050.ogg", premessage + "Seeing the dead planet below me makes me feel so … powerless.");
+						return new Message(prefile, "narration/LD38RadioVoiceOver050.ogg", premessage + "Seeing the dead planet below me makes me feel so ... powerless.");
 					case 6:
 						return new Message(prefile, "narration/LD38RadioVoiceOver051.ogg", premessage + "No more shipments from Earth's surface. Unless there's some sort of miracle, our fate will be the same as the one of our brothers on Earth.");
 					case 7:
 						return new Message(prefile, "narration/LD38RadioVoiceOver052.ogg", premessage + "I would have rather spent the last days of my life with my family than on this station.");
 					case 8:
 						if(SpaceStation.get().isContacetdEarth()){
-							return new Message(prefile, "narration/LD38RadioVoiceOver054.ogg", premessage + "We're the only humans left… We're humanity's last hope. We can't give up now.");
+							return new Message(prefile, "narration/LD38RadioVoiceOver054.ogg", premessage + "We're the only humans left... We're humanity's last hope. We can't give up now.");
 						} else {
 							return new Message(prefile, "narration/LD38RadioVoiceOver053.ogg", premessage + "We haven't given up hope on finding survivors yet. We just need to scan for their signals.");
 						}
